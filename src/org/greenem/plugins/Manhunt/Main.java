@@ -131,7 +131,7 @@ public class Main extends JavaPlugin implements Listener {
 				c.set(currentKey, true);
 			} else {
 				try {
-					ConfigData.allowGmCommandForOps = (boolean) c.get(currentKey);
+					ConfigData.allowHealCommandForOps = (boolean) c.get(currentKey);
 				} catch (ClassCastException e) {
 					logCastEx(currentKey);
 				}
@@ -774,8 +774,6 @@ public class Main extends JavaPlugin implements Listener {
 			}
 		}
 	}
-	
-	
 
 	public void AddItemStack(Player p, ItemStack ItemStack, int slot) {
 		if(!p.getInventory().contains(ItemStack)) {
