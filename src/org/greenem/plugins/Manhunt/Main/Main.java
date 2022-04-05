@@ -64,6 +64,7 @@ public class Main extends JavaPlugin implements Listener {
 	public static Map <Player, Location> FrozenLocs = new HashMap<>();
 	public static Map <Player, Integer> FrozenAir = new HashMap<>();
 
+	public File serverDirectory;
 	public File configsDirectory;
 	public File mainConfigDirectory;
 	
@@ -71,11 +72,6 @@ public class Main extends JavaPlugin implements Listener {
 //	public static String launchServerFileName;
 	
 	Plugin plugin = this;
-	
-	@Override
-	public void onDisable() {
-		log(ChatColor.RED + "Your Manhunt plugin has been disabled.");
-	}
 
 	@Override
 	public void onEnable() {
@@ -84,7 +80,8 @@ public class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(this, this);
 		RegisterAllCommands();
 		
-		configsDirectory = new File(getServer().getWorldContainer(), "configs");
+		serverDirectory = getServer().getWorldContainer();
+		configsDirectory = new File(serverDirectory, "plugins/configs");
 		mainConfigDirectory = new File(configsDirectory, "ManhuntAndWorldReset");
 		
 		mainConfigDirectory.mkdirs();
@@ -92,6 +89,11 @@ public class Main extends JavaPlugin implements Listener {
 		loadConfig();
 		
 		//healTests();
+	}
+	
+	@Override
+	public void onDisable() {
+		log(ChatColor.RED + "Your Manhunt plugin has been disabled.");
 	}
 	
 	public void logCastEx(String currentKey) {
@@ -107,16 +109,29 @@ public class Main extends JavaPlugin implements Listener {
 		String currentKey = null;
 
 		try {
-			currentKey = "launch-server-file-name";
+			currentKey = "launch-server-script-name";
 			if (c.get(currentKey) == null) {
 				c.set(currentKey, "Run.bat");
-			} //else {
-//				try {
-//					String launchServerFileName = (String) c.get(currentKey);
-//				} catch (ClassCastException e) {
-//
-//				}
-//			}
+			} else {
+				try {
+					String fileName = (String) c.get(currentKey);
+					if(!new File(serverDirectory, fileName).exists()) {
+						log(ChatColor.RED + "You have specified a non-existing run script file in the config!");
+					}
+				} catch (ClassCastException e) {
+					
+				}
+			}
+			/*currentKey = "java-path-for-restart-script";
+			if (c.get(currentKey) == null) {
+				c.set(currentKey, "java");
+			} else {
+				try {
+					javaString = (String) c.get(currentKey);
+				} catch (ClassCastException e) {
+
+				}
+			}*/
 			currentKey = "allow-gm-command-for-ops";
 			if (c.get(currentKey) == null) {
 				c.set(currentKey, true);
@@ -1111,22 +1126,30 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public void resetWorld(CommandSender sender) {
 		if(sender instanceof ConsoleCommandSender || (sender instanceof Player && ((Player) sender).isOp())) {
-			copyResetWorldJarFile();
-			
 			File pluginsDir = configsDirectory = new File(getServer().getWorldContainer(), "plugins");
 			File filesForResetingWorldDirectory = new File(pluginsDir, "FilesForResetingWorld");
 			
-			//log(new File(filesForResetingWorldDirectory, "ResetWorldAndRestart.jar").exists());
+			File prev = new File(filesForResetingWorldDirectory, "ResetWorldAndRestart.jar");
+			if(prev.exists()) {
+				prev.delete();
+			}
+			
+			copyResetWorldJarFile();
 			
 			AtomicReference<Process> ps = new AtomicReference<>();
 			Thread jarThread = new Thread(new Runnable() {
 				@Override
 				public void run() {
+					/*try {
+						Thread.sleep(200);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}*/
 					try {
 						//ProcessBuilder pb = new ProcessBuilder("cmd.exe /c \"java -jar ResetWorldAndRestart.jar\"");
 						//pb.directory(filesForResetingWorldDirectory);
 						//ps.set(pb.start());
-						ps.set(Runtime.getRuntime().exec("cmd.exe /c \"cd \"" + filesForResetingWorldDirectory + "\" && start cmd /c " + javaString + " -jar ResetWorldAndRestart.jar\""));
+						ps.set(Runtime.getRuntime().exec("cmd.exe /c \"pushd \"" + filesForResetingWorldDirectory + "\" && start cmd /c " + javaString + " -jar ResetWorldAndRestart.jar\""));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
