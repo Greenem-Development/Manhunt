@@ -110,14 +110,19 @@ public class Main extends JavaPlugin implements Listener {
 		String currentKey = null;
 
 		try {
+			String noExistingStartFileWarning = ChatColor.RED + "You have specified a non-existing run script file in the config! (other things are fine)";
 			currentKey = "launch-server-script-name";
 			if (c.get(currentKey) == null) {
 				c.set(currentKey, "Run.bat");
+				runFileString = "Run.bat";
+				if(!new File(serverDirectory, runFileString).exists()) {
+					log(noExistingStartFileWarning);
+				}
 			} else {
 				try {
 					runFileString = (String) c.get(currentKey);
 					if(!new File(serverDirectory, runFileString).exists()) {
-						log(ChatColor.RED + "You have specified a non-existing run script file in the config!");
+						log(noExistingStartFileWarning);
 					}
 				} catch (ClassCastException e) {
 					
@@ -1132,7 +1137,7 @@ public class Main extends JavaPlugin implements Listener {
 				return;
 			}
 				
-			File pluginsDir = configsDirectory = new File(getServer().getWorldContainer(), "plugins");
+			File pluginsDir = new File(getServer().getWorldContainer(), "plugins");
 			File filesForResetingWorldDirectory = new File(pluginsDir, "FilesForResetingWorld");
 			
 			File prev = new File(filesForResetingWorldDirectory, "ResetWorldAndRestart.jar");
