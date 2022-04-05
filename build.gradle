@@ -7,7 +7,7 @@
 apply plugin: 'java'
 
 group 'org.greenem.plugins.Manhunt'
-version '3.0.0'
+version 'pre-1.3V1'
 
 repositories {
     mavenCentral()
