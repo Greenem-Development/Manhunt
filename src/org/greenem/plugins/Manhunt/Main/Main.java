@@ -1,6 +1,7 @@
 package org.greenem.plugins.Manhunt.Main;
 
 import static org.greenem.plugins.Manhunt.SimpleLogger.log;
+import static org.greenem.plugins.Manhunt.SimpleLogger.debug;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -328,41 +329,20 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	@EventHandler
-	public void Move (PlayerMoveEvent e) {
+	public void Move(PlayerMoveEvent e) {
 		Player p = e.getPlayer();
 		if(Speedrunners.contains(e.getPlayer().getName())) findTarget();
 		if(Hunters.contains(e.getPlayer().getName())) findTarget();
-		//log.info(Frozen.contains(p) + "");
 		if(Frozen.contains(p.getName())) {
-			//e.setCancelled(true);
-			
-			
-//			Location loc = e.getFrom();
-//			loc.setDirection(p.getLocation().getDirection());
-//			p.teleport(loc);
-			
-			
 			if(!e.getFrom().getWorld().equals(e.getTo().getWorld())) return;
-			//e.setCancelled(true);
 			Location loc = e.getTo().clone();
-//			float y = e.getTo().getYaw();
-//			float pt = e.getTo().getPitch();
-//			p.teleport(loc);
-//			p.getLocation().setYaw(y);
-//			p.getLocation().setPitch(pt);
 			p.setAllowFlight(true);
 			p.setFlying(true);
 			loc.setX(FrozenLocs.get(p).getX());
 			loc.setY(FrozenLocs.get(p).getY());
 			loc.setZ(FrozenLocs.get(p).getZ());
-			//log.info(ChatColor.AQUA + "TP");
 			p.teleport(loc);
-			
-//			p.getLocation().setX(e.getFrom().getX());
-//			p.getLocation().setY(e.getFrom().getY());
-//			p.getLocation().setZ(e.getFrom().getZ());
 		}
-			//p.teleport(new Location(p.getWorld(), e.getFrom().getX(), e.getFrom().getY(), e.getFrom().getZ()));
 	}
 	
 	public void findTarget() {
@@ -372,87 +352,90 @@ public class Main extends JavaPlugin implements Listener {
 				continue;
 			}
 			if(plHunter.isDead()==false) { //TODO java.lang.NullPointerException: Cannot invoke "org.bukkit.entity.Player.isDead()" because "plHunter" is null, 274
-			Map <String, Double> Distations = new HashMap<>();
-			for (String speedrunner : Speedrunners) {
-				Player speedrunnerPl = getServer().getPlayerExact(speedrunner);
-				if(speedrunnerPl==null) {
-					continue;
-				}
-				if(speedrunnerPl.isDead()==false) { //TODO java.lang.NullPointerException: Cannot invoke "org.bukkit.entity.Player.isDead()" because "speedrunnerPl" is null
-					double distance = GetDistance(plHunter, speedrunnerPl);
-					if(distance<0) {
-						log.info("skipped.");
-						return;
+				Map <String, Double> Distations = new HashMap<>();
+				for (String speedrunner : Speedrunners) {
+					Player speedrunnerPl = getServer().getPlayerExact(speedrunner);
+					if(speedrunnerPl==null) {
+						continue;
 					}
-					Distations.put(speedrunner, distance);
+					if(speedrunnerPl.isDead()==false) { //TODO java.lang.NullPointerException: Cannot invoke "org.bukkit.entity.Player.isDead()" because "speedrunnerPl" is null
+						double distance = GetDistance(plHunter, speedrunnerPl);
+						if(distance<0) {
+							log.info("skipped.");
+							return;
+						}
+						Distations.put(speedrunner, distance);
+					}
 				}
-			}
-			//log.info(Distations.toString());
-			double nearest = -1;
-			int times = 0;
-			for (double dist : Distations.values()) {
-				if(times == 0) {
-					nearest = dist;
-					times++;
-				}
-				else {
-					if(nearest>dist) {
+				//log.info(Distations.toString());
+				double nearest = -1;
+				int times = 0;
+				for (double dist : Distations.values()) {
+					if(times == 0) {
 						nearest = dist;
+						times++;
 					}
-				}
-			}
-			for (String sp : Speedrunners) {
-				Player plSp = getServer().getPlayerExact(sp);
-				if(getServer().getPlayerExact(sp).isDead()==false) {
-				if(Distations.get(sp).equals(nearest)) {
-					Location target = GetTargetLocation(plHunter, plSp);
-					if(target.getWorld().getEnvironment().equals(Environment.NETHER) || target.getWorld().getEnvironment().equals(Environment.THE_END)) {
-						for(int i = 0; i < plHunter.getInventory().getSize(); i++) {
-					   		ItemStack CompassItem = plHunter.getInventory().getItem(i);
-					      	if(CompassItem != null) {
-					    	  	if(CompassItem.getType().equals(Material.COMPASS)) {
-						    	  	if(plHunter.getInventory().getItem(plHunter.getInventory().getHeldItemSlot())!=null && plHunter.getInventory().getItem(plHunter.getInventory().getHeldItemSlot()).getType().equals(Material.COMPASS)) {
-						    	  	
-						    	  	}
-						    	  	else {
-						    	  		CompassMeta meta = (CompassMeta) CompassItem.getItemMeta();
-						    	  		if(meta.getLodestone() == null) meta.setLodestoneTracked(false); //если нужно только
-						    	  		meta.setLodestone(target);
-						                CompassItem.setItemMeta(meta);
-						    	  	}
-					        	}
-					      	}
-						}
-					}
-					if(target.getWorld().getEnvironment().equals(Environment.NORMAL)) {
-						boolean toggle1 = false;
-						for(int i = 0; i < plHunter.getInventory().getSize(); i++) {
-					   		ItemStack CompassItem = plHunter.getInventory().getItem(i);
-					      	if(CompassItem != null) {
-					    	  	if(CompassItem.getType().equals(Material.COMPASS)) {
-					    	  		toggle1 = true;
-					    	  		//log.info("has: " + CompassItem.getItemMeta().toString());
-					    	  		CompassMeta meta = (CompassMeta) CompassItem.getItemMeta();
-					    	  		CompassItem.setItemMeta(meta);
-					    	  		if(meta.getLodestone()!=null) {
-					    	  			//int slot = i;
-					    	  			plHunter.getInventory().setItem(i, new ItemStack(Material.COMPASS, CompassItem.getAmount()));
-//					    	  			plHunter.setCompassTarget(target);
-					    	  		}
-					    	  		else {
-//					    	  			plHunter.setCompassTarget(target);
-					    	  		}
-					        	}
-					      	}
-						}
-						if(toggle1) {
-							plHunter.setCompassTarget(target);
+					else {
+						if(nearest>dist) {
+							nearest = dist;
 						}
 					}
 				}
+				for (String sp : Speedrunners) {
+					Player plSp = getServer().getPlayerExact(sp);
+					if(getServer().getPlayerExact(sp).isDead()==false) {
+						if(Distations.get(sp).equals(nearest)) {
+							Location target = GetTargetLocation(plHunter, plSp);
+							if(target.getWorld().getEnvironment().equals(Environment.NETHER) || target.getWorld().getEnvironment().equals(Environment.THE_END)) {
+								for(int i = 0; i < plHunter.getInventory().getSize(); i++) {
+							   		ItemStack CompassItem = plHunter.getInventory().getItem(i);
+							      	if(CompassItem != null) {
+							    	  	if(CompassItem.getType().equals(Material.COMPASS)) {
+								    	  	if(plHunter.getInventory().getItem(plHunter.getInventory().getHeldItemSlot())!=null && plHunter.getInventory().getItem(plHunter.getInventory().getHeldItemSlot()).getType().equals(Material.COMPASS)) {
+								    	  	
+								    	  	}
+								    	  	else if (plHunter.getWorld().getEnvironment()!=plSp.getWorld().getEnvironment()) {
+								    	  		// because there was a bug
+								    	  	}
+								    	  	else {
+								    	  		CompassMeta meta = (CompassMeta) CompassItem.getItemMeta();
+								    	  		if(meta.getLodestone() == null) meta.setLodestoneTracked(false); //если нужно только
+								    	  		meta.setLodestone(target);
+								                CompassItem.setItemMeta(meta);
+								    	  	}
+							        	}
+							      	}
+								}
+							}
+							if(target.getWorld().getEnvironment().equals(Environment.NORMAL)) {
+								boolean toggle1 = false;
+								for(int i = 0; i < plHunter.getInventory().getSize(); i++) {
+							   		ItemStack CompassItem = plHunter.getInventory().getItem(i);
+							      	if(CompassItem != null) {
+							    	  	if(CompassItem.getType().equals(Material.COMPASS)) {
+							    	  		toggle1 = true;
+							    	  		//log.info("has: " + CompassItem.getItemMeta().toString());
+							    	  		CompassMeta meta = (CompassMeta) CompassItem.getItemMeta();
+							    	  		CompassItem.setItemMeta(meta);
+							    	  		if(meta.getLodestone()!=null) {
+							    	  			//int slot = i;
+							    	  			plHunter.getInventory().setItem(i, new ItemStack(Material.COMPASS, CompassItem.getAmount()));
+		//					    	  			plHunter.setCompassTarget(target);
+							    	  		}
+							    	  		else {
+		//					    	  			plHunter.setCompassTarget(target);
+							    	  		}
+							        	}
+							      	}
+								}
+								if(toggle1) {
+									plHunter.setCompassTarget(target);
+								}
+							}
+						}
+					}
+				}
 			}
-			}
-		}
 		}
 	}
 	
@@ -752,10 +735,14 @@ public class Main extends JavaPlugin implements Listener {
 				if(atLeastOneImportantPlayer) {
 					if(logHealInfo) log("notifOthers: " + notifOthers);
 					for (String pAlert : Hunters) {
-						sendOthersTheAlert(pAlert, pName, notifOthers);
+						if (!pAlert.equals(pTo)) {
+							sendOthersTheAlert(pAlert, pName, notifOthers);
+						}
 					}
 					for (String pAlert : Speedrunners) {
-						sendOthersTheAlert(pAlert, pName, notifOthers);
+						if (!pAlert.equals(pTo)) {
+							sendOthersTheAlert(pAlert, pName, notifOthers);
+						}
 					}
 				}
 			}
@@ -1074,7 +1061,7 @@ public class Main extends JavaPlugin implements Listener {
 		getCommand("mhnorole").setTabCompleter(new EmptyCompleterNoArgs());
 		getCommand("gm").setTabCompleter(new MhGmCompleter());
 		getCommand("mhstart").setTabCompleter(new MhStartCompleter());
-		getCommand("loc").setTabCompleter(new EmptyCompleterNoArgs());
+//		getCommand("loc").setTabCompleter(new EmptyCompleterNoArgs());
 		getCommand("mhreloadconfig").setTabCompleter(new EmptyCompleterNoArgs());
 		getCommand("resetworld").setTabCompleter(new EmptyCompleterNoArgs());
 	}
