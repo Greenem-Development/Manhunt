@@ -128,7 +128,7 @@ public class Main extends JavaPlugin implements Listener {
 					
 				}
 			}
-			/*currentKey = "java-path-for-restart-script";
+			/*currentKey = "java-path-to-start-java-middle-script"; //TODO?
 			if (c.get(currentKey) == null) {
 				c.set(currentKey, "java");
 			} else {
