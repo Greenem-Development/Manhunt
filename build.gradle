@@ -17,5 +17,27 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src'
+        }
+        resources {
+            srcDir 'resources' 
+        }
+    }
+}
+
+jar {
+	archiveBaseName = 'Manhunt'
+    destinationDirectory.set(file("G:/SERVERS/Dev Server 1.18/plugins"))
+    configurations.implementation.canBeResolved=true
+    from { configurations.implementation.collect {
+      //it.canBeResolved = true 
+      it.isDirectory() ? it : zipTree(it) } 
+    }
+    //with jar
 }
