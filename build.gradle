@@ -41,34 +41,3 @@ jar {
     }
     //with jar
 }
-
-def dependsDir = "${System.getProperty('user.dir')}/dependencies/"
-task copyDepends(type: Copy) {
-  from configurations.implementation
-  into "${dependsDir}"
-}
-
-buildscript {
-	repositories {
-	  mavenCentral()
-	}
-	dependencies {
-	  classpath 'net.sf.proguard:proguard-gradle:6.0.3'
-	  classpath 'net.sf.proguard:proguard-base:6.0.3'
-	}
-}
-
-task proguard {
-   inputs.file jar.archivePath
-   outputs.file jar.archivePath // is this correct?
-   doLast {
-      ant.taskdef(name: 'proguard', classname: 'foo.bar.ProguardTask', classpath: configurations.proguard.asPath)
-      ant.proguard {
-         libraryjar(dir: 'otherfiles/here') // not sure what this does
-         outjar(name: jar.archivePath)
-      }
-   }
-}
-
-assemble.dependsOn proguard
-proguard.dependsOn jar
