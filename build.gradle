@@ -33,11 +33,31 @@ sourceSets {
 
 jar {
 	archiveBaseName = 'Manhunt'
-    destinationDirectory.set(file("G:/SERVERS/Dev Server 1.18/plugins"))
+    //destinationDirectory.set(file("G:/SERVERS/Dev Server 1.18/plugins"))
     configurations.implementation.canBeResolved=true
     from { configurations.implementation.collect {
       //it.canBeResolved = true 
       it.isDirectory() ? it : zipTree(it) } 
     }
     //with jar
+}
+
+def dependsDir = "${System.getProperty('user.dir')}/dependencies/"
+task copyDepends(type: Copy) {
+  from configurations.implementation
+  into "${dependsDir}"
+}
+
+buildscript {
+	repositories {
+	  mavenCentral()
+	}
+	dependencies {
+	  classpath 'net.sf.proguard:proguard-gradle:6.0.3'
+	  classpath 'net.sf.proguard:proguard-base:6.0.3'
+	}
+}
+
+task proguard(type: proguard.gradle.ProGuardTask) {
+    injars "build/libs"
 }

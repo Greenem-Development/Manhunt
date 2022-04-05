@@ -28,5 +28,5 @@ commands:
       description: Reload the plugin config
       permission: op
    resetworld:
-      description: DELETES THE WORLD AND RESTARTS THE SERVER
+      description: DELETES THE WORLD AND RESTARTS THE SERVER, may be moved to a separate plugin later
       permission: op

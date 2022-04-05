@@ -37,6 +37,7 @@ import org.bukkit.generator.ChunkGenerator.BiomeGrid;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.signature.qual.InternalForm;
 import org.greenem.plugins.Manhunt.completers.EmptyCompleterNoArgs;
 import org.greenem.plugins.Manhunt.completers.MhGmCompleter;
 import org.greenem.plugins.Manhunt.completers.MhStartCompleter;
@@ -46,7 +47,6 @@ import org.greenem.plugins.Manhunt.completers.MhProblemsCompleter;
 //import com.mysql.jdbc.Connection;
 
 import org.bukkit.inventory.meta.CompassMeta;
-
 
 public class Main extends JavaPlugin implements Listener {
 	
@@ -136,8 +136,8 @@ public class Main extends JavaPlugin implements Listener {
 					logCastEx(currentKey);
 				}
 			}
-			currentKey = "require-confirmation-for-world-resetting";
-			if (c.get(currentKey) == null) {
+			currentKey = "require-confirmation-for-world-resetting"; // TODO
+			/*if (c.get(currentKey) == null) {
 				c.set(currentKey, false);
 			} else {
 				try {
@@ -145,7 +145,8 @@ public class Main extends JavaPlugin implements Listener {
 				} catch (ClassCastException e) {
 					logCastEx(currentKey);
 				}
-			}
+			}*/
+			// TODO: HALT OR NOT
 		} catch (Throwable t) {
 			log("Error while reading \"" + currentKey + "\" from the config");
 		}
