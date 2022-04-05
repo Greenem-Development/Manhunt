@@ -1,5 +1,5 @@
 name: Manhunt
-main: org.greenem.plugins.Manhunt.Main
+main: org.greenem.plugins.Manhunt.Main.a
 version: 3.0.0
 api-version: 1.18
 commands:

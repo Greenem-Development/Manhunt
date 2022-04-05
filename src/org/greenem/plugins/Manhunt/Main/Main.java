@@ -1,4 +1,4 @@
-package org.greenem.plugins.Manhunt;
+package org.greenem.plugins.Manhunt.Main;
 
 import static org.greenem.plugins.Manhunt.SimpleLogger.log;
 import java.io.File;
@@ -37,7 +37,7 @@ import org.bukkit.generator.ChunkGenerator.BiomeGrid;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.signature.qual.InternalForm;
+import org.greenem.plugins.Manhunt.ConfigData;
 import org.greenem.plugins.Manhunt.completers.EmptyCompleterNoArgs;
 import org.greenem.plugins.Manhunt.completers.MhGmCompleter;
 import org.greenem.plugins.Manhunt.completers.MhStartCompleter;
@@ -1045,7 +1045,7 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	public void mhStopComand(Player p, String[] args) {
-		p.sendMessage("This command is not coded yet");
+		p.sendMessage(ChatColor.RED + "This command is not coded yet");
 	}
 	
 	public void mhProblemsComand(Player p, String[] args) {

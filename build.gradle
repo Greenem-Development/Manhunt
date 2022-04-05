@@ -33,7 +33,7 @@ sourceSets {
 
 jar {
 	archiveBaseName = 'Manhunt'
-    //destinationDirectory.set(file("G:/SERVERS/Dev Server 1.18/plugins"))
+    destinationDirectory.set(file("G:/SERVERS/Dev Server 1.18/non-converted"))
     configurations.implementation.canBeResolved=true
     from { configurations.implementation.collect {
       //it.canBeResolved = true 
