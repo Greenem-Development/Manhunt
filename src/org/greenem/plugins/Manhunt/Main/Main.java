@@ -68,6 +68,7 @@ public class Main extends JavaPlugin implements Listener {
 	public File configsDirectory;
 	public File mainConfigDirectory;
 	
+	public static String runFileString = "asdgsdfgsd";
 	public static String javaString = "java"; //"\"C:\\Program Files\\Java\\jdk-17.0.1\\bin\\java\"";
 //	public static String launchServerFileName;
 	
@@ -114,8 +115,8 @@ public class Main extends JavaPlugin implements Listener {
 				c.set(currentKey, "Run.bat");
 			} else {
 				try {
-					String fileName = (String) c.get(currentKey);
-					if(!new File(serverDirectory, fileName).exists()) {
+					runFileString = (String) c.get(currentKey);
+					if(!new File(serverDirectory, runFileString).exists()) {
 						log(ChatColor.RED + "You have specified a non-existing run script file in the config!");
 					}
 				} catch (ClassCastException e) {
@@ -1126,6 +1127,11 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public void resetWorld(CommandSender sender) {
 		if(sender instanceof ConsoleCommandSender || (sender instanceof Player && ((Player) sender).isOp())) {
+			if(!new File(serverDirectory, "runFileString").exists()) {
+				sender.sendMessage(ChatColor.RED + "You haven't specified a valid server start script file name in the config! (at server/plugins/configs/ManhuntAndWorldReset/mainconfig.yml)");
+				return;
+			}
+				
 			File pluginsDir = configsDirectory = new File(getServer().getWorldContainer(), "plugins");
 			File filesForResetingWorldDirectory = new File(pluginsDir, "FilesForResetingWorld");
 			
@@ -1173,7 +1179,7 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	public void copyResetWorldJarFile() {
-		File pluginsDir = configsDirectory = new File(getServer().getWorldContainer(), "plugins");
+		File pluginsDir = new File(serverDirectory, "plugins");
 		File filesForResetingWorldDirectory = new File(pluginsDir, "FilesForResetingWorld");
 		filesForResetingWorldDirectory.mkdirs();
 		
