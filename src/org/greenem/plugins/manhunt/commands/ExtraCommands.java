@@ -17,13 +17,13 @@ public class ExtraCommands {
 	
 	public static boolean GmCommand(CommandSender sender, String[] args) { // maybe boolean? (false not tested)
 		if(!ConfigData.allowGmCommandForOps) {
-			sender.sendMessage(ChatColor.RED + "This command was disabled in the config.");
+			sender.sendMessage(ChatColor.RED + "This command was disabled in the config");
 			return false;
 		}
 		Player p = Bukkit.getPlayerExact(sender.getName());
 		if(sender instanceof ConsoleCommandSender || p.isOp() == true){
 			if(args.length == 0){
-				sender.sendMessage(ChatColor.RED + "Please, insert gamemode number.");
+				sender.sendMessage(ChatColor.RED + "Please, insert gamemode number");
 			}
 			else if(args.length == 1){
 				if(sender instanceof ConsoleCommandSender) {
@@ -43,7 +43,7 @@ public class ExtraCommands {
 					p.setGameMode(GameMode.SPECTATOR);
 				}
 				else {
-					sender.sendMessage(ChatColor.RED + "Please, insert correct gamemode number.");
+					sender.sendMessage(ChatColor.RED + "Please, insert correct gamemode number");
 				}
 			}
 			else if(args.length == 2){
@@ -61,7 +61,7 @@ public class ExtraCommands {
 						Bukkit.getPlayerExact(args[1]).setGameMode(GameMode.SPECTATOR);
 					}
 					else {
-						sender.sendMessage(ChatColor.RED + "Please, insert correct gamemode number.");
+						sender.sendMessage(ChatColor.RED + "Please, insert correct gamemode number");
 					}
 				}
 				else {
@@ -69,7 +69,7 @@ public class ExtraCommands {
 						sender.sendMessage(ChatColor.RED + "Usage for other players: /gm <number 0-3> <player>");
 					}
 					else {
-						sender.sendMessage(ChatColor.RED + "Such player isn't online.");
+						sender.sendMessage(ChatColor.RED + "Such player isn't online");
 					}
 				}
 			}
@@ -78,7 +78,7 @@ public class ExtraCommands {
 			}
 		}
 		else {
-			sender.sendMessage(ChatColor.RED + "You can't use this command.");
+			sender.sendMessage(ChatColor.RED + "You can't use this command");
 		}
 		return true;
 	}
@@ -152,7 +152,7 @@ public class ExtraCommands {
 		boolean console = sender instanceof ConsoleCommandSender;
 		if(!ConfigData.allowHealCommandForOps) {
 			if(p!=null) {
-				p.sendMessage(ChatColor.RED + "This command was disabled in the config.");
+				p.sendMessage(ChatColor.RED + "This command was disabled in the config");
 			}
 			return false;
 		}
@@ -242,7 +242,7 @@ public class ExtraCommands {
 				}
 			}
 			else {
-				String problem = ChatColor.RED + "Such player isn't online.";
+				String problem = ChatColor.RED + "Such player isn't online";
 				if(logHealInfo) log("personal error to " + pName + ": " + problem);
 				if(p!=null) {
 					p.sendMessage(problem);
@@ -250,7 +250,7 @@ public class ExtraCommands {
 			}
 		}
 		else {
-			String problem = ChatColor.RED + "Please, type the command in such order: /heal <player>.";
+			String problem = ChatColor.RED + "Please, type the command in such order: /heal <player>";
 			log("personal error to " + pName + ": " + problem);
 			if(p!=null) {
 				p.sendMessage(problem);

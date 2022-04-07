@@ -20,12 +20,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.greenem.plugins.manhunt.Main.Main;
+import org.greenem.plugins.manhunt.data.Names;
 
 public class WorldResetting {
 	public static void resetWorld(CommandSender sender) {
 		if(sender instanceof ConsoleCommandSender || (sender instanceof Player && ((Player) sender).isOp())) {
 			if(!new File(serverDirectory, runFileString).exists()) {
-				sender.sendMessage(ChatColor.RED + "You haven't specified a valid server start script file name in the config! (at server/plugins/configs/ManhuntAndWorldReset/mainconfig.yml)");
+				sender.sendMessage(ChatColor.RED + "You haven't specified a valid server start script file name in the config! "
+						+ "(at server/plugins/configs/ManhuntAndWorldReset/" + Names.mainConfigName + ")");
 				return;
 			}
 				
@@ -71,7 +73,7 @@ public class WorldResetting {
 			//Bukkit.shutdown();
 		}
 		else {
-			sender.sendMessage(ChatColor.RED + "You don't have enough permissions to do this.");
+			sender.sendMessage(ChatColor.RED + "You don't have enough permissions to do this");
 		}
 	}
 	

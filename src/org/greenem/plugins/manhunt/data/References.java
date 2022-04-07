@@ -23,9 +23,11 @@ public class References {
 
 	public static File serverDirectory;
 	public static File configsDirectory;
-	public static File mainConfigDirectory;
+	public static File pluginConfigDirectory;
 	
 	public static String runFileString = "asdgsdfgsd";
 	public static String javaString = "java"; //"\"C:\\Program Files\\Java\\jdk-17.0.1\\bin\\java\"";
 //	public static String launchServerFileName;
+	
+	public static int speedrunnerDelay = 2; //TODO
 }

@@ -31,17 +31,17 @@ public class ManhuntCommands {
 			ManhuntCommandActions.doNoRole(p, pName);
 		}
 		if(!p.getWorld().getEnvironment().equals(Environment.NORMAL)) {
-			p.sendMessage(ChatColor.RED + "You must be in the overworld to use this command.");
+			p.sendMessage(ChatColor.RED + "You must be in the overworld to use this command");
 			return true;
 		}
 		if(!Hunters.contains(pName)) {
 			Hunters.add(pName);
 			Stash.AddItemStack(p, new ItemStack(Material.COMPASS), 8);
 			CompassUpdating.findTarget();
-			p.sendMessage(ChatColor.GOLD + "Now you are a " + ChatColor.RED + "" + ChatColor.BOLD + "hunter.");
+			p.sendMessage(ChatColor.GOLD + "Now you are a " + ChatColor.RED + "" + ChatColor.BOLD + "hunter");
 		}
 		else {
-			p.sendMessage(ChatColor.RED + "You are already a hunter.");
+			p.sendMessage(ChatColor.RED + "You are already a hunter");
 		}
 		return true;
 	}
@@ -59,10 +59,10 @@ public class ManhuntCommands {
 		}
 		if(!Speedrunners.contains(pName)) {
 			Speedrunners.add(pName);
-			p.sendMessage(ChatColor.GOLD + "Now you are a speedrunner.");
+			p.sendMessage(ChatColor.GOLD + "Now you are a speedrunner");
 		}
 		else {
-			p.sendMessage(ChatColor.RED + "You are already a " + ChatColor.GREEN + "" + ChatColor.BOLD + "speedrunner.");
+			p.sendMessage(ChatColor.RED + "You are already a " + ChatColor.GREEN + "" + ChatColor.BOLD + "speedrunner");
 		}
 		return true;
 	}
@@ -70,19 +70,39 @@ public class ManhuntCommands {
 	public static boolean noRoleCommand(Player p) {
 		String pName = p.getName();
 		ManhuntCommandActions.doNoRole(p, pName);
-		p.sendMessage(ChatColor.GOLD + "You have removed your role.");
+		p.sendMessage(ChatColor.GOLD + "You have removed your role");
 		return true;
 	}
 	
 	public static boolean startGameCommand(Player p, String[] args) {
 		if(args.length<1) {
 			p.sendMessage(ChatColor.RED + "Insert the delay in seconds. /mhstart <seconds>");
+			return true;
 		}
 		if(args.length==1) {
-			if(StandartUtils.isInteger(args[0])) ManhuntCommandActions.mhStart(Integer.parseInt(args[0]));
+			if(StandartUtils.isInteger(args[0])) {
+				int totalPlayers = Speedrunners.size()+Hunters.size();
+				if(totalPlayers==0) {
+					p.sendMessage(ChatColor.RED + "You didn't add a single hunter or speedrunner!");
+					return true;
+				}
+				if(Speedrunners.size()==0) {
+					p.sendMessage(ChatColor.RED + "You didn't add a single speedrunner!");
+					return true;
+				}
+				if(Hunters.size()==0) {
+					p.sendMessage(ChatColor.YELLOW + "You are starting the game against NO HUNTERS"); //. If that's a mistake, do /mhstop // add later
+				}
+				ManhuntCommandActions.mhStart(Integer.parseInt(args[0]));
+			}
+			else {
+				p.sendMessage(ChatColor.RED + "Use a number as the argument");
+				return true;
+			}
 		}
 		if(args.length>1) {
 			p.sendMessage(ChatColor.RED + "Incorrect arguments. /mhstart <seconds>");
+			return true;
 		}
 		return true;
 	}
@@ -95,16 +115,16 @@ public class ManhuntCommands {
 	public static boolean problemsCommand(Player p, String[] args) {
 		if(!Hunters.contains(p.getName())) {
 			p.sendMessage(ChatColor.RED + "You must be a hunter to use this command!");
-			return false; // ???
+			return true; // ???
 		}
 		if(args.length==1) {
 			if(args[0].equals("give_compass")) {
 				if(p.getInventory().contains(Material.COMPASS)) {
 					p.sendMessage(ChatColor.RED + "You already have a compass!");
-					return false; // ???
+					return true;
 				}
 				Stash.AddItemStack(p, new ItemStack(Material.COMPASS), 8);
-				p.sendMessage(ChatColor.GREEN + "You been given a compass.");
+				p.sendMessage(ChatColor.GREEN + "You been given a compass");
 			}
 		}
 		else {
@@ -115,7 +135,7 @@ public class ManhuntCommands {
 	
 	public static boolean reloadConfigCommand(CommandSender sender) {
 		ConfigOperations.loadConfig();
-		sender.sendMessage(ChatColor.GREEN + "Successfully reloaded the config.");
+		sender.sendMessage(ChatColor.GREEN + "Successfully reloaded the config");
 		return true;
 	}
 	

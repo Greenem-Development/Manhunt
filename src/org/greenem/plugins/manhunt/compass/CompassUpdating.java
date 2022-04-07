@@ -39,7 +39,7 @@ public class CompassUpdating {
 					if(speedrunnerPl.isDead()==false) { //TODO java.lang.NullPointerException: Cannot invoke "org.bukkit.entity.Player.isDead()" because "speedrunnerPl" is null
 						double distance = GetDistance(plHunter, speedrunnerPl);
 						if(distance<0) {
-							log("skipped.");
+							log("skipped");
 							return;
 						}
 						Distations.put(speedrunner, distance);
@@ -157,10 +157,10 @@ public class CompassUpdating {
 							return -1;
 						}
 						result += speedrunner.getLocation().distance(HuntersPortalFrom.get(nameH));
-						//Bukkit.broadcastMessage(ChatColor.RED + "Almost a error, speedrunner got into another dimension without plugin seeing this.");
+						//Bukkit.broadcastMessage(ChatColor.RED + "Almost a error, speedrunner got into another dimension without plugin seeing this");
 					}
 					else {
-						Bukkit.broadcastMessage(ChatColor.RED + "ERROR! A hunter got into another dimension without plugin seeing this.");
+						Bukkit.broadcastMessage(ChatColor.RED + "ERROR! A hunter got into another dimension without plugin seeing this");
 					}
 				}
 			}

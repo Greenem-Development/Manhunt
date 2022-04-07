@@ -16,6 +16,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.greenem.plugins.manhunt.Main.Main;
+import org.greenem.plugins.manhunt.data.References;
 import org.greenem.plugins.manhunt.util.Stash;
 
 public class ManhuntCommandActions {
@@ -35,7 +36,7 @@ public class ManhuntCommandActions {
 	}
 	
 	public static void mhStart(int delay) {
-		mhStart(delay, 2);
+		mhStart(delay, References.speedrunnerDelay);
 	}
 	
 	public static void mhStart(int delay, int speedrunnerDelay) {
@@ -62,8 +63,8 @@ public class ManhuntCommandActions {
 					hrPl.setAllowFlight(false);
 				}
 			}
-			pHunter.sendMessage(ChatColor.GRAY + "The speedrunners have " + speedrunnerDelay + " seconds to prepare...");
-			pHunter.sendTitle(ChatColor.GRAY + "Wait...", "", 5, 18*speedrunnerDelay, 4);
+			pHunter.sendMessage(ChatColor.GRAY + "The speedrunners have " + speedrunnerDelay + " seconds to prepare..");
+			pHunter.sendTitle(ChatColor.GRAY + "Wait..", "", 5, 18*speedrunnerDelay, 4);
 		}
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable() {
 			@Override
@@ -97,8 +98,7 @@ public class ManhuntCommandActions {
 						final int iCopy = i;
 						Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable() {
 							@Override
-							public void run() {
-								//hunter.sendMessage(""+iCopy);
+							public void run() {	
 								if(iCopy>0) {
 									if(iCopy==delay) {
 										pHunter.sendTitle(ChatColor.GRAY + "The game starts in", ChatColor.GREEN + "" + iCopy, 5, 21, 0);

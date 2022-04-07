@@ -13,7 +13,7 @@ import static org.greenem.plugins.manhunt.data.References.Frozen;
 import static org.greenem.plugins.manhunt.data.References.FrozenLocs;
 import static org.greenem.plugins.manhunt.data.References.serverDirectory;
 import static org.greenem.plugins.manhunt.data.References.configsDirectory;
-import static org.greenem.plugins.manhunt.data.References.mainConfigDirectory;
+import static org.greenem.plugins.manhunt.data.References.pluginConfigDirectory;
 
 import static org.greenem.plugins.manhunt.util.Stash.isSenderAPlayer;
 import static org.greenem.plugins.manhunt.util.Stash.isSenderAPlayerOrConsole;
@@ -68,10 +68,7 @@ public class Main extends JavaPlugin implements Listener {
 	public Plugin plugin = this;
 
 	private static Main instance;
-	public static Main getInstance() {
-		if(instance==null) {
-			instance = new Main();
-		}
+	public static Main getInstance() { // not synchronized, but that's ok
 		return instance;
 	}
 	
@@ -80,11 +77,12 @@ public class Main extends JavaPlugin implements Listener {
 		log(ChatColor.GREEN + "Your Manhunt plugin has been enabled!");
 		initAll();
 		ConfigOperations.loadConfig();
+		instance = this;
 	}
 	
 	@Override
 	public void onDisable() {
-		log("Your Manhunt plugin has been disabled.");
+		log("Your Manhunt plugin has been disabled");
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
@@ -96,47 +94,47 @@ public class Main extends JavaPlugin implements Listener {
 		
 		if(cmd.getName().equalsIgnoreCase("gm")){
 			if(isSenderAPlayerOrConsole(sender)) {
-				return ExtraCommands.GmCommand(sender, args);
+				ExtraCommands.GmCommand(sender, args);
 			}
 		}
 		else if(cmd.getName().equalsIgnoreCase("heal")){
 			if(isSenderAPlayerOrConsole(sender)) {
-				return ExtraCommands.HealCommand(sender, p, null, args);
+				ExtraCommands.HealCommand(sender, p, null, args);
 			}
 		}
 		if(cmd.getName().equalsIgnoreCase("mhhunter")){
 			if(!isSenderAPlayer(sender)) return true;
-			return ManhuntCommands.hunterCommand(p);
+			ManhuntCommands.hunterCommand(p);
 		}
 		else if(cmd.getName().equalsIgnoreCase("mhspeedrunner")){
 			if(!isSenderAPlayer(sender)) return true;
-			return ManhuntCommands.speedrunnerCommand(p);
+			ManhuntCommands.speedrunnerCommand(p);
 		}
 		else if(cmd.getName().equalsIgnoreCase("mhnorole")){
 			if(!isSenderAPlayer(sender)) return true;
-			return ManhuntCommands.noRoleCommand(p);
+			ManhuntCommands.noRoleCommand(p);
 		}
 		else if(cmd.getName().equalsIgnoreCase("mhstart")){
 			if(!isSenderAPlayer(sender)) return true;
-			return ManhuntCommands.startGameCommand(p, args);
+			ManhuntCommands.startGameCommand(p, args);
 		}
 		else if(cmd.getName().equalsIgnoreCase("mhstop")){
 			if(!isSenderAPlayerOrConsole(sender)) return true;
-			return ManhuntCommands.stopGameCommand(p, args);
+			ManhuntCommands.stopGameCommand(p, args);
 		}
 		else if(cmd.getName().equalsIgnoreCase("mhproblems")){
 			if(!isSenderAPlayer(sender)) return true;
-			return ManhuntCommands.problemsCommand(p, args);
+			ManhuntCommands.problemsCommand(p, args);
 		}
 		else if (cmd.getName().equalsIgnoreCase("resetworld")) {
 			if(!isSenderAPlayerOrConsole(sender)) return true;
-			return ManhuntCommands.resetWorldCommand(sender);
+			ManhuntCommands.resetWorldCommand(sender);
 		}
 		else if (cmd.getName().equalsIgnoreCase("mhreloadconfig")) {
 			if(!isSenderAPlayerOrConsole(sender)) return true;
-			return ManhuntCommands.reloadConfigCommand(sender);
+			ManhuntCommands.reloadConfigCommand(sender);
 		}
-		return false;
+		return true; //false??? //TODO
 	}
     
 	public static void sendActionBar(Player player, String message){
@@ -173,7 +171,7 @@ public class Main extends JavaPlugin implements Listener {
 	private void initFiles() {
 		serverDirectory = Bukkit.getWorldContainer();
 		configsDirectory = new File(serverDirectory, "plugins/configs");
-		mainConfigDirectory = new File(configsDirectory, "ManhuntAndWorldReset");
-		mainConfigDirectory.mkdirs();
+		pluginConfigDirectory = new File(configsDirectory, "ManhuntAndWorldReset");
+		pluginConfigDirectory.mkdirs();
 	}
 }

@@ -3,17 +3,18 @@ package org.greenem.plugins.manhunt.config;
 import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
 import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;
 import static org.greenem.plugins.manhunt.data.References.serverDirectory;
-import static org.greenem.plugins.manhunt.data.References.mainConfigDirectory;
+import static org.greenem.plugins.manhunt.data.References.pluginConfigDirectory;
 import static org.greenem.plugins.manhunt.data.References.runFileString;
 import java.io.File;
 import java.io.IOException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.greenem.plugins.manhunt.data.Names;
 
 public class ConfigOperations {
 	public static void loadConfig() {
-		File f = new File(mainConfigDirectory, "mainconfig.yml");
+		File f = new File(pluginConfigDirectory, Names.mainConfigName);
 		f.getParentFile().mkdirs();
 		
 		YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
