@@ -55,6 +55,7 @@ import org.greenem.plugins.manhunt.completers.plain.EmptyCompleterNoArgs;
 import org.greenem.plugins.manhunt.config.ConfigData;
 import org.greenem.plugins.manhunt.config.ConfigOperations;
 import org.greenem.plugins.manhunt.events.FrozenEvents;
+import org.greenem.plugins.manhunt.events.ManhuntEvents;
 import org.greenem.plugins.manhunt.util.StandartUtils;
 import org.greenem.plugins.manhunt.util.Stash;
 import org.greenem.plugins.manhunt.worldManagement.WorldResetting;
@@ -64,8 +65,6 @@ import org.greenem.plugins.manhunt.completers.MhProblemsCompleter;
 import org.bukkit.inventory.meta.CompassMeta;
 
 public class Main extends JavaPlugin implements Listener {
-	Logger log = getLogger();
-	
 	public Plugin plugin = this;
 
 	private static Main instance;
@@ -90,7 +89,7 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
 		Player p = null;
-		String name = sender.getName();
+//		String name = sender.getName();
 		try {
 			p = (Player) sender;
 		} catch (ClassCastException e) {}
@@ -139,125 +138,6 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		return false;
 	}
-	
-	@EventHandler
-	public void Move(PlayerMoveEvent e) {
-		Player p = e.getPlayer();
-		if(Speedrunners.contains(e.getPlayer().getName())) CompassUpdating.findTarget();
-		if(Hunters.contains(e.getPlayer().getName())) CompassUpdating.findTarget();
-		if(Frozen.contains(p.getName())) {
-			if(!e.getFrom().getWorld().equals(e.getTo().getWorld())) return;
-			Location loc = e.getTo().clone();
-			p.setAllowFlight(true);
-			p.setFlying(true);
-			loc.setX(FrozenLocs.get(p).getX());
-			loc.setY(FrozenLocs.get(p).getY());
-			loc.setZ(FrozenLocs.get(p).getZ());
-			p.teleport(loc);
-		}
-	}
-	
-	@EventHandler
-	public void PlayerPortalEvent (PlayerPortalEvent e) {
-		Player p = e.getPlayer();
-		String nameP = p.getName();
-		if(Speedrunners.contains(nameP)) {
-			if(e.getTo().getWorld().getEnvironment().equals(Environment.THE_END)) {
-				PortalEnd.put(nameP, e.getTo());
-			}
-			else {
-				if(PortalFrom.containsKey(nameP)) PortalFrom.remove(nameP);
-				if(PortalTo.containsKey(nameP)) PortalTo.remove(nameP);
-				PortalFrom.put(nameP, e.getFrom());
-				PortalTo.put(nameP, e.getTo());
-			}
-		}
-		if(Hunters.contains(nameP)) {
-			if(e.getTo().getWorld().getEnvironment().equals(Environment.THE_END)) {
-				//PortalEnd.put(nameP, e.getTo());
-			}
-			else {
-				if(HuntersPortalFrom.containsKey(nameP)) HuntersPortalFrom.remove(nameP);
-				if(HuntersPortalTo.containsKey(nameP)) HuntersPortalTo.remove(nameP);
-				HuntersPortalFrom.put(nameP, e.getFrom());
-				HuntersPortalTo.put(nameP, e.getTo());
-			}
-		}
-		checkNetherCompassInHand(p, e.getTo(), p.getInventory().getHeldItemSlot(), false);
-		CompassUpdating.findTarget();
-	}
-
-	@EventHandler
-	public void PlayerDies (PlayerDeathEvent e) {
-		Player p = e.getEntity();
-		String nameP = p.getName();
-		if(PortalFrom.containsKey(nameP) && PortalTo.containsKey(nameP) && p.getWorld().getEnvironment().equals(Environment.NETHER)) {
-			Location from = new Location(PortalFrom.get(nameP).getWorld(), PortalFrom.get(nameP).getX(), PortalFrom.get(nameP).getY(), PortalFrom.get(nameP).getZ());
-			PortalFrom.put(nameP, PortalTo.get(nameP));
-			PortalTo.put(nameP, from);
-		}
-		if(Hunters.contains(nameP)) {
-			for(int i = 0; i<p.getInventory().getSize(); i++) {
-				try {
-					if(e.getDrops().get(i).getType().equals(Material.COMPASS)) e.getDrops().remove(i); //TODO java.lang.IndexOutOfBoundsException: Index 8 out of bounds for length 8, 233 | Index 1 out of bounds for length 0
-				}
-				catch (IndexOutOfBoundsException e1) {
-					
-				}
-			}
-		}
-	}
-	
-	@EventHandler
-	public void Respawn (PlayerRespawnEvent e) {
-		Player p = e.getPlayer();
-		String nameP = p.getName();
-		if(Hunters.contains(nameP)) {
-			Stash.AddItemStack(p, new ItemStack(Material.COMPASS), 0);
-			CompassUpdating.findTarget();
-		}
-	}
-	
-	@EventHandler
-	public void onScroll(PlayerItemHeldEvent e) {
-		checkNetherCompassInHand(e.getPlayer(), e.getNewSlot());
-	}
-	
-	public static void checkNetherCompassInHand(Player p, int slot) {
-		checkNetherCompassInHand(p, p.getLocation(), slot);
-	}
-	
-	public static void checkNetherCompassInHand(Player p, Location loc, int slot) {
-		checkNetherCompassInHand(p, loc, slot, true);
-	}
-	public static void checkNetherCompassInHand(Player p, Location loc, int slot, boolean checkMeta) {
-//		log.info("check");
-		if(loc.getWorld().getEnvironment().equals(Environment.THE_END) || loc.getWorld().getEnvironment().equals(Environment.NETHER)) {
-//			log.info("check2");
-			if(p.getInventory().getItem(slot)!=null) {
-//				log.info("check3");
-				ItemStack maybeCompass = p.getInventory().getItem(slot);
-				if(maybeCompass.getType().equals(Material.COMPASS)){
-//					log.info("check4");
-					boolean toggle1 = false;
-					if(checkMeta) {
-						//log.info(e.getPlayer().getInventory().getItem(e.getNewSlot()).getItemMeta().getAttributeModifiers().containsKey(e)+ "");
-						CompassMeta meta = (CompassMeta) maybeCompass.getItemMeta();
-		    	  		if(meta.getLodestone() != null) {
-		    	  			//e.setCancelled(true);
-		    	  			toggle1 = true;
-		    	  		}
-					}
-					else {
-						toggle1 = true;
-					}
-					if(toggle1) {
-						p.sendMessage(ChatColor.RED + "Sorry, but the compass will not update while you are holding it in the Nether (or End)");
-					}
-				}
-			}
-		}
-	}
     
 	public static void sendActionBar(Player player, String message){
 //        CraftPlayer p = (CraftPlayer) player;
@@ -277,16 +157,10 @@ public class Main extends JavaPlugin implements Listener {
 	private void registerListeners() {
 		Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getPluginManager().registerEvents(new FrozenEvents(), this);
+		Bukkit.getPluginManager().registerEvents(new ManhuntEvents(), this);
 	}
 	
-	private void initFiles() {
-		serverDirectory = Bukkit.getWorldContainer();
-		configsDirectory = new File(serverDirectory, "plugins/configs");
-		mainConfigDirectory = new File(configsDirectory, "ManhuntAndWorldReset");
-		mainConfigDirectory.mkdirs();
-	}
-	
-	public void RegisterAllCommands() {
+	private void RegisterAllCommands() {
 		getCommand("mhproblems").setTabCompleter(new MhProblemsCompleter());
 		getCommand("mhhunter").setTabCompleter(new EmptyCompleterNoArgs());
 		getCommand("mhnorole").setTabCompleter(new EmptyCompleterNoArgs());
@@ -294,5 +168,12 @@ public class Main extends JavaPlugin implements Listener {
 		getCommand("mhstart").setTabCompleter(new MhStartCompleter());
 		getCommand("mhreloadconfig").setTabCompleter(new EmptyCompleterNoArgs());
 		getCommand("resetworld").setTabCompleter(new EmptyCompleterNoArgs());
+	}
+	
+	private void initFiles() {
+		serverDirectory = Bukkit.getWorldContainer();
+		configsDirectory = new File(serverDirectory, "plugins/configs");
+		mainConfigDirectory = new File(configsDirectory, "ManhuntAndWorldReset");
+		mainConfigDirectory.mkdirs();
 	}
 }
