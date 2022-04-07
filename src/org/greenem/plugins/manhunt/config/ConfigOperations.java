@@ -11,8 +11,15 @@ import java.io.IOException;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.greenem.plugins.manhunt.data.Names;
+import org.greenem.plugins.manhunt.versionCompatibility.ConfigCompatibility;
 
 public class ConfigOperations {
+	public static void updateAndLoadConfig() {
+		loadConfig();
+		ConfigCompatibility.updateConfig();
+		loadConfig();
+	}
+	
 	public static void loadConfig() {
 		File f = new File(pluginConfigDirectory, Names.mainConfigName);
 		f.getParentFile().mkdirs();
@@ -22,11 +29,13 @@ public class ConfigOperations {
 		String currentKey = null;
 
 		try {
+			String settingsNameWDot = "settings.";
 			String noExistingStartFileWarning = ChatColor.RED + "You haven't specified your run script file name in the config! (for world reseting, but other things are fine)";
-			currentKey = "launch-server-script-name";
+			currentKey = settingsNameWDot + "launch-server-script-name";
 			if (c.get(currentKey) == null) {
-				c.set(currentKey, "Run.bat");
-				runFileString = "Run.bat";
+				runFileString = (String) getDefaultValue(settingsNameWDot + currentKey);
+				c.set(currentKey, runFileString);
+				
 				if(!new File(serverDirectory, runFileString).exists()) {
 					log(noExistingStartFileWarning);
 				}
@@ -50,9 +59,10 @@ public class ConfigOperations {
 
 				}
 			}*/
-			currentKey = "allow-gm-command-for-ops";
+			currentKey = settingsNameWDot + "allow-gm-command-for-ops";
 			if (c.get(currentKey) == null) {
-				c.set(currentKey, true);
+				runFileString = (String) getDefaultValue(settingsNameWDot + currentKey);
+				c.set(currentKey, runFileString);
 			} else {
 				try {
 					ConfigData.allowGmCommandForOps = (boolean) c.get(currentKey);
@@ -60,7 +70,7 @@ public class ConfigOperations {
 					logCastEx(currentKey);
 				}
 			}
-			currentKey = "allow-heal-command-for-ops";
+			currentKey = settingsNameWDot + "allow-heal-command-for-ops";
 			if (c.get(currentKey) == null) {
 				c.set(currentKey, true);
 			} else {
@@ -70,7 +80,7 @@ public class ConfigOperations {
 					logCastEx(currentKey);
 				}
 			}
-			currentKey = "require-confirmation-for-world-resetting"; // TODO
+			currentKey = settingsNameWDot + "require-confirmation-for-world-resetting"; // TODO
 			/*if (c.get(currentKey) == null) {
 				c.set(currentKey, false);
 			} else {
@@ -87,23 +97,43 @@ public class ConfigOperations {
 		
 		// DONE
 		
+		saveConfigIfHasChanges(c, cOld, f);
+	}
+	
+	public static void logCastEx(String currentKey) {
+		log("Wrong value type for \"" + currentKey + "\" in the config");
+	}
+	
+	
+	/***
+	 * Returnes true if found changes
+	 * **/
+	public static boolean saveConfigIfHasChanges(YamlConfiguration newConfig, YamlConfiguration oldConfig, File f) {
 		boolean same = true;
-	    for(String key : c.getKeys(false)) {
-	        if(!cOld.contains(key)) {
+	    for(String key : newConfig.getKeys(false)) { // missing some keys in oldConfig, think about it later
+	        if(!oldConfig.contains(key)) {
 	        	same = false;
 	        }
 	    }
 	    
 		if (!same) {
 			try {
-				c.save(f);
+				newConfig.save(f);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+		return !same;
 	}
 	
-	public static void logCastEx(String currentKey) {
-		log("Wrong value type for \"" + currentKey + "\" in the config");
+	public static Object getDefaultValue(String key) {
+		switch (key) {
+		case "settings.launch-server-script-name": return "Run.bat";
+		case "allow-gm-command-for-ops": return true;
+		case "allow-heal-command-for-ops": return true;
+		case "require-confirmation-for-world-resetting": return false;
+		default:
+			return "";
+		}
 	}
 }

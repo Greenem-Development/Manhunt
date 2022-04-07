@@ -134,7 +134,7 @@ public class ManhuntCommands {
 	}
 	
 	public static boolean reloadConfigCommand(CommandSender sender) {
-		ConfigOperations.loadConfig();
+		ConfigOperations.updateAndLoadConfig();
 		sender.sendMessage(ChatColor.GREEN + "Successfully reloaded the config");
 		return true;
 	}

@@ -76,7 +76,7 @@ public class Main extends JavaPlugin implements Listener {
 	public void onEnable() {
 		log(ChatColor.GREEN + "Your Manhunt plugin has been enabled!");
 		initAll();
-		ConfigOperations.loadConfig();
+		ConfigOperations.updateAndLoadConfig();
 		instance = this;
 	}
 	

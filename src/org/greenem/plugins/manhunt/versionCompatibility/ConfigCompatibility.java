@@ -9,11 +9,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.greenem.plugins.manhunt.config.ConfigOperations;
 import org.greenem.plugins.manhunt.data.Names;
 import org.greenem.plugins.manhunt.data.References;
 
@@ -25,9 +28,10 @@ public class ConfigCompatibility {
 	
 	@SuppressWarnings("unchecked")
 	private static void updateConfigFrom1_3To1_4() {
+		File f = getConfigFile();
 		YamlConfiguration c = null;
 		try {
-			c = getConfigYaml(getConfigFile());
+			c = getConfigYaml(f);
 		} catch (FileNotFoundException e) {
 //			e.printStackTrace();
 			log(ChatColor.RED + "Cannot update the config - not found");
@@ -40,38 +44,35 @@ public class ConfigCompatibility {
 			cOld = getConfigYaml(getConfigFile());
 		} catch (IOException e) {}
 		
-		String settingsName = "settings";
+		String settingsNameWDot = "settings.";
 		String currentKey = null;
 		try {
-			currentKey = settingsName;
-			List<String> settings = (ArrayList<String>) c.get(currentKey);
+			currentKey = settingsNameWDot;
+			/*Map<String, Object> settings = (HashMap<String, Object>) c.get(currentKey);
 			if(settings==null) {
-				settings = new ArrayList<>();
-			}
+				settings = new HashMap<>();
+			}*/
 			
 			currentKey = "launch-server-script-name";
 			String currentValue = null;
 			try{
 				currentValue = (String) c.get(currentKey);
-			} catch (ClassCastException e) {}
+			} catch (ClassCastException e) {
+				c.set(settingsNameWDot + currentKey, null);
+			}
 			if (currentValue != null) {
-				boolean alreadyExists = false;
-				for (int i = 0; i < settings.size(); i++) {
-					if(settings.get(i).equals(settingsName)) {
-						settings.set(i, currentValue);
-						alreadyExists = true;
-						break;
-					}
-				}
-				if(!alreadyExists) {
-					settings.add(currentValue);
-				}
+				settings.put(currentKey, currentValue);
+				c.set(settingsNameWDot + currentKey, null);
+			} else {
+				settings.put(currentKey, currentValue);
 			}
 			
 			c.set("settings", settings);
 		} catch (Throwable t) {
 			log("Error while updating \"" + currentKey + "\" from the config");
 		}
+		
+		ConfigOperations.saveConfigIfHasChanges(c, cOld, f);
 	}
 	
 	private static File getConfigFile() {
