@@ -1,5 +1,11 @@
 package org.greenem.plugins.manhunt.worldManagement;
 
+import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
+import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;
+import static org.greenem.plugins.manhunt.data.References.serverDirectory;
+import static org.greenem.plugins.manhunt.data.References.runFileString;
+import static org.greenem.plugins.manhunt.data.References.javaString;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -18,7 +24,7 @@ import org.greenem.plugins.manhunt.Main.Main;
 public class WorldResetting {
 	public static void resetWorld(CommandSender sender) {
 		if(sender instanceof ConsoleCommandSender || (sender instanceof Player && ((Player) sender).isOp())) {
-			if(!new File(Main.serverDirectory, Main.runFileString).exists()) {
+			if(!new File(serverDirectory, runFileString).exists()) {
 				sender.sendMessage(ChatColor.RED + "You haven't specified a valid server start script file name in the config! (at server/plugins/configs/ManhuntAndWorldReset/mainconfig.yml)");
 				return;
 			}
@@ -46,7 +52,7 @@ public class WorldResetting {
 						//ProcessBuilder pb = new ProcessBuilder("cmd.exe /c \"java -jar ResetWorldAndRestart.jar\"");
 						//pb.directory(filesForResetingWorldDirectory);
 						//ps.set(pb.start());
-						ps.set(Runtime.getRuntime().exec("cmd.exe /c \"pushd \"" + filesForResetingWorldDirectory + "\" && start cmd /c " + Main.javaString + " -jar ResetWorldAndRestart.jar\""));
+						ps.set(Runtime.getRuntime().exec("cmd.exe /c \"pushd \"" + filesForResetingWorldDirectory + "\" && start cmd /c " + javaString + " -jar ResetWorldAndRestart.jar\""));
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -70,7 +76,7 @@ public class WorldResetting {
 	}
 	
 	public static void copyResetWorldJarFile() {
-		File pluginsDir = new File(Main.serverDirectory, "plugins");
+		File pluginsDir = new File(serverDirectory, "plugins");
 		File filesForResetingWorldDirectory = new File(pluginsDir, "FilesForResetingWorld");
 		filesForResetingWorldDirectory.mkdirs();
 		

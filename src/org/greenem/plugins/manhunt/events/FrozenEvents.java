@@ -1,7 +1,9 @@
 package org.greenem.plugins.manhunt.events;
 
-import static org.greenem.plugins.manhunt.Main.Main.Frozen;
-import static org.greenem.plugins.manhunt.Main.Main.FrozenAir;
+import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
+import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;
+import static org.greenem.plugins.manhunt.data.References.Frozen;
+import static org.greenem.plugins.manhunt.data.References.FrozenAir;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;

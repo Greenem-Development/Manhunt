@@ -1,4 +1,4 @@
-package org.greenem.plugins.manhunt.completers;
+package org.greenem.plugins.manhunt.completers.plain;
 
 import java.util.ArrayList;
 import java.util.List;

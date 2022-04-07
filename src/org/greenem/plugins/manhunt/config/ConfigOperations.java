@@ -1,17 +1,19 @@
 package org.greenem.plugins.manhunt.config;
 
 import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
-
+import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;
+import static org.greenem.plugins.manhunt.data.References.serverDirectory;
+import static org.greenem.plugins.manhunt.data.References.mainConfigDirectory;
+import static org.greenem.plugins.manhunt.data.References.runFileString;
 import java.io.File;
 import java.io.IOException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.greenem.plugins.manhunt.Main.Main;
 
 public class ConfigOperations {
 	public static void loadConfig() {
-		File f = new File(Main.mainConfigDirectory, "mainconfig.yml");
+		File f = new File(mainConfigDirectory, "mainconfig.yml");
 		f.getParentFile().mkdirs();
 		
 		YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
@@ -23,14 +25,14 @@ public class ConfigOperations {
 			currentKey = "launch-server-script-name";
 			if (c.get(currentKey) == null) {
 				c.set(currentKey, "Run.bat");
-				Main.runFileString = "Run.bat";
-				if(!new File(Main.serverDirectory, Main.runFileString).exists()) {
+				runFileString = "Run.bat";
+				if(!new File(serverDirectory, runFileString).exists()) {
 					log(noExistingStartFileWarning);
 				}
 			} else {
 				try {
-					Main.runFileString = (String) c.get(currentKey);
-					if(!new File(Main.serverDirectory, Main.runFileString).exists()) {
+					runFileString = (String) c.get(currentKey);
+					if(!new File(serverDirectory, runFileString).exists()) {
 						log(noExistingStartFileWarning);
 					}
 				} catch (ClassCastException e) {
