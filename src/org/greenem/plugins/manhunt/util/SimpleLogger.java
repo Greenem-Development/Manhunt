@@ -1,4 +1,4 @@
-package org.greenem.plugins.Manhunt.util;
+package org.greenem.plugins.manhunt.util;
 
 import org.bukkit.Bukkit;
 

@@ -1,8 +1,8 @@
-package org.greenem.plugins.Manhunt.util;
+package org.greenem.plugins.manhunt.util;
 
-import static org.greenem.plugins.Manhunt.util.SimpleLogger.log;
+import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
 
-import org.greenem.plugins.Manhunt.Main.Main;
+import org.greenem.plugins.manhunt.Main.Main;
 
 public class Stash {
 	public void healTests() {

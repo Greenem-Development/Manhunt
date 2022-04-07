@@ -1,7 +1,7 @@
-package org.greenem.plugins.Manhunt.events;
+package org.greenem.plugins.manhunt.events;
 
-import static org.greenem.plugins.Manhunt.Main.Main.Frozen;
-import static org.greenem.plugins.Manhunt.Main.Main.FrozenAir;
+import static org.greenem.plugins.manhunt.Main.Main.Frozen;
+import static org.greenem.plugins.manhunt.Main.Main.FrozenAir;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;

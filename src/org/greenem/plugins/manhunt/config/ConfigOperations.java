@@ -1,13 +1,13 @@
-package org.greenem.plugins.Manhunt.config;
+package org.greenem.plugins.manhunt.config;
 
-import static org.greenem.plugins.Manhunt.util.SimpleLogger.log;
+import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.greenem.plugins.Manhunt.Main.Main;
+import org.greenem.plugins.manhunt.Main.Main;
 
 public class ConfigOperations {
 	public static void loadConfig() {

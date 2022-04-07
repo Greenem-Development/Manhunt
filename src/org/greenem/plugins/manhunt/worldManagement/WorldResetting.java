@@ -1,4 +1,4 @@
-package org.greenem.plugins.Manhunt.worldManagement;
+package org.greenem.plugins.manhunt.worldManagement;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,7 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.greenem.plugins.Manhunt.Main.Main;
+import org.greenem.plugins.manhunt.Main.Main;
 
 public class WorldResetting {
 	public static void resetWorld(CommandSender sender) {

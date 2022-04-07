@@ -1,7 +1,7 @@
-package org.greenem.plugins.Manhunt.Main;
+package org.greenem.plugins.manhunt.Main;
 
-import static org.greenem.plugins.Manhunt.util.SimpleLogger.debug;
-import static org.greenem.plugins.Manhunt.util.SimpleLogger.log;
+import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;
+import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,14 +39,14 @@ import org.bukkit.generator.ChunkGenerator.BiomeGrid;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.greenem.plugins.Manhunt.completers.EmptyCompleterNoArgs;
-import org.greenem.plugins.Manhunt.completers.MhGmCompleter;
-import org.greenem.plugins.Manhunt.completers.MhStartCompleter;
-import org.greenem.plugins.Manhunt.config.ConfigData;
-import org.greenem.plugins.Manhunt.config.ConfigOperations;
-import org.greenem.plugins.Manhunt.worldManagement.WorldResetting;
+import org.greenem.plugins.manhunt.completers.EmptyCompleterNoArgs;
+import org.greenem.plugins.manhunt.completers.MhGmCompleter;
+import org.greenem.plugins.manhunt.completers.MhStartCompleter;
+import org.greenem.plugins.manhunt.config.ConfigData;
+import org.greenem.plugins.manhunt.config.ConfigOperations;
+import org.greenem.plugins.manhunt.worldManagement.WorldResetting;
 //import org.spigotmc.event.entity.EntityDismountEvent;
-import org.greenem.plugins.Manhunt.completers.MhProblemsCompleter;
+import org.greenem.plugins.manhunt.completers.MhProblemsCompleter;
 
 //import com.mysql.jdbc.Connection;
 
