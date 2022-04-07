@@ -1,9 +1,9 @@
-package org.greenem.plugins.Manhunt;
+package org.greenem.plugins.Manhunt.util;
 
 import org.bukkit.Bukkit;
 
 public class SimpleLogger {
-	public static String pluginName = "Manhunt";
+	public static String pluginName = "AdvancedManhunt";
 	public static String color = ""; // + ChatColor.WHITE;
 	private static boolean debugOutputEnabled = true;
 	

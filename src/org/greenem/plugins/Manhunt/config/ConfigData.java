@@ -1,4 +1,4 @@
-package org.greenem.plugins.Manhunt;
+package org.greenem.plugins.Manhunt.config;
 
 public class ConfigData {
 	public static boolean allowGmCommandForOps = true;

@@ -1,4 +1,4 @@
-package org.greenem.plugins.Manhunt;
+package org.greenem.plugins.Manhunt.events;
 
 import static org.greenem.plugins.Manhunt.Main.Main.Frozen;
 import static org.greenem.plugins.Manhunt.Main.Main.FrozenAir;

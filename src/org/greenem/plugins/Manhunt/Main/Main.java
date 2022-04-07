@@ -1,7 +1,8 @@
 package org.greenem.plugins.Manhunt.Main;
 
-import static org.greenem.plugins.Manhunt.SimpleLogger.log;
-import static org.greenem.plugins.Manhunt.SimpleLogger.debug;
+import static org.greenem.plugins.Manhunt.util.SimpleLogger.debug;
+import static org.greenem.plugins.Manhunt.util.SimpleLogger.log;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -38,10 +39,11 @@ import org.bukkit.generator.ChunkGenerator.BiomeGrid;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.greenem.plugins.Manhunt.ConfigData;
 import org.greenem.plugins.Manhunt.completers.EmptyCompleterNoArgs;
 import org.greenem.plugins.Manhunt.completers.MhGmCompleter;
 import org.greenem.plugins.Manhunt.completers.MhStartCompleter;
+import org.greenem.plugins.Manhunt.config.ConfigData;
+import org.greenem.plugins.Manhunt.config.ConfigOperations;
 //import org.spigotmc.event.entity.EntityDismountEvent;
 import org.greenem.plugins.Manhunt.completers.MhProblemsCompleter;
 
@@ -50,145 +52,47 @@ import org.greenem.plugins.Manhunt.completers.MhProblemsCompleter;
 import org.bukkit.inventory.meta.CompassMeta;
 
 public class Main extends JavaPlugin implements Listener {
-	
 	Logger log = getLogger();
-	public ArrayList<String> Hunters = new ArrayList<>();
-	public ArrayList<String> Speedrunners = new ArrayList<>();
-	public Map <String, Location> HuntersPortalFrom = new HashMap<>();
-	public Map <String, Location> HuntersPortalTo = new HashMap<>();
-	public Map <String, Location> PortalFrom = new HashMap<>();
-	public Map <String, Location> PortalTo = new HashMap<>();
-	public Map <String, Location> PortalEnd = new HashMap<>();
+	public static ArrayList<String> Hunters = new ArrayList<>();
+	public static ArrayList<String> Speedrunners = new ArrayList<>();
+	public static Map <String, Location> HuntersPortalFrom = new HashMap<>();
+	public static Map <String, Location> HuntersPortalTo = new HashMap<>();
+	public static Map <String, Location> PortalFrom = new HashMap<>();
+	public static Map <String, Location> PortalTo = new HashMap<>();
+	public static Map <String, Location> PortalEnd = new HashMap<>();
 	
 	public static ArrayList<String> Frozen = new ArrayList<>();
 	public static Map <Player, Location> FrozenLocs = new HashMap<>();
 	public static Map <Player, Integer> FrozenAir = new HashMap<>();
 
-	public File serverDirectory;
-	public File configsDirectory;
-	public File mainConfigDirectory;
+	public static File serverDirectory;
+	public static File configsDirectory;
+	public static File mainConfigDirectory;
 	
 	public static String runFileString = "asdgsdfgsd";
 	public static String javaString = "java"; //"\"C:\\Program Files\\Java\\jdk-17.0.1\\bin\\java\"";
 //	public static String launchServerFileName;
 	
-	Plugin plugin = this;
+	public Plugin plugin = this;
 
+	private static Main instance;
+	public static Main getInstance() {
+		if(instance==null) {
+			instance = new Main();
+		}
+		return instance;
+	}
+	
 	@Override
 	public void onEnable() {
 		log(ChatColor.GREEN + "Your Manhunt plugin has been enabled!");
-		
-		getServer().getPluginManager().registerEvents(this, this);
-		RegisterAllCommands();
-		
-		serverDirectory = getServer().getWorldContainer();
-		configsDirectory = new File(serverDirectory, "plugins/configs");
-		mainConfigDirectory = new File(configsDirectory, "ManhuntAndWorldReset");
-		
-		mainConfigDirectory.mkdirs();
-		
-		loadConfig();
-		
-		//healTests();
+		initAll();
+		ConfigOperations.loadConfig();
 	}
 	
 	@Override
 	public void onDisable() {
-		log(ChatColor.RED + "Your Manhunt plugin has been disabled.");
-	}
-	
-	public void logCastEx(String currentKey) {
-		log("Wrong value type for \"" + currentKey + "\" in the config");
-	}
-	
-	public void loadConfig() {
-		File f = new File(mainConfigDirectory, "mainconfig.yml");
-		f.getParentFile().mkdirs();
-		
-		YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
-		YamlConfiguration cOld = YamlConfiguration.loadConfiguration(f);
-		String currentKey = null;
-
-		try {
-			String noExistingStartFileWarning = ChatColor.RED + "You have specified a non-existing run script file in the config! (other things are fine)";
-			currentKey = "launch-server-script-name";
-			if (c.get(currentKey) == null) {
-				c.set(currentKey, "Run.bat");
-				runFileString = "Run.bat";
-				if(!new File(serverDirectory, runFileString).exists()) {
-					log(noExistingStartFileWarning);
-				}
-			} else {
-				try {
-					runFileString = (String) c.get(currentKey);
-					if(!new File(serverDirectory, runFileString).exists()) {
-						log(noExistingStartFileWarning);
-					}
-				} catch (ClassCastException e) {
-					
-				}
-			}
-			/*currentKey = "java-path-to-start-java-middle-script"; //TODO?
-			if (c.get(currentKey) == null) {
-				c.set(currentKey, "java");
-			} else {
-				try {
-					javaString = (String) c.get(currentKey);
-				} catch (ClassCastException e) {
-
-				}
-			}*/
-			currentKey = "allow-gm-command-for-ops";
-			if (c.get(currentKey) == null) {
-				c.set(currentKey, true);
-			} else {
-				try {
-					ConfigData.allowGmCommandForOps = (boolean) c.get(currentKey);
-				} catch (ClassCastException e) {
-					logCastEx(currentKey);
-				}
-			}
-			currentKey = "allow-heal-command-for-ops";
-			if (c.get(currentKey) == null) {
-				c.set(currentKey, true);
-			} else {
-				try {
-					ConfigData.allowHealCommandForOps = (boolean) c.get(currentKey);
-				} catch (ClassCastException e) {
-					logCastEx(currentKey);
-				}
-			}
-			currentKey = "require-confirmation-for-world-resetting"; // TODO
-			/*if (c.get(currentKey) == null) {
-				c.set(currentKey, false);
-			} else {
-				try {
-					ConfigData.requireConfirmationForWorldResetting = (boolean) c.get(currentKey);
-				} catch (ClassCastException e) {
-					logCastEx(currentKey);
-				}
-			}*/
-			// TODO: HALT OR NOT
-		} catch (Throwable t) {
-			log("Error while reading \"" + currentKey + "\" from the config");
-		}
-		
-		// DONE
-		
-		boolean same = true;
-	    for(String key : c.getKeys(false)) {
-	        if(!cOld.contains(key)) {
-	        	same = false;
-	        }
-	    }
-	    
-		if (!same) {
-			try {
-				c.save(f);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		log("Your Manhunt plugin has been disabled.");
 	}
 	
 	public boolean isSenderAPlayer(CommandSender sender) {
@@ -329,7 +233,8 @@ public class Main extends JavaPlugin implements Listener {
 			if(!isSenderAPlayerOrConsole(sender)) {
 				return true;
 			}
-			loadConfig();
+			ConfigOperations.loadConfig();
+			sender.sendMessage(ChatColor.GREEN + "Successfully reloaded the config.");
 		}
 		return false;
 	}
@@ -368,14 +273,14 @@ public class Main extends JavaPlugin implements Listener {
 	
 	public void findTarget() {
 		for (String hunter : Hunters) {
-			Player plHunter = getServer().getPlayerExact(hunter);
+			Player plHunter = Bukkit.getPlayerExact(hunter);
 			if(plHunter==null) {
 				continue;
 			}
 			if(plHunter.isDead()==false) { //TODO java.lang.NullPointerException: Cannot invoke "org.bukkit.entity.Player.isDead()" because "plHunter" is null, 274
 				Map <String, Double> Distations = new HashMap<>();
 				for (String speedrunner : Speedrunners) {
-					Player speedrunnerPl = getServer().getPlayerExact(speedrunner);
+					Player speedrunnerPl = Bukkit.getPlayerExact(speedrunner);
 					if(speedrunnerPl==null) {
 						continue;
 					}
@@ -403,8 +308,8 @@ public class Main extends JavaPlugin implements Listener {
 					}
 				}
 				for (String sp : Speedrunners) {
-					Player plSp = getServer().getPlayerExact(sp);
-					if(getServer().getPlayerExact(sp).isDead()==false) {
+					Player plSp = Bukkit.getPlayerExact(sp);
+					if(Bukkit.getPlayerExact(sp).isDead()==false) {
 						if(Distations.get(sp).equals(nearest)) {
 							Location target = GetTargetLocation(plHunter, plSp);
 							if(target.getWorld().getEnvironment().equals(Environment.NETHER) || target.getWorld().getEnvironment().equals(Environment.THE_END)) {
@@ -500,10 +405,10 @@ public class Main extends JavaPlugin implements Listener {
 							return -1;
 						}
 						result += speedrunner.getLocation().distance(HuntersPortalFrom.get(nameH));
-						//getServer().broadcastMessage(ChatColor.RED + "Almost a error, speedrunner got into another dimension without plugin seeing this.");
+						//Bukkit.broadcastMessage(ChatColor.RED + "Almost a error, speedrunner got into another dimension without plugin seeing this.");
 					}
 					else {
-						getServer().broadcastMessage(ChatColor.RED + "ERROR! A hunter got into another dimension without plugin seeing this.");
+						Bukkit.broadcastMessage(ChatColor.RED + "ERROR! A hunter got into another dimension without plugin seeing this.");
 					}
 				}
 			}
@@ -545,7 +450,7 @@ public class Main extends JavaPlugin implements Listener {
 			sender.sendMessage(ChatColor.RED + "This command was disabled in the config.");
 			return;
 		}
-		Player p = getServer().getPlayerExact(sender.getName());
+		Player p = Bukkit.getPlayerExact(sender.getName());
 		if(sender instanceof ConsoleCommandSender || p.isOp() == true){
 			if(args.length == 0){
 				sender.sendMessage(ChatColor.RED + "Please, insert gamemode number.");
@@ -572,18 +477,18 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 			else if(args.length == 2){
-				if(getServer().getPlayerExact(args[1]) != null){
+				if(Bukkit.getPlayerExact(args[1]) != null){
 					if(args[0].equalsIgnoreCase("0")){
-						getServer().getPlayerExact(args[1]).setGameMode(GameMode.SURVIVAL);
+						Bukkit.getPlayerExact(args[1]).setGameMode(GameMode.SURVIVAL);
 					}
 					else if(args[0].equalsIgnoreCase("1")){
-						getServer().getPlayerExact(args[1]).setGameMode(GameMode.CREATIVE);
+						Bukkit.getPlayerExact(args[1]).setGameMode(GameMode.CREATIVE);
 					}
 					else if(args[0].equalsIgnoreCase("2")){
-						getServer().getPlayerExact(args[1]).setGameMode(GameMode.ADVENTURE);
+						Bukkit.getPlayerExact(args[1]).setGameMode(GameMode.ADVENTURE);
 					}
 					else if(args[0].equalsIgnoreCase("3")){
-						getServer().getPlayerExact(args[1]).setGameMode(GameMode.SPECTATOR);
+						Bukkit.getPlayerExact(args[1]).setGameMode(GameMode.SPECTATOR);
 					}
 					else {
 						sender.sendMessage(ChatColor.RED + "Please, insert correct gamemode number.");
@@ -607,7 +512,7 @@ public class Main extends JavaPlugin implements Listener {
 		}
 	}
 	
-	public String coloredName(String name) {
+	public static String coloredName(String name) {
 		String s = "";
 		
 		if(name.equals("[CONSOLE]")) {
@@ -625,7 +530,7 @@ public class Main extends JavaPlugin implements Listener {
 		return s;
 	}
 	
-	public String coloredHealSentence(String from, String to) {
+	public static String coloredHealSentence(String from, String to) {
 		String s = "";
 		
 		if(to.equals("[CONSOLE]")) {
@@ -663,18 +568,18 @@ public class Main extends JavaPlugin implements Listener {
 		return s;
 	}
 	
-	public boolean logHealInfo = false; // false
+	public static boolean logHealInfo = false; // false
 	
-	public void sendOthersTheAlert(String pAlert, String pName, String notifOthers) {
+	public static void sendOthersTheAlert(String pAlert, String pName, String notifOthers) {
 		if(!pAlert.equals(pName)) {
-			Player pAlertP = getServer().getPlayerExact(pAlert);
+			Player pAlertP = Bukkit.getPlayerExact(pAlert);
 			if(pAlertP!=null) {
 				pAlertP.sendMessage(notifOthers);
 			}
 		}
 	}
 	
-	public void HealCommand(CommandSender sender, Player p, String pName, String[] args) {
+	public static void HealCommand(CommandSender sender, Player p, String pName, String[] args) {
 		boolean console = sender instanceof ConsoleCommandSender;
 		if(!ConfigData.allowHealCommandForOps) {
 			if(p!=null) {
@@ -689,7 +594,7 @@ public class Main extends JavaPlugin implements Listener {
 			pName = p.getName();
 		}
 		if(p==null) {
-			p = getServer().getPlayerExact(pName);
+			p = Bukkit.getPlayerExact(pName);
 		}
 		String pFrom = pName;
 		String notifpersonal;
@@ -722,7 +627,7 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		else if(args.length==1) {
 			String pTo = args[0];
-			Player pToP = getServer().getPlayerExact(pTo);
+			Player pToP = Bukkit.getPlayerExact(pTo);
 			if(pToP!=null || logHealInfo) {
 				String colorNameTo = coloredName(pTo);
 				boolean atLeastOneImportantPlayer = Hunters.contains(pFrom) || Speedrunners.contains(pFrom) || Hunters.contains(pTo) || Speedrunners.contains(pTo);
@@ -924,7 +829,7 @@ public class Main extends JavaPlugin implements Listener {
 	public void MhStart(int delay, int speedrunnerDelay) {
 		for(String speendrunner : Speedrunners) {
 			Frozen.add(speendrunner);
-			Player spPl = getServer().getPlayerExact(speendrunner);
+			Player spPl = Bukkit.getPlayerExact(speendrunner);
 			FrozenLocs.put(spPl, spPl.getLocation());
 			if(spPl.getGameMode().equals(GameMode.SURVIVAL) || spPl.getGameMode().equals(GameMode.ADVENTURE)) {
 				if(!spPl.getGameMode().equals(GameMode.CREATIVE) && !spPl.getGameMode().equals(GameMode.SPECTATOR)) {
@@ -932,12 +837,12 @@ public class Main extends JavaPlugin implements Listener {
 					spPl.setAllowFlight(false);
 				}
 			}
-			getServer().getPlayerExact(speendrunner).sendMessage(ChatColor.YELLOW + "You have 2 seconds to prepare");
+			Bukkit.getPlayerExact(speendrunner).sendMessage(ChatColor.YELLOW + "You have 2 seconds to prepare");
 		}
 		for(String hunter: Hunters) {
-			Player pHunter = getServer().getPlayerExact(hunter);
+			Player pHunter = Bukkit.getPlayerExact(hunter);
 			Frozen.add(hunter);
-			Player hrPl = getServer().getPlayerExact(hunter);
+			Player hrPl = Bukkit.getPlayerExact(hunter);
 			FrozenLocs.put(hrPl, hrPl.getLocation());
 			if(hrPl.getGameMode().equals(GameMode.SURVIVAL) || hrPl.getGameMode().equals(GameMode.ADVENTURE)) {
 				if(!hrPl.getGameMode().equals(GameMode.CREATIVE) && !hrPl.getGameMode().equals(GameMode.SPECTATOR)) {
@@ -948,13 +853,13 @@ public class Main extends JavaPlugin implements Listener {
 			pHunter.sendMessage(ChatColor.GRAY + "The speedrunners have " + speedrunnerDelay + " seconds to prepare...");
 			pHunter.sendTitle(ChatColor.GRAY + "Wait...", "", 5, 18*speedrunnerDelay, 4);
 		}
-		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			@Override
 			public void run() {
 				for(String speendrunner : Speedrunners) {
 					Frozen.remove(speendrunner);
-					getServer().getPlayerExact(speendrunner).sendMessage(ChatColor.YELLOW + "Now run!");
-					Player spPl = getServer().getPlayerExact(speendrunner);
+					Bukkit.getPlayerExact(speendrunner).sendMessage(ChatColor.YELLOW + "Now run!");
+					Player spPl = Bukkit.getPlayerExact(speendrunner);
 					FrozenLocs.remove(spPl);
 					if(!spPl.getGameMode().equals(GameMode.CREATIVE) && !spPl.getGameMode().equals(GameMode.SPECTATOR)) {
 						spPl.setFlying(false);
@@ -962,10 +867,10 @@ public class Main extends JavaPlugin implements Listener {
 					}
 				}
 				for(String hunter: Hunters) {
-					Player pHunter = getServer().getPlayerExact(hunter);
+					Player pHunter = Bukkit.getPlayerExact(hunter);
 					//Frozen.add(hunter);
 					final Player theHunter = pHunter;
-					getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 						@Override
 						public void run() {
 							Frozen.remove(theHunter.getName());
@@ -978,7 +883,7 @@ public class Main extends JavaPlugin implements Listener {
 					}, 20*delay);
 					for (int i = delay; i>=0; i--) {
 						final int iCopy = i;
-						getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 							@Override
 							public void run() {
 								//hunter.sendMessage(""+iCopy);
@@ -1076,167 +981,30 @@ public class Main extends JavaPlugin implements Listener {
 		}
 	}
 	
+	private void initAll() {
+		registerListeners(); // not sure if that should be done so early
+		RegisterAllCommands();
+		initFiles();
+	}
+	
+	private void registerListeners() {
+		Bukkit.getPluginManager().registerEvents(this, this);
+	}
+	
+	private void initFiles() {
+		serverDirectory = Bukkit.getWorldContainer();
+		configsDirectory = new File(serverDirectory, "plugins/configs");
+		mainConfigDirectory = new File(configsDirectory, "ManhuntAndWorldReset");
+		mainConfigDirectory.mkdirs();
+	}
+	
 	public void RegisterAllCommands() {
 		getCommand("mhproblems").setTabCompleter(new MhProblemsCompleter());
 		getCommand("mhhunter").setTabCompleter(new EmptyCompleterNoArgs());
 		getCommand("mhnorole").setTabCompleter(new EmptyCompleterNoArgs());
 		getCommand("gm").setTabCompleter(new MhGmCompleter());
 		getCommand("mhstart").setTabCompleter(new MhStartCompleter());
-//		getCommand("loc").setTabCompleter(new EmptyCompleterNoArgs());
 		getCommand("mhreloadconfig").setTabCompleter(new EmptyCompleterNoArgs());
 		getCommand("resetworld").setTabCompleter(new EmptyCompleterNoArgs());
-	}
-	
-	//             /// ////                    /// /                 / /           /         /       / / / /          / /  //          / ///           // / / / /
-
-	public Location IsBlockNearby(Player p, Material material, int distanse) {
-        ArrayList<Location> temp = new ArrayList<Location>();
-        ArrayList<Double> dis = new ArrayList<Double>();
- 
-        Location loc = new Location(p.getWorld(), p.getLocation().getBlock().getX()-distanse, p.getLocation().getBlock().getY()-distanse, p.getLocation().getBlock().getZ()-distanse);
-        //p.sendMessage("Drop event work");//For debug
-        //p.sendMessage(loc.getX() + " " + loc.getZ());
-        for(int i=1; i <= 2*distanse+1 ; i++) {
-            for(int j =1; j <= 2*distanse+1 ; j++ ) {
-            	for(int k =1; k <= 2*distanse+1 ; k++ ) {
-            		//getServer().broadcastMessage(loc.getX() + " " + loc.getY() + " " + loc.getZ());
-            		//getServer().broadcastMessage(loc.getBlock().getType().toString());
-                	if(loc.getBlock().getType() == material) {
-                		//getServer().broadcastMessage("Latern: " + loc);
-                    	temp.add(loc.getBlock().getLocation());
-                	}
-            		loc.setX(loc.getX()+1);
-            	}
-            	loc.setX(p.getLocation().getBlock().getX()-distanse);
-            	loc.setY(loc.getY()+1);
-            }
-            loc.setY(p.getLocation().getBlock().getY()-distanse);
-        	loc.setZ(loc.getZ()+1);
-        }
-        for(int i = 0; i<temp.size(); i++) {
-        	dis.add(temp.get(i).distance(p.getLocation()));
-        }
-        Collections.sort(dis);
-        for(int i = 0; i<temp.size(); i++) {
-        	if(temp.get(i).distance(p.getLocation()) == dis.get(0).doubleValue()) {
-        		//p.sendMessage(temp.get(i) + "");
-        		temp.get(i).add(0.5, 0, 0.5);
-        		return temp.get(i);
-        	}
-        }
-        //p.sendMessage("Temp :" + temp);//For debug
-        //p.sendMessage("Dis :" + dis);//For debug
-        //p.spawnParticle(Particle.BLOCK_CRACK, new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ()), 100, blood.createBlockData());
-        return null;
-	}
-	
-	public void resetWorld(CommandSender sender) {
-		if(sender instanceof ConsoleCommandSender || (sender instanceof Player && ((Player) sender).isOp())) {
-			if(!new File(serverDirectory, "runFileString").exists()) {
-				sender.sendMessage(ChatColor.RED + "You haven't specified a valid server start script file name in the config! (at server/plugins/configs/ManhuntAndWorldReset/mainconfig.yml)");
-				return;
-			}
-				
-			File pluginsDir = new File(getServer().getWorldContainer(), "plugins");
-			File filesForResetingWorldDirectory = new File(pluginsDir, "FilesForResetingWorld");
-			
-			File prev = new File(filesForResetingWorldDirectory, "ResetWorldAndRestart.jar");
-			if(prev.exists()) {
-				prev.delete();
-			}
-			
-			copyResetWorldJarFile();
-			
-			AtomicReference<Process> ps = new AtomicReference<>();
-			Thread jarThread = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					/*try {
-						Thread.sleep(200);
-					} catch (InterruptedException e1) {
-						e1.printStackTrace();
-					}*/
-					try {
-						//ProcessBuilder pb = new ProcessBuilder("cmd.exe /c \"java -jar ResetWorldAndRestart.jar\"");
-						//pb.directory(filesForResetingWorldDirectory);
-						//ps.set(pb.start());
-						ps.set(Runtime.getRuntime().exec("cmd.exe /c \"pushd \"" + filesForResetingWorldDirectory + "\" && start cmd /c " + javaString + " -jar ResetWorldAndRestart.jar\""));
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			});
-			jarThread.start();
-			
-			try {
-				Thread.currentThread().sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-			Runtime.getRuntime().halt(0);
-			
-			//Bukkit.shutdown();
-		}
-		else {
-			sender.sendMessage(ChatColor.RED + "You don't have enough permissions to do this.");
-		}
-	}
-	
-	public void copyResetWorldJarFile() {
-		File pluginsDir = new File(serverDirectory, "plugins");
-		File filesForResetingWorldDirectory = new File(pluginsDir, "FilesForResetingWorld");
-		filesForResetingWorldDirectory.mkdirs();
-		
-		File f = new File(filesForResetingWorldDirectory, "ResetWorldAndRestart.jar");
-		if (!f.exists()) {
-			InputStream is = getClass().getResourceAsStream("/extraFiles/ResetWorldAndRestart.jar");
-			OutputStream os = null;
-			try {
-				os = new FileOutputStream(f);
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			}
-			byte[] buffer = new byte[4096];
-			int length;
-			try {
-				while ((length = is.read(buffer)) > 0) {
-					os.write(buffer, 0, length);
-				}
-				os.close();
-				is.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public void healTests() {
-		Speedrunners.add("Greenem");
-		Hunters.add("MayX");
-		//Hunters.add("Dismov");
-		HealCommand(null, null, "Greenem", new String[]{});
-		log("-----");
-		HealCommand(null, null, "Greenem", new String[]{"Greenem"});
-		log("-----");
-		HealCommand(null, null, "Greenem", new String[]{"MayX"});
-		log("-----");
-		HealCommand(null, null, "Greenem", new String[]{"Dismov"});
-		log("----------------------------------------------");
-		HealCommand(null, null, "MayX", new String[]{});
-		log("-----");
-		HealCommand(null, null, "MayX", new String[]{"MayX"});
-		log("-----");
-		HealCommand(null, null, "MayX", new String[]{"Greenem"});
-		log("-----");
-		HealCommand(null, null, "MayX", new String[]{"Dismov"});
-		log("----------------------------------------------");
-		HealCommand(null, null, "Dismov", new String[]{});
-		log("-----");
-		HealCommand(null, null, "Dismov", new String[]{"Dismov"});
-		log("-----");
-		HealCommand(null, null, "Dismov", new String[]{"Greenem"});
-		log("-----");
-		HealCommand(null, null, "Dismov", new String[]{"MayX"});
 	}
 }
