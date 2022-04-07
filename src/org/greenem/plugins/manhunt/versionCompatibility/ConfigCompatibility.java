@@ -29,12 +29,11 @@ public class ConfigCompatibility {
 	@SuppressWarnings("unchecked")
 	private static void updateConfigFrom1_3To1_4() {
 		File f = getConfigFile();
-		YamlConfiguration c = null;
+		/*YamlConfiguration c = null;
 		try {
 			c = getConfigYaml(f);
 		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-			log(ChatColor.RED + "Cannot update the config - not found");
+			log(ChatColor.RED + "Cannot update the config - file not found");
 			return;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -42,32 +41,21 @@ public class ConfigCompatibility {
 		YamlConfiguration cOld = null;
 		try {
 			cOld = getConfigYaml(getConfigFile());
-		} catch (IOException e) {}
+		} catch (IOException e) {}*/
+		f.getParentFile().mkdirs();
 		
-		String settingsNameWDot = "settings.";
+		YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
+		YamlConfiguration cOld = YamlConfiguration.loadConfiguration(f);
+		
+		String settingsString = "settings.";
 		String currentKey = null;
 		try {
-			currentKey = settingsNameWDot;
-			/*Map<String, Object> settings = (HashMap<String, Object>) c.get(currentKey);
-			if(settings==null) {
-				settings = new HashMap<>();
-			}*/
-			
 			currentKey = "launch-server-script-name";
-			String currentValue = null;
-			try{
-				currentValue = (String) c.get(currentKey);
-			} catch (ClassCastException e) {
-				c.set(settingsNameWDot + currentKey, null);
-			}
-			if (currentValue != null) {
-				settings.put(currentKey, currentValue);
-				c.set(settingsNameWDot + currentKey, null);
-			} else {
-				settings.put(currentKey, currentValue);
-			}
-			
-			c.set("settings", settings);
+			c = updateValue(c, currentKey, settingsString + currentKey);
+			currentKey = "allow-gm-command-for-ops";
+			c = updateValue(c, currentKey, settingsString + currentKey);
+			currentKey = "allow-heal-command-for-ops";
+			c = updateValue(c, currentKey, settingsString + currentKey);
 		} catch (Throwable t) {
 			log("Error while updating \"" + currentKey + "\" from the config");
 		}
@@ -86,6 +74,21 @@ public class ConfigCompatibility {
 		} catch (InvalidConfigurationException e) {
 			log(ChatColor.RED + "The config file is invalid! Make sure it's edited the right way");
 //			e.printStackTrace();
+		}
+		return c;
+	}
+	
+	private static YamlConfiguration updateValue(YamlConfiguration c, String oldKey, String newKey) {
+		String currentValue = null;
+		try{
+			currentValue = (String) c.get(oldKey);
+		} catch (ClassCastException e) {
+//			c.set(extendedKey, null);
+		}
+		if (currentValue != null) {
+			c.set(newKey, currentValue);
+		} else {
+			c.set(newKey, ConfigOperations.getDefaultValue(newKey));
 		}
 		return c;
 	}

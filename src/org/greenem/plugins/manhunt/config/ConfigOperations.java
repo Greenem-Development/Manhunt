@@ -15,7 +15,7 @@ import org.greenem.plugins.manhunt.versionCompatibility.ConfigCompatibility;
 
 public class ConfigOperations {
 	public static void updateAndLoadConfig() {
-		loadConfig();
+		//loadConfig();
 		ConfigCompatibility.updateConfig();
 		loadConfig();
 	}
@@ -27,14 +27,15 @@ public class ConfigOperations {
 		YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
 		YamlConfiguration cOld = YamlConfiguration.loadConfiguration(f);
 		String currentKey = null;
-
+		Object def = null;
 		try {
 			String settingsNameWDot = "settings.";
 			String noExistingStartFileWarning = ChatColor.RED + "You haven't specified your run script file name in the config! (for world reseting, but other things are fine)";
 			currentKey = settingsNameWDot + "launch-server-script-name";
 			if (c.get(currentKey) == null) {
-				runFileString = (String) getDefaultValue(settingsNameWDot + currentKey);
-				c.set(currentKey, runFileString);
+				def = (String) getDefaultValue(currentKey);
+				c.set(currentKey, def);
+				runFileString = (String) def;
 				
 				if(!new File(serverDirectory, runFileString).exists()) {
 					log(noExistingStartFileWarning);
@@ -61,8 +62,8 @@ public class ConfigOperations {
 			}*/
 			currentKey = settingsNameWDot + "allow-gm-command-for-ops";
 			if (c.get(currentKey) == null) {
-				runFileString = (String) getDefaultValue(settingsNameWDot + currentKey);
-				c.set(currentKey, runFileString);
+				def = getDefaultValue(currentKey);
+				c.set(currentKey, (boolean) def);
 			} else {
 				try {
 					ConfigData.allowGmCommandForOps = (boolean) c.get(currentKey);
@@ -70,9 +71,13 @@ public class ConfigOperations {
 					logCastEx(currentKey);
 				}
 			}
+			log(currentKey);
+			log(def);
+			log(ConfigData.allowGmCommandForOps);
 			currentKey = settingsNameWDot + "allow-heal-command-for-ops";
 			if (c.get(currentKey) == null) {
-				c.set(currentKey, true);
+				def = getDefaultValue(currentKey);
+				c.set(currentKey, (boolean) def);
 			} else {
 				try {
 					ConfigData.allowHealCommandForOps = (boolean) c.get(currentKey);
@@ -110,8 +115,13 @@ public class ConfigOperations {
 	 * **/
 	public static boolean saveConfigIfHasChanges(YamlConfiguration newConfig, YamlConfiguration oldConfig, File f) {
 		boolean same = true;
-	    for(String key : newConfig.getKeys(false)) { // missing some keys in oldConfig, think about it later
+	    for(String key : newConfig.getKeys(false)) { // missing some keys in oldConfig, think about it later (alrady not)
 	        if(!oldConfig.contains(key)) {
+	        	same = false;
+	        }
+	    }
+	    for(String key : oldConfig.getKeys(false)) {
+	        if(!newConfig.contains(key)) {
 	        	same = false;
 	        }
 	    }
@@ -129,9 +139,9 @@ public class ConfigOperations {
 	public static Object getDefaultValue(String key) {
 		switch (key) {
 		case "settings.launch-server-script-name": return "Run.bat";
-		case "allow-gm-command-for-ops": return true;
-		case "allow-heal-command-for-ops": return true;
-		case "require-confirmation-for-world-resetting": return false;
+		case "settings.allow-gm-command-for-ops": return true;
+		case "settings.allow-heal-command-for-ops": return true;
+		case "settings.require-confirmation-for-world-resetting": return false;
 		default:
 			return "";
 		}
