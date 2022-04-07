@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 import org.greenem.plugins.Manhunt.Main.Main;
 
 public class WorldResetting {
-	public void resetWorld(CommandSender sender) {
+	public static void resetWorld(CommandSender sender) {
 		if(sender instanceof ConsoleCommandSender || (sender instanceof Player && ((Player) sender).isOp())) {
 			if(!new File(Main.serverDirectory, Main.runFileString).exists()) {
 				sender.sendMessage(ChatColor.RED + "You haven't specified a valid server start script file name in the config! (at server/plugins/configs/ManhuntAndWorldReset/mainconfig.yml)");
@@ -69,14 +69,14 @@ public class WorldResetting {
 		}
 	}
 	
-	public void copyResetWorldJarFile() {
+	public static void copyResetWorldJarFile() {
 		File pluginsDir = new File(Main.serverDirectory, "plugins");
 		File filesForResetingWorldDirectory = new File(pluginsDir, "FilesForResetingWorld");
 		filesForResetingWorldDirectory.mkdirs();
 		
 		File f = new File(filesForResetingWorldDirectory, "ResetWorldAndRestart.jar");
 		if (!f.exists()) {
-			InputStream is = getClass().getResourceAsStream("/extraFiles/ResetWorldAndRestart.jar");
+			InputStream is = Main.getInstance().getClass().getResourceAsStream("/extraFiles/ResetWorldAndRestart.jar");
 			OutputStream os = null;
 			try {
 				os = new FileOutputStream(f);

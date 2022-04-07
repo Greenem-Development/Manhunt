@@ -44,6 +44,7 @@ import org.greenem.plugins.Manhunt.completers.MhGmCompleter;
 import org.greenem.plugins.Manhunt.completers.MhStartCompleter;
 import org.greenem.plugins.Manhunt.config.ConfigData;
 import org.greenem.plugins.Manhunt.config.ConfigOperations;
+import org.greenem.plugins.Manhunt.worldManagement.WorldResetting;
 //import org.spigotmc.event.entity.EntityDismountEvent;
 import org.greenem.plugins.Manhunt.completers.MhProblemsCompleter;
 
@@ -227,7 +228,7 @@ public class Main extends JavaPlugin implements Listener {
 			if(!isSenderAPlayerOrConsole(sender)) {
 				return true;
 			}
-			resetWorld(sender);
+			WorldResetting.resetWorld(sender);
 		}
 		else if (cmd.getName().equalsIgnoreCase("mhreloadconfig")) {
 			if(!isSenderAPlayerOrConsole(sender)) {
