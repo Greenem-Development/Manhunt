@@ -36,6 +36,12 @@ public class ConfigOperations {
 			ConfigData.requireConfirmationForWorldResetting = (boolean) loadKey(c, currentKey, null, null); // TODO
 			currentKey = "settings.world-resetting.use-halt-for-instant-server-stopping";
 			ConfigData.useHaltForWorldResettings = (boolean) loadKey(c, currentKey, null, null); // TODO
+			currentKey = "settings.game.delay-for-speedrunner-on-start-in-milliseconds";
+			ConfigData.speedrunnerDelayMilliseconds = (int) loadKey(c, currentKey, null, null); // TODO
+			currentKey = "settings.warnings.disable-no-existing-start-file-warning";
+			ConfigData.disableNoExistingStartFileWarning = (boolean) loadKey(c, currentKey, null, null); // TODO
+			currentKey = "settings.game.clear-items-on-start";
+			ConfigData.clearItemsOnStart = (boolean) loadKey(c, currentKey, null, null); // TODO
 			
 			//"java-path-to-start-java-middle-script" // maybe later
 		} catch (Throwable t) {
@@ -51,6 +57,9 @@ public class ConfigOperations {
 			case "settings.commands.allow-heal-command-for-ops": return true;
 			case "settings.world-resetting.require-confirmation-for-world-resetting": return false;
 			case "settings.world-resetting.use-halt-for-instant-server-stopping": return true;
+			case "settings.game.delay-for-speedrunner-on-start-in-milliseconds": return 2000;
+			case "settings.warnings.disable-no-existing-start-file-warning": return false;
+			case "settings.game.clear-items-on-start": return true;
 			default:
 				return "UNDEFINED_CONFIG_VALUE";
 		}
