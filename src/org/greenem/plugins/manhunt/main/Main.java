@@ -1,4 +1,4 @@
-package org.greenem.plugins.manhunt.Main;
+package org.greenem.plugins.manhunt.main;
 
 import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
 import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;

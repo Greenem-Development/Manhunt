@@ -67,6 +67,7 @@ public class ConfigCompatibility {
 		return new File(References.pluginConfigDirectory, Names.mainConfigName);
 	}
 	
+	@Deprecated
 	private static YamlConfiguration getConfigYaml(File f) throws FileNotFoundException, IOException {
 		YamlConfiguration c = new YamlConfiguration();
 		try {

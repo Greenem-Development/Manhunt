@@ -19,8 +19,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.greenem.plugins.manhunt.Main.Main;
 import org.greenem.plugins.manhunt.data.Names;
+import org.greenem.plugins.manhunt.main.Main;
 
 public class WorldResetting {
 	public static void resetWorld(CommandSender sender) {

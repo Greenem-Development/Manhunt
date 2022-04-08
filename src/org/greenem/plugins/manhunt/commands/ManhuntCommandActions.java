@@ -15,8 +15,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.greenem.plugins.manhunt.Main.Main;
 import org.greenem.plugins.manhunt.data.References;
+import org.greenem.plugins.manhunt.main.Main;
 import org.greenem.plugins.manhunt.util.Stash;
 
 public class ManhuntCommandActions {

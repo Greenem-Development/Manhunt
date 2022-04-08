@@ -134,7 +134,7 @@ public class ManhuntCommands {
 	}
 	
 	public static boolean reloadConfigCommand(CommandSender sender) {
-		ConfigOperations.updateAndLoadConfig();
+		ConfigOperations.loadConfig(); // and maybe check for user-added fields and delete them or something like that (maybe change something else too)
 		sender.sendMessage(ChatColor.GREEN + "Successfully reloaded the config");
 		return true;
 	}

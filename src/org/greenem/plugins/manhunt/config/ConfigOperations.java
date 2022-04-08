@@ -15,9 +15,8 @@ import org.greenem.plugins.manhunt.versionCompatibility.ConfigCompatibility;
 
 public class ConfigOperations {
 	public static void updateAndLoadConfig() {
-		//loadConfig();
 		ConfigCompatibility.updateConfig();
-		loadConfig();
+//		loadConfig();
 	}
 	
 	public static void loadConfig() {
