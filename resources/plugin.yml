@@ -1,6 +1,6 @@
 name: AdvancedManhunt
 main: org.greenem.plugins.manhunt.main.Main
-version: 3.0.0
+version: 1.4.0
 api-version: 1.18
 commands:
    mhhunter:
@@ -13,7 +13,7 @@ commands:
       description: No role (not a speedrunner or a hunter)
       default: true
    mhstart:
-      description: Start mh
+      description: Start Manhunt
       default: true
    mhproblems:
       description: Special commands

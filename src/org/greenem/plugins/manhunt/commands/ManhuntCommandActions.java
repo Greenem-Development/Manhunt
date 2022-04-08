@@ -15,6 +15,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.greenem.plugins.manhunt.config.ConfigData;
 import org.greenem.plugins.manhunt.data.References;
 import org.greenem.plugins.manhunt.main.Main;
 import org.greenem.plugins.manhunt.util.Stash;
@@ -36,13 +37,17 @@ public class ManhuntCommandActions {
 	}
 	
 	public static void mhStart(int delay) {
-		mhStart(delay, References.speedrunnerDelay);
+		mhStart(delay, ConfigData.speedrunnerDelayMilliseconds);
 	}
 	
-	public static void mhStart(int delay, int speedrunnerDelay) {
+	@Deprecated
+	public static void mhStart(int delay, int speedrunnerDelay) { // TO REMAKE, THIS IS TOO BAD LOL
+		int delayInSecondsInt = (int) ConfigData.speedrunnerDelayMilliseconds/1000;
 		for(String speendrunner : Speedrunners) {
-			Frozen.add(speendrunner);
 			Player spPl = Bukkit.getPlayerExact(speendrunner);
+			if(spPl==null) continue;
+			if(ConfigData.clearItemsOnStart) spPl.getInventory().clear();
+			Frozen.add(speendrunner); // make it before and put value when back online TOD0
 			FrozenLocs.put(spPl, spPl.getLocation());
 			if(spPl.getGameMode().equals(GameMode.SURVIVAL) || spPl.getGameMode().equals(GameMode.ADVENTURE)) {
 				if(!spPl.getGameMode().equals(GameMode.CREATIVE) && !spPl.getGameMode().equals(GameMode.SPECTATOR)) {
@@ -50,30 +55,34 @@ public class ManhuntCommandActions {
 					spPl.setAllowFlight(false);
 				}
 			}
-			Bukkit.getPlayerExact(speendrunner).sendMessage(ChatColor.YELLOW + "You have 2 seconds to prepare");
+			Bukkit.getPlayerExact(speendrunner).sendMessage(ChatColor.YELLOW + "You have " + delayInSecondsInt + " seconds to prepare");
 		}
 		for(String hunter: Hunters) {
 			Player pHunter = Bukkit.getPlayerExact(hunter);
+			if(pHunter==null) continue;
+			if(ConfigData.clearItemsOnStart) pHunter.getInventory().clear();
 			Frozen.add(hunter);
-			Player hrPl = Bukkit.getPlayerExact(hunter);
-			FrozenLocs.put(hrPl, hrPl.getLocation());
-			if(hrPl.getGameMode().equals(GameMode.SURVIVAL) || hrPl.getGameMode().equals(GameMode.ADVENTURE)) {
-				if(!hrPl.getGameMode().equals(GameMode.CREATIVE) && !hrPl.getGameMode().equals(GameMode.SPECTATOR)) {
-					hrPl.setFlying(false);
-					hrPl.setAllowFlight(false);
+			FrozenLocs.put(pHunter, pHunter.getLocation());
+			if(pHunter.getGameMode().equals(GameMode.SURVIVAL) || pHunter.getGameMode().equals(GameMode.ADVENTURE)) {
+				if(!pHunter.getGameMode().equals(GameMode.CREATIVE) && !pHunter.getGameMode().equals(GameMode.SPECTATOR)) {
+					pHunter.setFlying(false);
+					pHunter.setAllowFlight(false);
 				}
 			}
-			pHunter.sendMessage(ChatColor.GRAY + "The speedrunners have " + speedrunnerDelay + " seconds to prepare..");
-			pHunter.sendTitle(ChatColor.GRAY + "Wait..", "", 5, 18*speedrunnerDelay, 4);
+			if(((int) ConfigData.speedrunnerDelayMilliseconds/1000)>0) {
+				pHunter.sendMessage(ChatColor.GRAY + "The speedrunners have " + delayInSecondsInt + " seconds to prepare..");
+				pHunter.sendTitle(ChatColor.GRAY + "Wait..", "", 5, 18*speedrunnerDelay/1000, 4);
+			}
 		}
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable() {
 			@Override
 			public void run() {
 				for(String speendrunner : Speedrunners) {
 					Frozen.remove(speendrunner);
-					Bukkit.getPlayerExact(speendrunner).sendMessage(ChatColor.YELLOW + "Now run!");
 					Player spPl = Bukkit.getPlayerExact(speendrunner);
 					FrozenLocs.remove(spPl);
+					if(spPl==null) continue;
+					Bukkit.getPlayerExact(speendrunner).sendMessage(ChatColor.YELLOW + "Now run!");
 					if(!spPl.getGameMode().equals(GameMode.CREATIVE) && !spPl.getGameMode().equals(GameMode.SPECTATOR)) {
 						spPl.setFlying(false);
 						spPl.setAllowFlight(false);
@@ -83,6 +92,7 @@ public class ManhuntCommandActions {
 					Player pHunter = Bukkit.getPlayerExact(hunter);
 					//Frozen.add(hunter);
 					final Player theHunter = pHunter;
+//					if(theHunter==null) continue;
 					Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable() {
 						@Override
 						public void run() {
@@ -115,6 +125,6 @@ public class ManhuntCommandActions {
 					}
 				}
 			}
-		}, 20 * speedrunnerDelay);
+		}, 20 * speedrunnerDelay/1000);
 	}
 }

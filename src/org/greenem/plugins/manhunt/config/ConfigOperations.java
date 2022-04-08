@@ -37,11 +37,11 @@ public class ConfigOperations {
 			currentKey = "settings.world-resetting.use-halt-for-instant-server-stopping";
 			ConfigData.useHaltForWorldResettings = (boolean) loadKey(c, currentKey, null, null); // TODO
 			currentKey = "settings.game.delay-for-speedrunner-on-start-in-milliseconds";
-			ConfigData.speedrunnerDelayMilliseconds = (int) loadKey(c, currentKey, null, null); // TODO
+			ConfigData.speedrunnerDelayMilliseconds = (int) loadKey(c, currentKey, null, null);
 			currentKey = "settings.warnings.disable-no-existing-start-file-warning";
-			ConfigData.disableNoExistingStartFileWarning = (boolean) loadKey(c, currentKey, null, null); // TODO
+			ConfigData.disableNoExistingStartFileWarning = (boolean) loadKey(c, currentKey, null, null);
 			currentKey = "settings.game.clear-items-on-start";
-			ConfigData.clearItemsOnStart = (boolean) loadKey(c, currentKey, null, null); // TODO
+			ConfigData.clearItemsOnStart = (boolean) loadKey(c, currentKey, null, null);
 			
 			//"java-path-to-start-java-middle-script" // maybe later
 		} catch (Throwable t) {
@@ -116,6 +116,7 @@ public class ConfigOperations {
 	}
 	
 	private static void checkStartScript() {
+		if(ConfigData.disableNoExistingStartFileWarning) return;
 		if(!new File(serverDirectory, References.runFileString).exists()) {
 			String noExistingStartFileWarning = ChatColor.RED + "You haven't specified your run script file name in the config!"
 					+ "(for world reseting, but other things are fine)";
