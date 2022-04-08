@@ -51,11 +51,12 @@ public class ConfigCompatibility {
 		String currentKey = null;
 		try {
 			currentKey = "launch-server-script-name";
-			c = updateValue(c, currentKey, settingsString + currentKey);
+			moveValue(c, currentKey, settingsString + currentKey);
 			currentKey = "allow-gm-command-for-ops";
-			c = updateValue(c, currentKey, settingsString + currentKey);
+			moveValue(c, currentKey, settingsString + currentKey);
 			currentKey = "allow-heal-command-for-ops";
-			c = updateValue(c, currentKey, settingsString + currentKey);
+			moveValue(c, currentKey, settingsString + currentKey);
+			log(c.get("allow-gm-command-for-ops"));
 		} catch (Throwable t) {
 			log("Error while updating \"" + currentKey + "\" from the config");
 		}
@@ -79,18 +80,20 @@ public class ConfigCompatibility {
 		return c;
 	}
 	
-	private static YamlConfiguration updateValue(YamlConfiguration c, String oldKey, String newKey) {
-		String currentValue = null;
-		try{
-			currentValue = (String) c.get(oldKey);
-		} catch (ClassCastException e) {
-//			c.set(extendedKey, null);
+	private static void moveValue(YamlConfiguration c, String oldKey, String newKey) {
+		if(c.get(newKey)==null) {
+			Object currentValue = null;
+			try{
+				currentValue = c.get(oldKey);
+			} catch (ClassCastException e) {
+				
+			}
+			if (currentValue!=null) {
+				c.set(newKey, currentValue);
+			} else {
+				c.set(newKey, ConfigOperations.getDefaultValue(newKey));
+			}
 		}
-		if (currentValue != null) {
-			c.set(newKey, currentValue);
-		} else {
-			c.set(newKey, ConfigOperations.getDefaultValue(newKey));
-		}
-		return c;
+		c.set(oldKey, null);
 	}
 }

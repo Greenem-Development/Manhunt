@@ -16,7 +16,7 @@ import org.greenem.plugins.manhunt.versionCompatibility.ConfigCompatibility;
 public class ConfigOperations {
 	public static void updateAndLoadConfig() {
 		ConfigCompatibility.updateConfig();
-//		loadConfig();
+		loadConfig();
 	}
 	
 	public static void loadConfig() {
@@ -26,43 +26,29 @@ public class ConfigOperations {
 		YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
 		YamlConfiguration cOld = YamlConfiguration.loadConfiguration(f);
 		String currentKey = null;
+		Object currentValue = null;
 		Object def = null;
 		try {
-			String settingsNameWDot = "settings.";
 			String noExistingStartFileWarning = ChatColor.RED + "You haven't specified your run script file name in the config! (for world reseting, but other things are fine)";
+			String settingsNameWDot = "settings.";
+			
 			currentKey = settingsNameWDot + "launch-server-script-name";
-			if (c.get(currentKey) == null) {
-				def = (String) getDefaultValue(currentKey);
-				c.set(currentKey, def);
-				runFileString = (String) def;
-				
+			runFileString = (String) loadKey(cOld, currentKey, () -> {
 				if(!new File(serverDirectory, runFileString).exists()) {
 					log(noExistingStartFileWarning);
 				}
-			} else {
-				try {
-					runFileString = (String) c.get(currentKey);
-					if(!new File(serverDirectory, runFileString).exists()) {
-						log(noExistingStartFileWarning);
-					}
-				} catch (ClassCastException e) {
-					
+			}, () -> {
+				if(!new File(serverDirectory, runFileString).exists()) {
+					log(noExistingStartFileWarning);
 				}
-			}
-			/*currentKey = "java-path-to-start-java-middle-script"; //TODO?
-			if (c.get(currentKey) == null) {
-				c.set(currentKey, "java");
-			} else {
-				try {
-					javaString = (String) c.get(currentKey);
-				} catch (ClassCastException e) {
-
-				}
-			}*/
+			});
+			
+			//currentKey = "java-path-to-start-java-middle-script"; //TODO?
 			currentKey = settingsNameWDot + "allow-gm-command-for-ops";
 			if (c.get(currentKey) == null) {
 				def = getDefaultValue(currentKey);
-				c.set(currentKey, (boolean) def);
+				c.set(currentKey, def);
+				debug("set");
 			} else {
 				try {
 					ConfigData.allowGmCommandForOps = (boolean) c.get(currentKey);
@@ -70,13 +56,13 @@ public class ConfigOperations {
 					logCastEx(currentKey);
 				}
 			}
-			log(currentKey);
-			log(def);
-			log(ConfigData.allowGmCommandForOps);
+			debug(currentKey);
+			debug(def);
+			debug(ConfigData.allowGmCommandForOps);
 			currentKey = settingsNameWDot + "allow-heal-command-for-ops";
 			if (c.get(currentKey) == null) {
 				def = getDefaultValue(currentKey);
-				c.set(currentKey, (boolean) def);
+				c.set(currentKey, def);
 			} else {
 				try {
 					ConfigData.allowHealCommandForOps = (boolean) c.get(currentKey);
@@ -85,15 +71,6 @@ public class ConfigOperations {
 				}
 			}
 			currentKey = settingsNameWDot + "require-confirmation-for-world-resetting"; // TODO
-			/*if (c.get(currentKey) == null) {
-				c.set(currentKey, false);
-			} else {
-				try {
-					ConfigData.requireConfirmationForWorldResetting = (boolean) c.get(currentKey);
-				} catch (ClassCastException e) {
-					logCastEx(currentKey);
-				}
-			}*/
 			// TODO: HALT OR NOT
 		} catch (Throwable t) {
 			log("Error while reading \"" + currentKey + "\" from the config");
@@ -108,6 +85,29 @@ public class ConfigOperations {
 		log("Wrong value type for \"" + currentKey + "\" in the config");
 	}
 	
+	private static Object loadKey(YamlConfiguration c, String currentKey, Runnable ifExists, Runnable ifNotExists) {
+		Object currentValue = c.get(currentKey);
+		Object def = null;
+		Object returnValue = null;
+		if (currentValue == null) {
+			def = (String) getDefaultValue(currentKey);
+			c.set(currentKey, def);
+			returnValue = (String) def;
+			if(ifExists!=null) {
+				ifExists.run();
+			}
+		} else {
+			try {
+				returnValue = (String) currentValue;
+				if(ifNotExists!=null) {
+					ifNotExists.run();
+				}
+			} catch (ClassCastException e) {
+				logCastEx(currentKey);
+			}
+		}
+		return returnValue;
+	}
 	
 	/***
 	 * Returnes true if found changes
@@ -142,7 +142,7 @@ public class ConfigOperations {
 		case "settings.allow-heal-command-for-ops": return true;
 		case "settings.require-confirmation-for-world-resetting": return false;
 		default:
-			return "";
+			return "UNDEFINED_CONFIG_VALUE";
 		}
 	}
 }

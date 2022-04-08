@@ -1,5 +1,5 @@
 name: AdvancedManhunt
-main: org.greenem.plugins.manhunt.Main.Main
+main: org.greenem.plugins.manhunt.main.Main
 version: 3.0.0
 api-version: 1.18
 commands:
