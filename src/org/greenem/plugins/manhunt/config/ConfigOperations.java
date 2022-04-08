@@ -27,9 +27,9 @@ public class ConfigOperations {
 		String currentKey = null;
 		try {
 			String noExistingStartFileWarning = ChatColor.RED + "You haven't specified your run script file name in the config! (for world reseting, but other things are fine)";
-			String settingsNameWDot = "settings.";
+			String settings = "settings.";
 			
-			currentKey = settingsNameWDot + "launch-server-script-name";
+			currentKey = settings + "world-resetting.launch-server-script-name";
 			runFileString = (String) loadKey(c, currentKey, () -> {
 				if(!new File(serverDirectory, runFileString).exists()) {
 					log(noExistingStartFileWarning);
@@ -40,24 +40,31 @@ public class ConfigOperations {
 				}
 			});
 			
-			currentKey = settingsNameWDot + "allow-gm-command-for-ops";
+			currentKey = settings + "commands.allow-gm-command-for-ops";
 			ConfigData.allowGmCommandForOps = (boolean) loadKey(c, currentKey, null, null);
-			debug(currentKey);
-			debug(ConfigData.allowGmCommandForOps);
-			currentKey = settingsNameWDot + "allow-heal-command-for-ops";
+			currentKey = settings + "commands.allow-heal-command-for-ops";
 			ConfigData.allowHealCommandForOps = (boolean) loadKey(c, currentKey, null, null);
-			
-			currentKey = settingsNameWDot + "require-confirmation-for-world-resetting"; // TODO
-			//currentKey = "java-path-to-start-java-middle-script"; //TODO?
-			// TODO: HALT OR NOT
+			currentKey = settings + "world-resetting.require-confirmation-for-world-resetting";
+			ConfigData.requireConfirmationForWorldResetting = (boolean) loadKey(c, currentKey, null, null); // TODO
+			currentKey = settings + "world-resetting.use-halt-for-instant-server-stopping";
+			ConfigData.useHaltForWorldResettings = (boolean) loadKey(c, currentKey, null, null); // TODO
+			//currentKey = "java-path-to-start-java-middle-script"; // maybe later
 		} catch (Throwable t) {
 			log("Error while reading \"" + currentKey + "\" from the config");
 		}
 		saveConfigIfHasChanges(c, cOld, f);
 	}
 	
-	public static void logCastEx(String currentKey) {
-		log("Wrong value type for \"" + currentKey + "\" in the config");
+	public static Object getDefaultValue(String key) {
+		switch (key) {
+		case "settings.world-resetting.launch-server-script-name": return "Run.bat";
+		case "settings.commands.allow-gm-command-for-ops": return true;
+		case "settings.commands.allow-heal-command-for-ops": return true;
+		case "settings.world-resetting.require-confirmation-for-world-resetting": return false;
+		case "settings.world-resetting.use-halt-for-instant-server-stopping": return true;
+		default:
+			return "UNDEFINED_CONFIG_VALUE";
+		}
 	}
 	
 	private static Object loadKey(YamlConfiguration c, String currentKey, Runnable ifExists, Runnable ifNotExists) {
@@ -67,7 +74,6 @@ public class ConfigOperations {
 		if (currentValue == null) {
 			def = getDefaultValue(currentKey);
 			c.set(currentKey, def);
-			debug("adding to " + currentKey + ": " + def);
 			returnValue = def;
 			if(ifExists!=null) {
 				ifExists.run();
@@ -90,7 +96,7 @@ public class ConfigOperations {
 	 * **/
 	public static boolean saveConfigIfHasChanges(YamlConfiguration newConfig, YamlConfiguration oldConfig, File f) {
 		boolean hasChanges = false;
-	    for(String key : newConfig.getKeys(true)) { // missing some keys in oldConfig, think about it later (alrady not)
+	    for(String key : newConfig.getKeys(true)) { // missing keys added by user
 	        if(!oldConfig.contains(key)) {
 	        	hasChanges = true;
 	        }
@@ -111,14 +117,7 @@ public class ConfigOperations {
 		return hasChanges;
 	}
 	
-	public static Object getDefaultValue(String key) {
-		switch (key) {
-		case "settings.launch-server-script-name": return "Run.bat";
-		case "settings.allow-gm-command-for-ops": return true;
-		case "settings.allow-heal-command-for-ops": return true;
-		case "settings.require-confirmation-for-world-resetting": return false;
-		default:
-			return "UNDEFINED_CONFIG_VALUE";
-		}
+	public static void logCastEx(String currentKey) {
+		log("Wrong value type for \"" + currentKey + "\" in the config");
 	}
 }

@@ -47,16 +47,15 @@ public class ConfigCompatibility {
 		YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
 		YamlConfiguration cOld = YamlConfiguration.loadConfiguration(f);
 		
-		String settingsString = "settings.";
+		String newPrefixString = "settings.";
 		String currentKey = null;
 		try {
 			currentKey = "launch-server-script-name";
-			moveValue(c, currentKey, settingsString + currentKey);
+			moveValue(c, currentKey, newPrefixString + "world-resetting." + currentKey);
 			currentKey = "allow-gm-command-for-ops";
-			moveValue(c, currentKey, settingsString + currentKey);
+			moveValue(c, currentKey, newPrefixString + ".commands." + currentKey);
 			currentKey = "allow-heal-command-for-ops";
-			moveValue(c, currentKey, settingsString + currentKey);
-			log(c.get("allow-gm-command-for-ops"));
+			moveValue(c, currentKey, newPrefixString + ".commands." + currentKey);
 		} catch (Throwable t) {
 			log("Error while updating \"" + currentKey + "\" from the config");
 		}

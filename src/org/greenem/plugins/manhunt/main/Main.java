@@ -56,6 +56,7 @@ import org.greenem.plugins.manhunt.config.ConfigData;
 import org.greenem.plugins.manhunt.config.ConfigOperations;
 import org.greenem.plugins.manhunt.events.FrozenEvents;
 import org.greenem.plugins.manhunt.events.ManhuntEvents;
+import org.greenem.plugins.manhunt.util.SimpleLogger;
 import org.greenem.plugins.manhunt.util.StandartUtils;
 import org.greenem.plugins.manhunt.util.Stash;
 import org.greenem.plugins.manhunt.worldManagement.WorldResetting;
@@ -77,6 +78,7 @@ public class Main extends JavaPlugin implements Listener {
 		log(ChatColor.GREEN + "Your Manhunt plugin has been enabled!");
 		initAll();
 		ConfigOperations.updateAndLoadConfig();
+		finishInit();
 		instance = this;
 	}
 	
@@ -173,5 +175,11 @@ public class Main extends JavaPlugin implements Listener {
 		configsDirectory = new File(serverDirectory, "plugins/configs");
 		pluginConfigDirectory = new File(configsDirectory, "ManhuntAndWorldReset");
 		pluginConfigDirectory.mkdirs();
+	}
+	
+	private void finishInit() {
+		if(SimpleLogger.debugOutputEnabled) {
+			log(ChatColor.AQUA + "Debug mode is enabled");
+		}
 	}
 }
