@@ -26,20 +26,20 @@ public class ConfigOperations {
 		YamlConfiguration cOld = YamlConfiguration.loadConfiguration(f);
 		String currentKey = null;
 		try {
+			currentKey = "settings.warnings.disable-no-existing-start-file-warning"; // TESTED
+			ConfigData.disableNoExistingStartFileWarning = (boolean) loadKey(c, currentKey, null, null);
 			currentKey = "settings.world-resetting.launch-server-script-name";
 			References.runFileString = (String) loadKey(c, currentKey, () -> { checkStartScript(); }, () -> { checkStartScript(); });
-			currentKey = "settings.commands.allow-gm-command-for-ops";
+			currentKey = "settings.commands.allow-gm-command-for-ops"; // TODO
 			ConfigData.allowGmCommandForOps = (boolean) loadKey(c, currentKey, null, null);
-			currentKey = "settings.commands.allow-heal-command-for-ops";
+			currentKey = "settings.commands.allow-heal-command-for-ops"; // TODO
 			ConfigData.allowHealCommandForOps = (boolean) loadKey(c, currentKey, null, null);
-			currentKey = "settings.world-resetting.require-confirmation-for-world-resetting";
-			ConfigData.requireConfirmationForWorldResetting = (boolean) loadKey(c, currentKey, null, null); // TODO
-			currentKey = "settings.world-resetting.use-halt-for-instant-server-stopping";
-			ConfigData.useHaltForWorldResettings = (boolean) loadKey(c, currentKey, null, null); // TODO
+			currentKey = "settings.world-resetting.require-confirmation-for-world-resetting"; // TODO
+			ConfigData.requireConfirmationForWorldResetting = (boolean) loadKey(c, currentKey, null, null);
+			currentKey = "settings.world-resetting.use-halt-for-instant-server-stopping"; // TODO
+			ConfigData.useHaltForWorldResettings = (boolean) loadKey(c, currentKey, null, null);
 			currentKey = "settings.game.delay-for-speedrunner-on-start-in-milliseconds";
 			ConfigData.speedrunnerDelayMilliseconds = (int) loadKey(c, currentKey, null, null);
-			currentKey = "settings.warnings.disable-no-existing-start-file-warning";
-			ConfigData.disableNoExistingStartFileWarning = (boolean) loadKey(c, currentKey, null, null);
 			currentKey = "settings.game.clear-items-on-start";
 			ConfigData.clearItemsOnStart = (boolean) loadKey(c, currentKey, null, null);
 			
