@@ -29,21 +29,7 @@ public class ConfigCompatibility {
 	@SuppressWarnings("unchecked")
 	private static void updateConfigFrom1_3To1_4() {
 		File f = getConfigFile();
-		/*YamlConfiguration c = null;
-		try {
-			c = getConfigYaml(f);
-		} catch (FileNotFoundException e) {
-			log(ChatColor.RED + "Cannot update the config - file not found");
-			return;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		YamlConfiguration cOld = null;
-		try {
-			cOld = getConfigYaml(getConfigFile());
-		} catch (IOException e) {}*/
 		f.getParentFile().mkdirs();
-		
 		YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
 		YamlConfiguration cOld = YamlConfiguration.loadConfiguration(f);
 		
