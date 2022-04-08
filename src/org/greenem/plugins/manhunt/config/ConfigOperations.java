@@ -22,18 +22,15 @@ public class ConfigOperations {
 	public static void loadConfig() {
 		File f = new File(pluginConfigDirectory, Names.mainConfigName);
 		f.getParentFile().mkdirs();
-		
 		YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
 		YamlConfiguration cOld = YamlConfiguration.loadConfiguration(f);
 		String currentKey = null;
-		Object currentValue = null;
-		Object def = null;
 		try {
 			String noExistingStartFileWarning = ChatColor.RED + "You haven't specified your run script file name in the config! (for world reseting, but other things are fine)";
 			String settingsNameWDot = "settings.";
 			
 			currentKey = settingsNameWDot + "launch-server-script-name";
-			runFileString = (String) loadKey(cOld, currentKey, () -> {
+			runFileString = (String) loadKey(c, currentKey, () -> {
 				if(!new File(serverDirectory, runFileString).exists()) {
 					log(noExistingStartFileWarning);
 				}
@@ -43,41 +40,19 @@ public class ConfigOperations {
 				}
 			});
 			
-			//currentKey = "java-path-to-start-java-middle-script"; //TODO?
 			currentKey = settingsNameWDot + "allow-gm-command-for-ops";
-			if (c.get(currentKey) == null) {
-				def = getDefaultValue(currentKey);
-				c.set(currentKey, def);
-				debug("set");
-			} else {
-				try {
-					ConfigData.allowGmCommandForOps = (boolean) c.get(currentKey);
-				} catch (ClassCastException e) {
-					logCastEx(currentKey);
-				}
-			}
+			ConfigData.allowGmCommandForOps = (boolean) loadKey(c, currentKey, null, null);
 			debug(currentKey);
-			debug(def);
 			debug(ConfigData.allowGmCommandForOps);
 			currentKey = settingsNameWDot + "allow-heal-command-for-ops";
-			if (c.get(currentKey) == null) {
-				def = getDefaultValue(currentKey);
-				c.set(currentKey, def);
-			} else {
-				try {
-					ConfigData.allowHealCommandForOps = (boolean) c.get(currentKey);
-				} catch (ClassCastException e) {
-					logCastEx(currentKey);
-				}
-			}
+			ConfigData.allowHealCommandForOps = (boolean) loadKey(c, currentKey, null, null);
+			
 			currentKey = settingsNameWDot + "require-confirmation-for-world-resetting"; // TODO
+			//currentKey = "java-path-to-start-java-middle-script"; //TODO?
 			// TODO: HALT OR NOT
 		} catch (Throwable t) {
 			log("Error while reading \"" + currentKey + "\" from the config");
 		}
-		
-		// DONE
-		
 		saveConfigIfHasChanges(c, cOld, f);
 	}
 	
@@ -90,15 +65,16 @@ public class ConfigOperations {
 		Object def = null;
 		Object returnValue = null;
 		if (currentValue == null) {
-			def = (String) getDefaultValue(currentKey);
+			def = getDefaultValue(currentKey);
 			c.set(currentKey, def);
-			returnValue = (String) def;
+			debug("adding to " + currentKey + ": " + def);
+			returnValue = def;
 			if(ifExists!=null) {
 				ifExists.run();
 			}
 		} else {
 			try {
-				returnValue = (String) currentValue;
+				returnValue = currentValue;
 				if(ifNotExists!=null) {
 					ifNotExists.run();
 				}
@@ -113,26 +89,26 @@ public class ConfigOperations {
 	 * Returnes true if found changes
 	 * **/
 	public static boolean saveConfigIfHasChanges(YamlConfiguration newConfig, YamlConfiguration oldConfig, File f) {
-		boolean same = true;
-	    for(String key : newConfig.getKeys(false)) { // missing some keys in oldConfig, think about it later (alrady not)
+		boolean hasChanges = false;
+	    for(String key : newConfig.getKeys(true)) { // missing some keys in oldConfig, think about it later (alrady not)
 	        if(!oldConfig.contains(key)) {
-	        	same = false;
+	        	hasChanges = true;
 	        }
 	    }
-	    for(String key : oldConfig.getKeys(false)) {
+	    for(String key : oldConfig.getKeys(true)) {
 	        if(!newConfig.contains(key)) {
-	        	same = false;
+	        	hasChanges = true;
 	        }
 	    }
 	    
-		if (!same) {
+		if (hasChanges) {
 			try {
 				newConfig.save(f);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		return !same;
+		return hasChanges;
 	}
 	
 	public static Object getDefaultValue(String key) {

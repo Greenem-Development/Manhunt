@@ -60,7 +60,6 @@ public class ConfigCompatibility {
 		} catch (Throwable t) {
 			log("Error while updating \"" + currentKey + "\" from the config");
 		}
-		
 		ConfigOperations.saveConfigIfHasChanges(c, cOld, f);
 	}
 	
