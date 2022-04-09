@@ -22,6 +22,7 @@ import org.greenem.plugins.manhunt.util.StandartUtils;
 import org.greenem.plugins.manhunt.util.Stash;
 import org.greenem.plugins.manhunt.worldManagement.WorldResetting;
 
+//@SuppressWarnings("unused")
 public class ManhuntCommands {
 	public static boolean hunterCommand(Player p) {
 		String pName = p.getName();

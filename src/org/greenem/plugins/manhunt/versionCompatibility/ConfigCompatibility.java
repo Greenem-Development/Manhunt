@@ -8,10 +8,6 @@ import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -26,7 +22,6 @@ public class ConfigCompatibility {
 		// other later
 	}
 	
-	@SuppressWarnings("unchecked")
 	private static void updateConfigFrom1_3To1_4() {
 		File f = getConfigFile();
 		f.getParentFile().mkdirs();

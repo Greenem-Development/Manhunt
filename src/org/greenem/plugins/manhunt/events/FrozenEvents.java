@@ -143,7 +143,7 @@ public class FrozenEvents implements Listener {
 	@EventHandler
 	public void PlayerInteractEvent(PlayerInteractEvent e){
 		Player p = e.getPlayer();
-        Block b = e.getClickedBlock();
+//        Block b = e.getClickedBlock();
         //if(e.getClickedBlock() != null) log.info(e.getClickedBlock().getType().toString());
         if(Frozen.contains(p.getName())) {
         	e.setCancelled(true);

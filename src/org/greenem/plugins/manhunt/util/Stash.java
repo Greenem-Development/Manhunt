@@ -10,13 +10,10 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;
 import static org.greenem.plugins.manhunt.data.References.Speedrunners;
 import static org.greenem.plugins.manhunt.data.References.Hunters;
 
 import org.greenem.plugins.manhunt.commands.ExtraCommands;
-import org.greenem.plugins.manhunt.commands.ManhuntCommandActions;
-import org.greenem.plugins.manhunt.main.Main;
 
 public class Stash {
 	public static void AddItemStack(Player p, ItemStack ItemStack, int slot) { // can be better, change this later
