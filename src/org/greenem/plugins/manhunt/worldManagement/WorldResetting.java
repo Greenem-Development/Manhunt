@@ -19,15 +19,23 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.greenem.plugins.manhunt.data.Names;
+import org.greenem.plugins.manhunt.config.ConfigData;
+import org.greenem.plugins.manhunt.data.Lines;
 import org.greenem.plugins.manhunt.main.Main;
+import org.greenem.plugins.manhunt.util.OsDependent;
+import org.greenem.plugins.manhunt.util.OsType;
 
 public class WorldResetting {
 	public static void resetWorld(CommandSender sender) {
 		if(sender instanceof ConsoleCommandSender || (sender instanceof Player && ((Player) sender).isOp())) {
+			if(!OsDependent.checkSystemSupported(sender, OsType.WINDOWS)) return;
+			if(!ConfigData.allowWorldResetting) {
+				sender.sendMessage(ChatColor.RED + Lines.featureDisabledByConfig);
+				return;
+			}
 			if(!new File(serverDirectory, runFileString).exists()) {
 				sender.sendMessage(ChatColor.RED + "You haven't specified a valid server start script file name in the config! "
-						+ "(at server/plugins/configs/ManhuntAndWorldReset/" + Names.mainConfigName + ")");
+						+ "(at server/plugins/configs/ManhuntAndWorldReset/" + Lines.mainConfigName + ")");
 				return;
 			}
 				
@@ -68,9 +76,12 @@ public class WorldResetting {
 				e.printStackTrace();
 			}
 			
-			Runtime.getRuntime().halt(0);
-			
-			//Bukkit.shutdown();
+			if(ConfigData.useHaltForWorldResettings) {
+				Runtime.getRuntime().halt(0);
+			}
+			else {
+				Bukkit.shutdown();
+			}
 		}
 		else {
 			sender.sendMessage(ChatColor.RED + "You don't have enough permissions to do this");

@@ -13,7 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.greenem.plugins.manhunt.config.ConfigOperations;
-import org.greenem.plugins.manhunt.data.Names;
+import org.greenem.plugins.manhunt.data.Lines;
 import org.greenem.plugins.manhunt.data.References;
 
 public class ConfigCompatibility {
@@ -44,7 +44,7 @@ public class ConfigCompatibility {
 	}
 	
 	private static File getConfigFile() {
-		return new File(References.pluginConfigDirectory, Names.mainConfigName);
+		return new File(References.pluginConfigDirectory, Lines.mainConfigName);
 	}
 	
 	@Deprecated

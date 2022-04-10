@@ -35,8 +35,10 @@ import org.greenem.plugins.manhunt.completers.MhGmCompleter;
 import org.greenem.plugins.manhunt.completers.MhStartCompleter;
 import org.greenem.plugins.manhunt.completers.plain.EmptyCompleterNoArgs;
 import org.greenem.plugins.manhunt.config.ConfigOperations;
+import org.greenem.plugins.manhunt.data.References;
 import org.greenem.plugins.manhunt.events.FrozenEvents;
 import org.greenem.plugins.manhunt.events.ManhuntEvents;
+import org.greenem.plugins.manhunt.util.OsDependent;
 import org.greenem.plugins.manhunt.util.SimpleLogger;
 //import org.spigotmc.event.entity.EntityDismountEvent;
 import org.greenem.plugins.manhunt.completers.MhProblemsCompleter;
@@ -56,6 +58,7 @@ public class Main extends JavaPlugin implements Listener {
 		ConfigOperations.updateAndLoadConfig();
 		finishInit();
 		instance = this;
+		OsDependent.getSystemType();
 	}
 	
 	@Override
@@ -125,6 +128,7 @@ public class Main extends JavaPlugin implements Listener {
     }
 	
 	private void initAll() {
+		References.os = OsDependent.getSystemType();
 		registerListeners(); // not sure if that should be done so early
 		RegisterAllCommands();
 		initFiles();

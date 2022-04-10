@@ -11,11 +11,11 @@ import java.io.IOException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.greenem.plugins.manhunt.data.Names;
+import org.greenem.plugins.manhunt.data.Lines;
 
 public class ConfigOperations {
 	public static void loadConfig() {
-		File f = new File(pluginConfigDirectory, Names.mainConfigName);
+		File f = new File(pluginConfigDirectory, Lines.mainConfigName);
 		f.getParentFile().mkdirs();
 		
 		YamlConfiguration c = YamlConfiguration.loadConfiguration(f);

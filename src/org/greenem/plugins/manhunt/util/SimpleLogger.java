@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 public class SimpleLogger {
 	public static String pluginName = "AdvancedManhunt";
 	public static String color = ""; // + ChatColor.WHITE;
-	public static boolean debugOutputEnabled = true;
+	public static boolean debugOutputEnabled = false;
 	
 	public static void log(Object o) {
 		if(o!=null) {

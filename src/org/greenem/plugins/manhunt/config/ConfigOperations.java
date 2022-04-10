@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.greenem.plugins.manhunt.data.Names;
+import org.greenem.plugins.manhunt.data.Lines;
 import org.greenem.plugins.manhunt.data.References;
 import org.greenem.plugins.manhunt.versionCompatibility.ConfigCompatibility;
 
@@ -20,7 +20,7 @@ public class ConfigOperations {
 	}
 	
 	public static void loadConfig() {
-		File f = new File(pluginConfigDirectory, Names.mainConfigName);
+		File f = new File(pluginConfigDirectory, Lines.mainConfigName);
 		f.getParentFile().mkdirs();
 		YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
 		YamlConfiguration cOld = YamlConfiguration.loadConfiguration(f);
@@ -34,6 +34,8 @@ public class ConfigOperations {
 			ConfigData.allowGmCommandForOps = (boolean) loadKey(c, currentKey, null, null);
 			currentKey = "settings.commands.allow-heal-command-for-ops"; // TODO
 			ConfigData.allowHealCommandForOps = (boolean) loadKey(c, currentKey, null, null);
+			currentKey = "settings.world-resetting.allow-ops-use-world-resetting";
+			ConfigData.allowWorldResetting = (boolean) loadKey(c, currentKey, null, null);
 			currentKey = "settings.world-resetting.require-confirmation-for-world-resetting"; // TODO
 			ConfigData.requireConfirmationForWorldResetting = (boolean) loadKey(c, currentKey, null, null);
 			currentKey = "settings.world-resetting.use-halt-for-instant-server-stopping"; // TODO
@@ -56,10 +58,11 @@ public class ConfigOperations {
 			case "settings.commands.allow-gm-command-for-ops": return true;
 			case "settings.commands.allow-heal-command-for-ops": return true;
 			case "settings.world-resetting.require-confirmation-for-world-resetting": return false;
-			case "settings.world-resetting.use-halt-for-instant-server-stopping": return true;
+			case "settings.world-resetting.use-halt-for-instant-server-stopping": return false;
 			case "settings.game.delay-for-speedrunner-on-start-in-milliseconds": return 2000;
 			case "settings.warnings.disable-no-existing-start-file-warning": return false;
 			case "settings.game.clear-items-on-start": return true;
+			case "settings.world-resetting.allow-ops-use-world-resetting": return true;
 			default:
 				return "UNDEFINED_CONFIG_VALUE";
 		}
