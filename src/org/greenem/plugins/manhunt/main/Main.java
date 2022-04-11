@@ -6,7 +6,7 @@ import static org.greenem.plugins.manhunt.data.References.Speedrunners;
 import static org.greenem.plugins.manhunt.data.References.Hunters;
 import static org.greenem.plugins.manhunt.data.References.PortalTo;
 import static org.greenem.plugins.manhunt.data.References.PortalFrom;
-import static org.greenem.plugins.manhunt.data.References.PortalEnd;
+import static org.greenem.plugins.manhunt.data.References.PortalEndTo;
 import static org.greenem.plugins.manhunt.data.References.HuntersPortalFrom;
 import static org.greenem.plugins.manhunt.data.References.HuntersPortalTo;
 import static org.greenem.plugins.manhunt.data.References.Frozen;

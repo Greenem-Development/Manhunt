@@ -16,7 +16,10 @@ public class References {
 	public static Map <String, Location> HuntersPortalTo = new HashMap<>();
 	public static Map <String, Location> PortalFrom = new HashMap<>();
 	public static Map <String, Location> PortalTo = new HashMap<>();
-	public static Map <String, Location> PortalEnd = new HashMap<>();
+	public static Map <String, Location> PortalEndFrom = new HashMap<>();
+	public static Map <String, Location> PortalEndTo = new HashMap<>();
+	public static Map <String, Location> HuntersPortalEndFrom = new HashMap<>();
+	public static Map <String, Location> HuntersPortalEndTo = new HashMap<>();
 	
 	public static ArrayList<String> Frozen = new ArrayList<>();
 	public static Map <Player, Location> FrozenLocs = new HashMap<>();

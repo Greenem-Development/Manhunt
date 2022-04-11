@@ -5,7 +5,7 @@ import static org.greenem.plugins.manhunt.data.References.FrozenLocs;
 import static org.greenem.plugins.manhunt.data.References.Hunters;
 import static org.greenem.plugins.manhunt.data.References.HuntersPortalFrom;
 import static org.greenem.plugins.manhunt.data.References.HuntersPortalTo;
-import static org.greenem.plugins.manhunt.data.References.PortalEnd;
+import static org.greenem.plugins.manhunt.data.References.PortalEndTo;
 import static org.greenem.plugins.manhunt.data.References.PortalFrom;
 import static org.greenem.plugins.manhunt.data.References.PortalTo;
 import static org.greenem.plugins.manhunt.data.References.Speedrunners;
@@ -28,7 +28,7 @@ public class ManhuntCommandActions {
 		else if(Speedrunners.contains(pName)) {
 			Speedrunners.remove(pName);
 		}
-		if(PortalEnd.containsKey(pName)) PortalEnd.remove(pName);
+		if(PortalEndTo.containsKey(pName)) PortalEndTo.remove(pName);
 		if(PortalFrom.containsKey(pName)) PortalFrom.remove(pName);
 		if(PortalTo.containsKey(pName)) PortalTo.remove(pName);
 		if(HuntersPortalFrom.containsKey(pName)) HuntersPortalFrom.remove(pName);

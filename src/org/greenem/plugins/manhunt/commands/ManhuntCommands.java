@@ -3,7 +3,7 @@ package org.greenem.plugins.manhunt.commands;
 import static org.greenem.plugins.manhunt.data.References.Hunters;
 import static org.greenem.plugins.manhunt.data.References.HuntersPortalFrom;
 import static org.greenem.plugins.manhunt.data.References.HuntersPortalTo;
-import static org.greenem.plugins.manhunt.data.References.PortalEnd;
+import static org.greenem.plugins.manhunt.data.References.PortalEndTo;
 import static org.greenem.plugins.manhunt.data.References.PortalFrom;
 import static org.greenem.plugins.manhunt.data.References.PortalTo;
 import static org.greenem.plugins.manhunt.data.References.Speedrunners;
@@ -37,9 +37,10 @@ public class ManhuntCommands {
 		}
 		if(!Hunters.contains(pName)) {
 			Hunters.add(pName);
+			p.getInventory().remove(Material.COMPASS);
 			Stash.AddItemStack(p, new ItemStack(Material.COMPASS), 8);
 			CompassUpdating.findTarget();
-			p.sendMessage(ChatColor.GOLD + "Now you are a " + ChatColor.RED + "" + ChatColor.BOLD + "hunter");
+			p.sendMessage(ChatColor.GOLD + "Now you are a " + ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "hunter");
 		}
 		else {
 			p.sendMessage(ChatColor.RED + "You are already a hunter");
@@ -63,7 +64,7 @@ public class ManhuntCommands {
 			p.sendMessage(ChatColor.GOLD + "Now you are a speedrunner");
 		}
 		else {
-			p.sendMessage(ChatColor.RED + "You are already a " + ChatColor.GREEN + "" + ChatColor.BOLD + "speedrunner");
+			p.sendMessage(ChatColor.RED + "You are already a " + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + "speedrunner");
 		}
 		return true;
 	}

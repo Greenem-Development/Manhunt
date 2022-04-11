@@ -1,14 +1,20 @@
 package org.greenem.plugins.manhunt.events;
 
+import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
+import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;
 import static org.greenem.plugins.manhunt.data.References.Frozen;
 import static org.greenem.plugins.manhunt.data.References.FrozenLocs;
 import static org.greenem.plugins.manhunt.data.References.Hunters;
 import static org.greenem.plugins.manhunt.data.References.HuntersPortalFrom;
 import static org.greenem.plugins.manhunt.data.References.HuntersPortalTo;
-import static org.greenem.plugins.manhunt.data.References.PortalEnd;
+import static org.greenem.plugins.manhunt.data.References.PortalEndFrom;
+import static org.greenem.plugins.manhunt.data.References.PortalEndTo;
+import static org.greenem.plugins.manhunt.data.References.HuntersPortalEndFrom;
+import static org.greenem.plugins.manhunt.data.References.HuntersPortalEndTo;
 import static org.greenem.plugins.manhunt.data.References.PortalFrom;
 import static org.greenem.plugins.manhunt.data.References.PortalTo;
 import static org.greenem.plugins.manhunt.data.References.Speedrunners;
+import static org.greenem.plugins.manhunt.compass.CompassUpdating.getEnvironment;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -31,67 +37,83 @@ public class ManhuntEvents implements Listener {
 	@EventHandler
 	public void Move(PlayerMoveEvent e) {
 		Player p = e.getPlayer();
-		if(Speedrunners.contains(e.getPlayer().getName())) CompassUpdating.findTarget();
-		if(Hunters.contains(e.getPlayer().getName())) CompassUpdating.findTarget();
+		String pName = p.getName();
+		if(Speedrunners.contains(pName) || Hunters.contains(pName)) CompassUpdating.findTarget();
 		if(Frozen.contains(p.getName())) {
-			if(!e.getFrom().getWorld().equals(e.getTo().getWorld())) return;
-			Location loc = e.getTo().clone();
-			p.setAllowFlight(true);
-			p.setFlying(true);
-			loc.setX(FrozenLocs.get(p).getX());
-			loc.setY(FrozenLocs.get(p).getY());
-			loc.setZ(FrozenLocs.get(p).getZ());
-			p.teleport(loc);
+			cancelMovement(e);
 		}
+	}
+	
+	private static void cancelMovement(PlayerMoveEvent e) {
+		Player p = e.getPlayer();
+		if(!e.getFrom().getWorld().equals(e.getTo().getWorld())) return;
+		Location loc = e.getTo().clone();
+		p.setAllowFlight(true);
+		p.setFlying(true);
+		loc.setX(FrozenLocs.get(p).getX());
+		loc.setY(FrozenLocs.get(p).getY());
+		loc.setZ(FrozenLocs.get(p).getZ());
+		p.teleport(loc);
 	}
 	
 	@EventHandler
 	public void PlayerPortalEvent (PlayerPortalEvent e) {
 		Player p = e.getPlayer();
-		String nameP = p.getName();
-		if(Speedrunners.contains(nameP)) {
-			if(e.getTo().getWorld().getEnvironment().equals(Environment.THE_END)) {
-				PortalEnd.put(nameP, e.getTo());
+		String pName = p.getName();
+		debug(e.getFrom());
+		debug(e.getTo());
+		debug(e.getPlayer().getLocation());
+		if(Speedrunners.contains(pName)) {
+			if(getEnvironment(e.getTo())==Environment.THE_END) {
+				PortalEndFrom.put(pName, e.getFrom());
+				debug(PortalEndFrom);
+				PortalEndTo.put(pName, e.getTo());
+				debug(PortalEndTo);
 			}
 			else {
-				if(PortalFrom.containsKey(nameP)) PortalFrom.remove(nameP);
-				if(PortalTo.containsKey(nameP)) PortalTo.remove(nameP);
-				PortalFrom.put(nameP, e.getFrom());
-				PortalTo.put(nameP, e.getTo());
+				PortalFrom.put(pName, e.getFrom());
+				PortalTo.put(pName, e.getTo());
 			}
 		}
-		if(Hunters.contains(nameP)) {
-			if(e.getTo().getWorld().getEnvironment().equals(Environment.THE_END)) {
-				//PortalEnd.put(nameP, e.getTo());
+		if(Hunters.contains(pName)) {
+			if(getEnvironment(e.getTo())==Environment.THE_END) {
+				HuntersPortalEndFrom.put(pName, e.getFrom());
+				HuntersPortalEndTo.put(pName, e.getTo());
 			}
 			else {
-				if(HuntersPortalFrom.containsKey(nameP)) HuntersPortalFrom.remove(nameP);
-				if(HuntersPortalTo.containsKey(nameP)) HuntersPortalTo.remove(nameP);
-				HuntersPortalFrom.put(nameP, e.getFrom());
-				HuntersPortalTo.put(nameP, e.getTo());
+//				HuntersPortalFrom.remove(pName);
+//				HuntersPortalTo.remove(pName);
+				HuntersPortalFrom.put(pName, e.getFrom());
+				HuntersPortalTo.put(pName, e.getTo());
+//				debug(HuntersPortalTo.get(pName));
 			}
 		}
-		checkNetherCompassInHand(p, e.getTo(), p.getInventory().getHeldItemSlot(), false);
-		CompassUpdating.findTarget();
+		checkNetherCompassInHand(p, e.getTo(), p.getInventory().getHeldItemSlot(), false, p.getInventory().getItemInOffHand());
+//		CompassUpdating.findTarget();
 	}
 
 	@EventHandler
 	public void PlayerDies (PlayerDeathEvent e) {
 		Player p = e.getEntity();
-		String nameP = p.getName();
-		if(PortalFrom.containsKey(nameP) && PortalTo.containsKey(nameP) && p.getWorld().getEnvironment().equals(Environment.NETHER)) {
-			Location from = new Location(PortalFrom.get(nameP).getWorld(), PortalFrom.get(nameP).getX(), PortalFrom.get(nameP).getY(), PortalFrom.get(nameP).getZ());
-			PortalFrom.put(nameP, PortalTo.get(nameP));
-			PortalTo.put(nameP, from);
+		String pName = p.getName();
+		if(PortalFrom.containsKey(pName) && PortalTo.containsKey(pName) && p.getWorld().getEnvironment().equals(Environment.NETHER)) {
+			Location from = PortalFrom.get(pName).clone();
+			PortalFrom.put(pName, PortalTo.get(pName));
+			PortalTo.put(pName, from);
 		}
-		if(Hunters.contains(nameP)) {
-			for(int i = 0; i<p.getInventory().getSize(); i++) {
-				try {
-					if(e.getDrops().get(i).getType().equals(Material.COMPASS)) e.getDrops().remove(i); //TODO java.lang.IndexOutOfBoundsException: Index 8 out of bounds for length 8, 233 | Index 1 out of bounds for length 0
-				}
-				catch (IndexOutOfBoundsException e1) {
-					
-				}
+		if(Hunters.contains(pName)) {
+			clearCompassItems(e, p);
+		}
+	}
+	
+	public static void clearCompassItems(PlayerDeathEvent e, Player p) {
+		p.getInventory().remove(Material.COMPASS); // not tested
+		for(int i = 0; i<p.getInventory().getSize(); i++) {
+			try {
+				if(e.getDrops().get(i).getType().equals(Material.COMPASS)) e.getDrops().remove(i); //TODO java.lang.IndexOutOfBoundsException: Index 8 out of bounds for length 8, 233 | Index 1 out of bounds for length 0
+			}
+			catch (IndexOutOfBoundsException e1) {
+				
 			}
 		}
 	}
@@ -116,9 +138,10 @@ public class ManhuntEvents implements Listener {
 	}
 	
 	public static void checkNetherCompassInHand(Player p, Location loc, int slot) {
-		checkNetherCompassInHand(p, loc, slot, true);
+		checkNetherCompassInHand(p, loc, slot, true, null);
 	}
-	public static void checkNetherCompassInHand(Player p, Location loc, int slot, boolean checkMeta) {
+	
+	public static void checkNetherCompassInHand(Player p, Location loc, int slot, boolean checkMeta, ItemStack is) {
 //		log.info("check");
 		if(loc.getWorld().getEnvironment().equals(Environment.THE_END) || loc.getWorld().getEnvironment().equals(Environment.NETHER)) {
 //			log.info("check2");
@@ -127,19 +150,24 @@ public class ManhuntEvents implements Listener {
 				ItemStack maybeCompass = p.getInventory().getItem(slot);
 				if(maybeCompass.getType().equals(Material.COMPASS)){
 //					log.info("check4");
-					boolean toggle1 = false;
+					boolean warn = false;
 					if(checkMeta) {
 						//log.info(e.getPlayer().getInventory().getItem(e.getNewSlot()).getItemMeta().getAttributeModifiers().containsKey(e)+ "");
 						CompassMeta meta = (CompassMeta) maybeCompass.getItemMeta();
 		    	  		if(meta.getLodestone() != null) {
 		    	  			//e.setCancelled(true);
-		    	  			toggle1 = true;
+		    	  			warn = true;
 		    	  		}
 					}
 					else {
-						toggle1 = true;
+						warn = true;
 					}
-					if(toggle1) {
+					
+					if(is!=null) {
+						if(is.getType()==Material.COMPASS) warn = true;
+					}
+					
+					if(warn) {
 						p.sendMessage(ChatColor.RED + "Sorry, but the compass will not update while you are holding it in the Nether (or End)");
 					}
 				}
