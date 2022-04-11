@@ -60,7 +60,7 @@ public class ConfigCompatibility {
 	}
 	
 	private static void moveValue(YamlConfiguration c, String oldKey, String newKey) {
-		if(c.get(newKey)==null) {
+		if(c.get(newKey)==null && c.get(oldKey)!=null) {
 			Object currentValue = null;
 			try{
 				currentValue = c.get(oldKey);

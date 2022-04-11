@@ -32,7 +32,7 @@ sourceSets {
 }
 
 jar {
-	archiveBaseName = 'Manhunt'
+	archiveBaseName = 'AdvancedManhunt'
     destinationDirectory.set(file("G:/SERVERS/Dev Server 1.18/plugins"))
     configurations.implementation.canBeResolved=true
     from { configurations.implementation.collect {

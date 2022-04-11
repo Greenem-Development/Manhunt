@@ -58,7 +58,6 @@ public class Main extends JavaPlugin implements Listener {
 		ConfigOperations.updateAndLoadConfig();
 		finishInit();
 		instance = this;
-		OsDependent.getSystemType();
 	}
 	
 	@Override

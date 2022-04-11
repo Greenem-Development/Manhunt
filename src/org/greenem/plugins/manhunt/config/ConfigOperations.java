@@ -26,19 +26,19 @@ public class ConfigOperations {
 		YamlConfiguration cOld = YamlConfiguration.loadConfiguration(f);
 		String currentKey = null;
 		try {
-			currentKey = "settings.warnings.disable-no-existing-start-file-warning"; // TESTED
+			currentKey = "settings.warnings.disable-no-existing-start-file-warning";
 			ConfigData.disableNoExistingStartFileWarning = (boolean) loadKey(c, currentKey, null, null);
 			currentKey = "settings.world-resetting.launch-server-script-name";
-			References.runFileString = (String) loadKey(c, currentKey, () -> { checkStartScript(); }, () -> { checkStartScript(); });
-			currentKey = "settings.commands.allow-gm-command-for-ops"; // TODO
+			References.runFileString = (String) loadKey(c, currentKey, null, null); //() -> { checkStartScript(); }, () -> { checkStartScript(); });
+			currentKey = "settings.commands.allow-gm-command-for-ops";
 			ConfigData.allowGmCommandForOps = (boolean) loadKey(c, currentKey, null, null);
-			currentKey = "settings.commands.allow-heal-command-for-ops"; // TODO
+			currentKey = "settings.commands.allow-heal-command-for-ops";
 			ConfigData.allowHealCommandForOps = (boolean) loadKey(c, currentKey, null, null);
 			currentKey = "settings.world-resetting.allow-ops-use-world-resetting";
 			ConfigData.allowWorldResetting = (boolean) loadKey(c, currentKey, null, null);
-			currentKey = "settings.world-resetting.require-confirmation-for-world-resetting"; // TODO
-			ConfigData.requireConfirmationForWorldResetting = (boolean) loadKey(c, currentKey, null, null);
-			currentKey = "settings.world-resetting.use-halt-for-instant-server-stopping"; // TODO
+//			currentKey = "settings.world-resetting.require-confirmation-for-world-resetting"; // TODO
+//			ConfigData.requireConfirmationForWorldResetting = (boolean) loadKey(c, currentKey, null, null);
+			currentKey = "settings.world-resetting.use-halt-for-instant-server-stopping";
 			ConfigData.useHaltForWorldResettings = (boolean) loadKey(c, currentKey, null, null);
 			currentKey = "settings.game.delay-for-speedrunner-on-start-in-milliseconds";
 			ConfigData.speedrunnerDelayMilliseconds = (int) loadKey(c, currentKey, null, null);
@@ -89,6 +89,9 @@ public class ConfigOperations {
 				logCastEx(currentKey);
 			}
 		}
+		if(currentKey=="settings.world-resetting.launch-server-script-name") {
+			checkStartScript((String) returnValue);
+		}
 		return returnValue;
 	}
 	
@@ -118,10 +121,10 @@ public class ConfigOperations {
 		return hasChanges;
 	}
 	
-	private static void checkStartScript() {
+	private static void checkStartScript(String runFileString) {
 		if(ConfigData.disableNoExistingStartFileWarning) return;
-		if(!new File(serverDirectory, References.runFileString).exists()) {
-			String noExistingStartFileWarning = ChatColor.RED + "You haven't specified your run script file name in the config!"
+		if(!new File(serverDirectory, runFileString).exists()) {
+			String noExistingStartFileWarning = ChatColor.RED + "You haven't specified your run script file name in the config! "
 					+ "(for world reseting, but other things are fine)";
 			log(noExistingStartFileWarning);
 		}

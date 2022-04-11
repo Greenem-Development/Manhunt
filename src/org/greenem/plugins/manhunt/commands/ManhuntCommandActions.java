@@ -15,6 +15,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.greenem.plugins.manhunt.config.ConfigData;
 import org.greenem.plugins.manhunt.main.Main;
 import org.greenem.plugins.manhunt.util.Stash;
@@ -45,6 +46,8 @@ public class ManhuntCommandActions {
 		for(String speendrunner : Speedrunners) {
 			Player spPl = Bukkit.getPlayerExact(speendrunner);
 			if(spPl==null) continue;
+			spPl.setGameMode(GameMode.SURVIVAL);
+//			disableFlightIfSurv(spPl, true);
 			if(ConfigData.clearItemsOnStart) spPl.getInventory().clear();
 			Frozen.add(speendrunner); // make it before and put value when back online TOD0
 			FrozenLocs.put(spPl, spPl.getLocation());
@@ -54,12 +57,26 @@ public class ManhuntCommandActions {
 					spPl.setAllowFlight(false);
 				}
 			}
-			Bukkit.getPlayerExact(speendrunner).sendMessage(ChatColor.YELLOW + "You have " + delayInSecondsInt + " seconds to prepare");
+			if(delayInSecondsInt>0) {
+				Bukkit.getPlayerExact(speendrunner).sendMessage(ChatColor.YELLOW + "You have " + delayInSecondsInt + " seconds to prepare");
+			} else {
+				Bukkit.getPlayerExact(speendrunner).sendMessage(ChatColor.YELLOW + "You have " + (float) ConfigData.speedrunnerDelayMilliseconds/1000 + " seconds to prepare");
+			}
 		}
 		for(String hunter: Hunters) {
 			Player pHunter = Bukkit.getPlayerExact(hunter);
 			if(pHunter==null) continue;
-			if(ConfigData.clearItemsOnStart) pHunter.getInventory().clear();
+			pHunter.setGameMode(GameMode.SURVIVAL);
+//			disableFlightIfSurv(pHunter, true);
+			if(ConfigData.clearItemsOnStart) {
+				ItemStack[] all = pHunter.getInventory().getContents();
+				for (int i = 0; i < all.length; i++) {
+					ItemStack is = all[i];
+					if(is!=null && is.getType()!=Material.COMPASS) {
+						pHunter.getInventory().setItem(i, new ItemStack(Material.AIR));
+					}
+				}
+			}
 			Frozen.add(hunter);
 			FrozenLocs.put(pHunter, pHunter.getLocation());
 			if(pHunter.getGameMode().equals(GameMode.SURVIVAL) || pHunter.getGameMode().equals(GameMode.ADVENTURE)) {
@@ -125,5 +142,16 @@ public class ManhuntCommandActions {
 				}
 			}
 		}, 20 * speedrunnerDelay/1000);
+	}
+	
+	public static void disableFlightIfSurv(Player p) {
+		disableFlightIfSurv(p, false);
+	}
+	
+	public static void disableFlightIfSurv(Player p, boolean fastMode) {
+		if(fastMode || (p.getGameMode()==GameMode.SURVIVAL || p.getGameMode()==GameMode.ADVENTURE)) {
+			p.setAllowFlight(false);
+		}
+		p.setFlying(false);
 	}
 }
