@@ -18,29 +18,28 @@ import org.greenem.plugins.manhunt.data.References;
 
 public class ConfigCompatibility {
 	public static void updateConfig() {
-		updateConfigFrom1_3To1_4();
-		// other later
-	}
-	
-	private static void updateConfigFrom1_3To1_4() {
 		File f = getConfigFile();
 		f.getParentFile().mkdirs();
 		YamlConfiguration c = YamlConfiguration.loadConfiguration(f);
 		YamlConfiguration cOld = YamlConfiguration.loadConfiguration(f);
 		
-		String newPrefixString = "settings.";
 		String currentKey = null;
 		try {
-			currentKey = "launch-server-script-name";
-			moveValue(c, currentKey, newPrefixString + "world-resetting." + currentKey);
-			currentKey = "allow-gm-command-for-ops";
-			moveValue(c, currentKey, newPrefixString + ".commands." + currentKey);
-			currentKey = "allow-heal-command-for-ops";
-			moveValue(c, currentKey, newPrefixString + ".commands." + currentKey);
+			updateConfigFrom1_3To1_4(c, currentKey);
 		} catch (Throwable t) {
 			log("Error while updating \"" + currentKey + "\" from the config");
 		}
 		ConfigOperations.saveConfigIfHasChanges(c, cOld, f);
+	}
+	
+	private static void updateConfigFrom1_3To1_4(YamlConfiguration c, String currentKey) {
+		String newPrefixString = "settings.";
+		currentKey = "launch-server-script-name";
+		moveValue(c, currentKey, newPrefixString + "world-resetting." + currentKey);
+		currentKey = "allow-gm-command-for-ops";
+		moveValue(c, currentKey, newPrefixString + ".commands." + currentKey);
+		currentKey = "allow-heal-command-for-ops";
+		moveValue(c, currentKey, newPrefixString + ".commands." + currentKey);
 	}
 	
 	private static File getConfigFile() {

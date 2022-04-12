@@ -23,6 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
@@ -35,9 +36,12 @@ import org.greenem.plugins.manhunt.completers.MhGmCompleter;
 import org.greenem.plugins.manhunt.completers.MhStartCompleter;
 import org.greenem.plugins.manhunt.completers.plain.EmptyCompleterNoArgs;
 import org.greenem.plugins.manhunt.config.ConfigOperations;
+import org.greenem.plugins.manhunt.coreDependent.NonBukkit;
+import org.greenem.plugins.manhunt.coreDependent.Test1;
 import org.greenem.plugins.manhunt.data.References;
 import org.greenem.plugins.manhunt.events.FrozenEvents;
 import org.greenem.plugins.manhunt.events.ManhuntEvents;
+import org.greenem.plugins.manhunt.util.DebugModeSwitch;
 import org.greenem.plugins.manhunt.util.OsDependent;
 import org.greenem.plugins.manhunt.util.SimpleLogger;
 //import org.spigotmc.event.entity.EntityDismountEvent;
@@ -114,6 +118,14 @@ public class Main extends JavaPlugin implements Listener {
 			if(!isSenderAPlayerOrConsole(sender)) return true;
 			ManhuntCommands.reloadConfigCommand(sender);
 		}
+		else if (cmd.getName().equalsIgnoreCase("mhw-authors")) {
+			try {
+//				NonBukkit.authors(sender);
+				Test1.authors(sender);
+			} catch (NoClassDefFoundError e) {
+				ManhuntCommands.authors(sender);
+			}
+		}
 		return true; //false??? //TODO
 	}
     
@@ -127,10 +139,11 @@ public class Main extends JavaPlugin implements Listener {
     }
 	
 	private void initAll() {
+		initFiles();
+		DebugModeSwitch.init();
 		References.os = OsDependent.getSystemType();
 		registerListeners(); // not sure if that should be done so early
 		RegisterAllCommands();
-		initFiles();
 	}
 	
 	private void registerListeners() {

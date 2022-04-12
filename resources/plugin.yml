@@ -30,3 +30,6 @@ commands:
    resetworld:
       description: DELETES THE WORLD AND RESTARTS THE SERVER, may be moved to a separate plugin later
       permission: op
+   mhw-authors:
+      description: Display info about the plugin and it's authors
+      permission: op
