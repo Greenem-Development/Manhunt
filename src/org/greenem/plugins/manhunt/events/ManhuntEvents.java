@@ -60,9 +60,9 @@ public class ManhuntEvents implements Listener {
 	public void PlayerPortalEvent (PlayerPortalEvent e) {
 		Player p = e.getPlayer();
 		String pName = p.getName();
-		debug(e.getFrom());
-		debug(e.getTo());
-		debug(e.getPlayer().getLocation());
+//		debug(e.getFrom());
+//		debug(e.getTo());
+//		debug(e.getPlayer().getLocation());
 		if(Speedrunners.contains(pName)) {
 			if(getEnvironment(e.getTo())==Environment.THE_END) {
 				PortalEndFrom.put(pName, e.getFrom());
@@ -89,7 +89,7 @@ public class ManhuntEvents implements Listener {
 			}
 		}
 		checkNetherCompassInHand(p, e.getTo(), p.getInventory().getHeldItemSlot(), false, p.getInventory().getItemInOffHand());
-//		CompassUpdating.findTarget();
+		CompassUpdating.findTarget(p.getName(), e.getTo());
 	}
 
 	@EventHandler
