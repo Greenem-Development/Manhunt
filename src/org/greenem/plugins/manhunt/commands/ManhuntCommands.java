@@ -9,25 +9,19 @@ import static org.greenem.plugins.manhunt.data.References.PortalTo;
 import static org.greenem.plugins.manhunt.data.References.Speedrunners;
 import static org.greenem.plugins.manhunt.util.Stash.isSenderAPlayerOrConsole;
 
-import java.lang.System.Logger;
-import java.util.Calendar;
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.greenem.plugins.manhunt.compass.CompassUpdating;
+import org.greenem.plugins.manhunt.config.ConfigData;
 import org.greenem.plugins.manhunt.config.ConfigOperations;
-import org.greenem.plugins.manhunt.util.SimpleLogger;
 import org.greenem.plugins.manhunt.util.StandartUtils;
 import org.greenem.plugins.manhunt.util.Stash;
 import org.greenem.plugins.manhunt.worldManagement.WorldResetting;
 
-import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 //@SuppressWarnings("unused")
@@ -68,6 +62,7 @@ public class ManhuntCommands {
 		}
 		if(!Speedrunners.contains(pName)) {
 			Speedrunners.add(pName);
+			p.getInventory().remove(Material.COMPASS);
 			p.sendMessage(ChatColor.GOLD + "Now you are a " + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + "speedrunner");
 		}
 		else {
@@ -143,23 +138,20 @@ public class ManhuntCommands {
 		sender.sendMessage(ChatColor.GREEN + "Successfully reloaded the config");
 	}
 	
-	public static void resetWorldCommand(CommandSender sender) {
-		WorldResetting.resetWorld(sender);
+	public static void resetWorldCommand(CommandSender sender, String[] args) {
+		WorldResetting.resetWorld(sender, args);
 	}
 	
 	public static void authors(CommandSender sender) {
-		String discordLinkText = "(no link)";
+		String discordLinkText = "(no link yet)";
 		String curseforgeLinkText = "https://www.curseforge.com/minecraft/bukkit-plugins/advanced-manhunt";
 		String line = "-------------------------------------------------------------------------------";
 		String endLine = "\n" + ChatColor.RED + line;
 		
-		TextComponent enrireMessage = null;
-		String simpleText = "";
-		
 		String part1 = ChatColor.RED + line + ChatColor.RESET + "\n";
 		part1 += ChatColor.WHITE + "" + ChatColor.BOLD + "Info about Advanced Manhunt plugin" + ChatColor.RESET + "\n";
 		part1 += ChatColor.WHITE + "Author: " + ChatColor.RED + "" + ChatColor.BOLD + "Greenem" + ChatColor.RESET + "\n";
-		part1 += ChatColor.GRAY + "Social links: " + ChatColor.RESET;
+		part1 += ChatColor.GRAY + "Social links: \n" + ChatColor.RESET;
 		part1 += ChatColor.WHITE + "Discord server: " + ChatColor.RESET;
 		
 		String discordPartText = ChatColor.GRAY + "" + ChatColor.BOLD + discordLinkText;
@@ -169,9 +161,8 @@ public class ManhuntCommands {
 		
 		String curseforgePartText = ChatColor.GRAY + "" + ChatColor.BOLD + curseforgeLinkText;
 		
-		sender.sendMessage(part1 + discordLinkText + part2 + curseforgeLinkText +
-				"\n" + ChatColor.GRAY + "Your server doesnt' support clickable text in chat" + endLine);
-        
-//		clickable.setHoverEvent(new HoverEvent()); // to do later, show that player's name
+		sender.sendMessage(part1 + discordPartText + part2 + curseforgePartText + endLine);
+
+		//		clickable.setHoverEvent(new HoverEvent()); // to do later, show that player's name
 	}
 }

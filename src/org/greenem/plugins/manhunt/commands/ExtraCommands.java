@@ -15,10 +15,10 @@ import org.greenem.plugins.manhunt.config.ConfigData;
 public class ExtraCommands {
 	public static boolean logHealInfo = false; // false
 	
-	public static boolean GmCommand(CommandSender sender, String[] args) { // maybe boolean? (false not tested)
+	public static void GmCommand(CommandSender sender, String[] args) { // maybe boolean? (false not tested)
 		if(!ConfigData.allowGmCommandForOps) {
 			sender.sendMessage(ChatColor.RED + "This command was disabled in the config");
-			return false;
+			return;
 		}
 		Player p = Bukkit.getPlayerExact(sender.getName());
 		if(sender instanceof ConsoleCommandSender || p.isOp() == true){
@@ -28,18 +28,25 @@ public class ExtraCommands {
 			else if(args.length == 1){
 				if(sender instanceof ConsoleCommandSender) {
 					sender.sendMessage(ChatColor.RED + "You can only change the players' gamemodes from console!");
-					return false;
+					return;
 				}
-				if(args[0].equalsIgnoreCase("0")){
+				int value = -1;
+				try {
+					value = Integer.parseInt(args[0]);
+				} catch (NumberFormatException e) {
+					sender.sendMessage(ChatColor.RED + "You should specify a number there");
+					return;
+				}
+				if(value==0) { // 00?
 					p.setGameMode(GameMode.SURVIVAL);
 				}
-				else if(args[0].equalsIgnoreCase("1")){
+				else if(value==1) {
 					p.setGameMode(GameMode.CREATIVE);
 				}
-				else if(args[0].equalsIgnoreCase("2")){
+				else if(value==2) {
 					p.setGameMode(GameMode.ADVENTURE);
 				}
-				else if(args[0].equalsIgnoreCase("3")){
+				else if(value==3) {
 					p.setGameMode(GameMode.SPECTATOR);
 				}
 				else {
@@ -47,17 +54,24 @@ public class ExtraCommands {
 				}
 			}
 			else if(args.length == 2){
-				if(Bukkit.getPlayerExact(args[1]) != null){
-					if(args[0].equalsIgnoreCase("0")){
+				int value = -1;
+				try {
+					value = Integer.parseInt(args[0]);
+				} catch (NumberFormatException e) {
+					sender.sendMessage(ChatColor.RED + "You should specify a number there");
+					return;
+				}
+				if(Bukkit.getPlayerExact(args[1])!=null){	
+					if(value==0) {
 						Bukkit.getPlayerExact(args[1]).setGameMode(GameMode.SURVIVAL);
 					}
-					else if(args[0].equalsIgnoreCase("1")){
+					else if(value==1) {
 						Bukkit.getPlayerExact(args[1]).setGameMode(GameMode.CREATIVE);
 					}
-					else if(args[0].equalsIgnoreCase("2")){
+					else if(value==2) {
 						Bukkit.getPlayerExact(args[1]).setGameMode(GameMode.ADVENTURE);
 					}
-					else if(args[0].equalsIgnoreCase("3")){
+					else if(value==3) {
 						Bukkit.getPlayerExact(args[1]).setGameMode(GameMode.SPECTATOR);
 					}
 					else {
@@ -65,7 +79,13 @@ public class ExtraCommands {
 					}
 				}
 				else {
-					if(args[1].equals("0") || args[1].equals("1") || args[1].equals("2") || args[1].equals("3")) {
+					value = -1;
+					try {
+						value = Integer.parseInt(args[1]);
+					} catch (NumberFormatException e) {
+						
+					}
+					if(value==0 || value==1 || value==2 || value==3) {
 						sender.sendMessage(ChatColor.RED + "Usage for other players: /gm <number 0-3> <player>");
 					}
 					else {
@@ -80,7 +100,6 @@ public class ExtraCommands {
 		else {
 			sender.sendMessage(ChatColor.RED + "You can't use this command");
 		}
-		return true;
 	}
 	
 	public static String coloredName(String name) {

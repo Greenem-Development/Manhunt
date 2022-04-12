@@ -26,7 +26,7 @@ import org.greenem.plugins.manhunt.util.OsDependent;
 import org.greenem.plugins.manhunt.util.OsType;
 
 public class WorldResetting {
-	public static void resetWorld(CommandSender sender) {
+	public static void resetWorld(CommandSender sender, String[] args) {
 		if(sender instanceof ConsoleCommandSender || (sender instanceof Player && ((Player) sender).isOp())) {
 			if(!OsDependent.checkSystemSupported(sender, OsType.WINDOWS)) return;
 			if(!ConfigData.allowWorldResetting) {
@@ -38,6 +38,22 @@ public class WorldResetting {
 						+ "(at server/plugins/configs/ManhuntAndWorldReset/" + Lines.mainConfigName + ")");
 				return;
 			}
+			
+			boolean allow = !ConfigData.requireConfirmationForWorldResetting;
+			String usage = ChatColor.BOLD + "/resetworld confirm";
+			if(args.length==1 && !allow) {
+				if(args[0].equals("confirm")) {
+					allow = true;
+				} else {
+					sender.sendMessage(ChatColor.RED + "To confirm the world resetting, use " + usage);
+					// TODO All command usages highlighted like that
+				}
+			} else if(args.length==0 && !allow) {
+				sender.sendMessage(ChatColor.RED + "You need to confirm the world resetting. Use " + usage);
+			} else if(args.length>1 && !allow) {
+				sender.sendMessage(ChatColor.RED + "You have entered too many arguments. Use " + usage);
+			}
+			if(!allow) return;
 				
 			File pluginsDir = new File(Bukkit.getWorldContainer(), "plugins");
 			File filesForResetingWorldDirectory = new File(pluginsDir, "FilesForResetingWorld");

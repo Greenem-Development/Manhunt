@@ -1,6 +1,6 @@
 name: AdvancedManhunt
 main: org.greenem.plugins.manhunt.main.Main
-version: 1.4.0
+version: 1.5.0
 api-version: 1.18
 commands:
    mhhunter:
@@ -30,6 +30,6 @@ commands:
    resetworld:
       description: DELETES THE WORLD AND RESTARTS THE SERVER, may be moved to a separate plugin later
       permission: op
-   mhw-authors:
+   mhw-about:
       description: Display info about the plugin and it's authors
       permission: op

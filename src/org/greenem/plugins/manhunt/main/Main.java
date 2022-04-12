@@ -34,10 +34,10 @@ import org.greenem.plugins.manhunt.commands.ExtraCommands;
 import org.greenem.plugins.manhunt.commands.ManhuntCommands;
 import org.greenem.plugins.manhunt.completers.MhGmCompleter;
 import org.greenem.plugins.manhunt.completers.MhStartCompleter;
+import org.greenem.plugins.manhunt.completers.plain.EmptyCompleter1Arg;
 import org.greenem.plugins.manhunt.completers.plain.EmptyCompleterNoArgs;
 import org.greenem.plugins.manhunt.config.ConfigOperations;
 import org.greenem.plugins.manhunt.coreDependent.NonBukkit;
-import org.greenem.plugins.manhunt.coreDependent.Test1;
 import org.greenem.plugins.manhunt.data.References;
 import org.greenem.plugins.manhunt.events.FrozenEvents;
 import org.greenem.plugins.manhunt.events.ManhuntEvents;
@@ -112,21 +112,20 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		else if (cmd.getName().equalsIgnoreCase("resetworld")) {
 			if(!isSenderAPlayerOrConsole(sender)) return true;
-			ManhuntCommands.resetWorldCommand(sender);
+			ManhuntCommands.resetWorldCommand(sender, args);
 		}
 		else if (cmd.getName().equalsIgnoreCase("mhreloadconfig")) {
 			if(!isSenderAPlayerOrConsole(sender)) return true;
 			ManhuntCommands.reloadConfigCommand(sender);
 		}
-		else if (cmd.getName().equalsIgnoreCase("mhw-authors")) {
+		else if (cmd.getName().equalsIgnoreCase("mhw-about")) {
 			try {
-//				NonBukkit.authors(sender);
-				Test1.authors(sender);
+				NonBukkit.authors(sender);
 			} catch (NoClassDefFoundError e) {
 				ManhuntCommands.authors(sender);
 			}
 		}
-		return true; //false??? //TODO
+		return true; //false???
 	}
     
 	public static void sendActionBar(Player player, String message){
@@ -152,7 +151,7 @@ public class Main extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(new ManhuntEvents(), this);
 	}
 	
-	private void RegisterAllCommands() {
+	private void RegisterAllCommands() { // can forget to change command name everywhere and get a bug
 		getCommand("mhproblems").setTabCompleter(new MhProblemsCompleter());
 		getCommand("mhhunter").setTabCompleter(new EmptyCompleterNoArgs());
 		getCommand("mhnorole").setTabCompleter(new EmptyCompleterNoArgs());
@@ -160,6 +159,7 @@ public class Main extends JavaPlugin implements Listener {
 		getCommand("mhstart").setTabCompleter(new MhStartCompleter());
 		getCommand("mhreloadconfig").setTabCompleter(new EmptyCompleterNoArgs());
 		getCommand("resetworld").setTabCompleter(new EmptyCompleterNoArgs());
+		getCommand("mhw-about").setTabCompleter(new EmptyCompleterNoArgs());
 	}
 	
 	private void initFiles() {

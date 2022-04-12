@@ -50,7 +50,7 @@ public class CompassUpdating {
 			return;
 		}
 		Location target = GetTargetLocation(h, s, playerUpdated, theLoc);
-		debug(shortLocation(target));
+//		debug(shortLocation(target));
 		
 		if(target==null) return; // TODO error logging with no spamming
 		
@@ -72,12 +72,12 @@ public class CompassUpdating {
 ////	    	  			meta.setLodestone(target);
 //	    	  			currentItem.setItemMeta(meta);
 	    	  			h.getInventory().setItem(i, new ItemStack(Material.COMPASS, currentItem.getAmount()));
-	    	  			debug("DISABLING LODESTONE, target: " + shortLocation(target));
+//	    	  			debug("DISABLING LODESTONE, target: " + shortLocation(target));
 	    	  		}
 		      	}
 			}
 			if(hasCompass) {
-				debug("setting normal compass target");
+//				debug("setting normal compass target");
 				if(playerUpdated!=null) {
 					Bukkit.getScheduler().runTaskLater(Main.getInstance().plugin, new Runnable() {
 						@Override
@@ -107,7 +107,7 @@ public class CompassUpdating {
 	    	  		}
 	    	  		meta.setLodestone(target);
 	                currentItem.setItemMeta(meta);
-	                debug("ENABLED LODESTONE");
+//	                debug("ENABLED LODESTONE");
 //		    	  	}
 		      	}
 			}
@@ -342,13 +342,13 @@ public class CompassUpdating {
 			}
 			else if(getEnvironment(spLocation)!=Environment.THE_END && getEnvironment(hLocation)==Environment.THE_END) {
 				result = PortalEndTo.get(s);
-				debug(4);
+//				debug(4);
 				if(result==null) {
 					result = HuntersPortalEndTo.get(h);
-					debug(5);
+//					debug(5);
 				}
 				if(result==null) {
-					debug(6);
+//					debug(6);
 				}
 			}
 //			else if(getEnvironment(hunter)==Environment.THE_END && getEnvironment(speedrunner)!=Environment.THE_END) {
@@ -356,17 +356,17 @@ public class CompassUpdating {
 //			}
 			else if(getEnvironment(hLocation)==Environment.NETHER && !PortalFrom.containsKey(s)) {
 				result = HuntersPortalTo.get(h);
-				debug(1);
+//				debug(1);
 			}
 			else {
 				if(PortalFrom.containsKey(s)) {
 					result = PortalFrom.get(s);
-					debug(2);
+//					debug(2);
 				}
 				else {
 					if(HuntersPortalTo.containsKey(h)) {
 						result = HuntersPortalTo.get(h);
-						debug(3);
+//						debug(3);
 					}
 					else {
 						log(ChatColor.RED + "Error code: 0001");

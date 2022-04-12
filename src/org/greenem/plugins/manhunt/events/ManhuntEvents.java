@@ -66,9 +66,9 @@ public class ManhuntEvents implements Listener {
 		if(Speedrunners.contains(pName)) {
 			if(getEnvironment(e.getTo())==Environment.THE_END) {
 				PortalEndFrom.put(pName, e.getFrom());
-				debug(PortalEndFrom);
+//				debug(PortalEndFrom);
 				PortalEndTo.put(pName, e.getTo());
-				debug(PortalEndTo);
+//				debug(PortalEndTo);
 			}
 			else {
 				PortalFrom.put(pName, e.getFrom());

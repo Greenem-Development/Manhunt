@@ -36,8 +36,8 @@ public class ConfigOperations {
 			ConfigData.allowHealCommandForOps = (boolean) loadKey(c, currentKey, null, null);
 			currentKey = "settings.world-resetting.allow-ops-use-world-resetting";
 			ConfigData.allowWorldResetting = (boolean) loadKey(c, currentKey, null, null);
-//			currentKey = "settings.world-resetting.require-confirmation-for-world-resetting"; // TODO
-//			ConfigData.requireConfirmationForWorldResetting = (boolean) loadKey(c, currentKey, null, null);
+			currentKey = "settings.world-resetting.require-confirmation-for-world-resetting"; // TODO
+			ConfigData.requireConfirmationForWorldResetting = (boolean) loadKey(c, currentKey, null, null);
 			currentKey = "settings.world-resetting.use-halt-for-instant-server-stopping";
 			ConfigData.useHaltForWorldResettings = (boolean) loadKey(c, currentKey, null, null);
 			currentKey = "settings.game.delay-for-speedrunner-on-start-in-milliseconds";

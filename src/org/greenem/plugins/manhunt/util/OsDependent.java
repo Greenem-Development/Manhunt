@@ -1,5 +1,6 @@
 package org.greenem.plugins.manhunt.util;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.greenem.plugins.manhunt.data.Lines;
 import org.greenem.plugins.manhunt.data.References;
@@ -24,7 +25,7 @@ public class OsDependent {
 			if(References.os==osTypes[i]) return true;
 		}
 		if(sender!=null) {
-			sender.sendMessage(Lines.operationNotSupportedOnSystem);
+			sender.sendMessage(ChatColor.RED + Lines.operationNotSupportedOnSystem);
 		}
 		return false;
 	}
