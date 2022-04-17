@@ -3,6 +3,7 @@ package org.greenem.plugins.manhunt.commands;
 import static org.greenem.plugins.manhunt.data.References.Hunters;
 import static org.greenem.plugins.manhunt.data.References.Speedrunners;
 import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
+import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,6 +26,12 @@ public class ExtraCommands {
 			sender.sendMessage(ChatColor.RED + "This command was disabled in the config");
 			return;
 		}
+		
+		AbstractCommand ac = new AbstractCommand();
+		ac.sender = sender;
+		ac.type = CommandActionType.GM;
+		ac.additionalType = AdditionalCommandActionType.SELF;
+		
 		Player p = Bukkit.getPlayerExact(sender.getName());
 		if(sender instanceof ConsoleCommandSender || p.isOp() == true){
 			if(args.length == 0){
@@ -43,20 +50,24 @@ public class ExtraCommands {
 					return;
 				}
 				if(value==0) { // 00?
-					p.setGameMode(GameMode.SURVIVAL);
+					ac.gm = GameMode.SURVIVAL;
 				}
 				else if(value==1) {
-					p.setGameMode(GameMode.CREATIVE);
+					ac.gm = GameMode.CREATIVE;
 				}
 				else if(value==2) {
-					p.setGameMode(GameMode.ADVENTURE);
+					ac.gm = GameMode.ADVENTURE;
 				}
 				else if(value==3) {
-					p.setGameMode(GameMode.SPECTATOR);
+					ac.gm = GameMode.SPECTATOR;
 				}
 				else {
 					sender.sendMessage(ChatColor.RED + "Please, insert correct gamemode number");
+					return;
 				}
+				
+				ac.completeInitialisation();
+				UniversalCommands.universalCommand(ac);
 			}
 			else if(args.length == 2){
 				int value = -1;
@@ -66,22 +77,28 @@ public class ExtraCommands {
 					sender.sendMessage(ChatColor.RED + "You should specify a number there");
 					return;
 				}
-				if(Bukkit.getPlayerExact(args[1])!=null){	
+				if(Bukkit.getPlayerExact(args[1])!=null){
+					ac.targetName = args[1];
+					ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
 					if(value==0) {
-						Bukkit.getPlayerExact(args[1]).setGameMode(GameMode.SURVIVAL);
+//						Bukkit.getPlayerExact(args[1]).setGameMode(GameMode.SURVIVAL);
+						ac.gm = GameMode.SURVIVAL;
 					}
 					else if(value==1) {
-						Bukkit.getPlayerExact(args[1]).setGameMode(GameMode.CREATIVE);
+						ac.gm = GameMode.CREATIVE;
 					}
 					else if(value==2) {
-						Bukkit.getPlayerExact(args[1]).setGameMode(GameMode.ADVENTURE);
+						ac.gm = GameMode.ADVENTURE;
 					}
 					else if(value==3) {
-						Bukkit.getPlayerExact(args[1]).setGameMode(GameMode.SPECTATOR);
+						ac.gm = GameMode.SPECTATOR;
 					}
 					else {
 						sender.sendMessage(ChatColor.RED + "Please, insert correct gamemode number");
+						return;
 					}
+					ac.completeInitialisation();
+					UniversalCommands.universalCommand(ac);
 				}
 				else {
 					value = -1;
@@ -107,14 +124,32 @@ public class ExtraCommands {
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	public static boolean HealCommand(CommandSender sender, Player p, String pName, String[] args) {
-		boolean console = sender instanceof ConsoleCommandSender;
 		if(!ConfigData.allowHealCommandForOps) {
 			if(p!=null) {
 				p.sendMessage(ChatColor.RED + "This command was disabled in the config");
 			}
 			return false;
 		}
+		
+		AbstractCommand ac = new AbstractCommand();
+		ac.sender = sender;
+		ac.type = CommandActionType.HEAL;
+		if(args.length==1) {
+			ac.targetName = args[0];
+			ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
+		} else {
+			ac.additionalType = AdditionalCommandActionType.SELF;
+		}
+		ac.completeInitialisation();
+		
+		UniversalCommands.universalCommand(ac);
+		
+		if(true) return false;
+		
+		boolean console = sender instanceof ConsoleCommandSender;
+		
 		if(console) {
 			pName = "[CONSOLE]";
 		}
@@ -181,7 +216,7 @@ public class ExtraCommands {
 					if(p!=null) {
 						p.sendMessage(notifpersonal);
 					}
-					notifOthers = UniversalCommands.coloredHealSentence(colorNameFrom, colorNameTo);
+					notifOthers = UniversalCommands.coloredHealSentence(colorNameFrom, colorNameTo, null);
 				}
 				
 				if(logHealInfo) log("notifpersonal: " + notifpersonal);

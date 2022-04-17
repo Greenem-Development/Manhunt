@@ -33,7 +33,9 @@ public class ManhuntCommandActions {
 		if(PortalTo.containsKey(pName)) PortalTo.remove(pName);
 		if(HuntersPortalFrom.containsKey(pName)) HuntersPortalFrom.remove(pName);
 		if(HuntersPortalTo.containsKey(pName)) HuntersPortalTo.remove(pName);
-		Stash.RemoveMaterial(p, Material.COMPASS);
+		if(p!=null) {
+			Stash.RemoveMaterial(p, Material.COMPASS);
+		}
 	}
 	
 	public static void mhStart(int delay) {

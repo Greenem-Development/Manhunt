@@ -26,17 +26,24 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class ManhuntCommands {
 	@SuppressWarnings("unused")
-	public static void hunterCommand(Player p) {
+	public static void hunterCommand(CommandSender sender, String[] args) {
 		AbstractCommand ac = new AbstractCommand();
-		ac.sender = p;
+		ac.sender = sender;
 		ac.type = CommandActionType.MAKE_HUNTER;
-		ac.additionalType = AdditionalCommandActionType.SELF;
+		if(args.length==2) {
+			ac.targetName = args[1];
+			ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
+		} else {
+			ac.additionalType = AdditionalCommandActionType.SELF;
+		}
+		
 		ac.completeInitialisation();
 		
 		UniversalCommands.universalCommand(ac);
 		
 		if(true) return;
 		
+		Player p = (Player) sender;
 		String pName = p.getName();
 		if(Speedrunners.contains(pName)) {
 //			p.sendMessage(ChatColor.RED + "You are a speedrunner. Use /norole first");
@@ -59,7 +66,24 @@ public class ManhuntCommands {
 		}
 	}
 	
-	public static void speedrunnerCommand(Player p) {
+	@SuppressWarnings("unused")
+	public static void speedrunnerCommand(CommandSender sender, String[] args) {
+		AbstractCommand ac = new AbstractCommand();
+		ac.sender = sender;
+		ac.type = CommandActionType.MAKE_SPEEDRUNNER;
+		if(args.length==2) {
+			ac.targetName = args[1];
+			ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
+		} else {
+			ac.additionalType = AdditionalCommandActionType.SELF;
+		}
+		ac.completeInitialisation();
+		
+		UniversalCommands.universalCommand(ac);
+		
+		if(true) return;
+		
+		Player p = (Player) sender;
 		String pName = p.getName();
 		if(Hunters.contains(pName)) {
 //			p.sendMessage(ChatColor.RED + "You are a hunter. Use /norole");
@@ -80,7 +104,24 @@ public class ManhuntCommands {
 		}
 	}
 	
-	public static void noRoleCommand(Player p) {
+	@SuppressWarnings("unused")
+	public static void noRoleCommand(CommandSender sender, String[] args) {
+		AbstractCommand ac = new AbstractCommand();
+		ac.sender = sender;
+		ac.type = CommandActionType.MAKE_NOROLE;
+		if(args.length==2) {
+			ac.targetName = args[1];
+			ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
+		} else {
+			ac.additionalType = AdditionalCommandActionType.SELF;
+		}
+		ac.completeInitialisation();
+		
+		UniversalCommands.universalCommand(ac);
+		
+		if(true) return;
+		
+		Player p = (Player) sender;
 		String pName = p.getName();
 		ManhuntCommandActions.doNoRole(p, pName);
 		p.sendMessage(ChatColor.GOLD + "You have removed your role");

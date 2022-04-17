@@ -19,7 +19,7 @@ import org.greenem.plugins.manhunt.util.Stash;
 public class UniversalCommands {
 	public static void doAction(AbstractCommand ac) {
 		// Player from, Player to, CommandActionType action, GameMode gm
-		String msgFromNotNormalEnv = ChatColor.RED + "The player must be in the overworld for you ac.targetPlayer use this command. (There would be problems with missing portal location. Later this will be avaliable)";
+		String msgFromNotNormalEnv = ChatColor.RED + "The player must be in the overworld for you to use this command. (There would be problems with missing portal location. Later this will be avaliable)";
 		if(ac.type==CommandActionType.GM) {
 			ac.targetPlayer.setGameMode(ac.gm);
 		} else if(ac.type==CommandActionType.HEAL) {
@@ -37,9 +37,9 @@ public class UniversalCommands {
 			}
 			if(!ac.targetPlayer.getWorld().getEnvironment().equals(Environment.NORMAL)) {
 				if(ac.targetPlayer.equals(ac.senderPlayer)) {
-					ac.targetPlayer.sendMessage(ChatColor.RED + "You must be in the overworld ac.targetPlayer use this command. (There would be problems with missing portal location. Later this will be avaliable)");
+					ac.targetPlayer.sendMessage(ChatColor.RED + "You must be in the overworld to use this command. (There would be problems with missing portal location. Later this will be avaliable)");
 				} else {
-					ac.targetPlayer.sendMessage(ChatColor.RED + "You must be in the overworld ac.targetPlayer get the role. (" + ac.senderPlayer.getName() + " tried ac.targetPlayer change it for you)");
+					ac.targetPlayer.sendMessage(ChatColor.RED + "You must be in the overworld to get the role. (" + ac.senderPlayer.getName() + " tried to change it for you)");
 					ac.senderPlayer.sendMessage(msgFromNotNormalEnv);
 				}
 				return;
@@ -50,7 +50,7 @@ public class UniversalCommands {
 				Stash.AddItemStack(ac.targetPlayer, new ItemStack(Material.COMPASS), 8);
 				CompassUpdating.findTarget();
 				if(!ac.targetPlayer.equals(ac.senderPlayer)) {
-					ac.targetPlayer.sendMessage(ChatColor.GOLD + ac.senderPlayer.getName() + " has added you ac.targetPlayer the hunters list");
+					ac.targetPlayer.sendMessage(ChatColor.GOLD + ac.senderPlayer.getName() + " has added you to the hunters list");
 				}
 				ac.targetPlayer.sendMessage(ChatColor.GOLD + "Now you are a " + ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "hunter");
 			}
@@ -72,9 +72,9 @@ public class UniversalCommands {
 			}
 			if(!ac.targetPlayer.getWorld().getEnvironment().equals(Environment.NORMAL)) {
 				if(ac.targetPlayer.equals(ac.senderPlayer)) {
-					ac.targetPlayer.sendMessage(ChatColor.RED + "You must be in the overworld ac.targetPlayer use this command. (There would be problems with missing portal location. Later this will be avaliable)");
+					ac.targetPlayer.sendMessage(ChatColor.RED + "You must be in the overworld to use this command. (There would be problems with missing portal location. Later this will be avaliable)");
 				} else {
-					ac.targetPlayer.sendMessage(ChatColor.RED + "You must be in the overworld ac.targetPlayer get the role. (" + ac.senderPlayer.getName() + " tried ac.targetPlayer change it for you)");
+					ac.targetPlayer.sendMessage(ChatColor.RED + "You must be in the overworld to get the role. (" + ac.senderPlayer.getName() + " tried to change it for you)");
 					ac.senderPlayer.sendMessage(msgFromNotNormalEnv);
 				}
 				return;
@@ -84,7 +84,7 @@ public class UniversalCommands {
 				ac.targetPlayer.getInventory().remove(Material.COMPASS);
 				CompassUpdating.findTarget();
 				if(!ac.targetPlayer.equals(ac.senderPlayer)) {
-					ac.targetPlayer.sendMessage(ChatColor.GOLD + ac.senderPlayer.getName() + " has added you ac.targetPlayer the speedrunners list");
+					ac.targetPlayer.sendMessage(ChatColor.GOLD + ac.senderPlayer.getName() + " has added you to the speedrunners list");
 				}
 				ac.targetPlayer.sendMessage(ChatColor.GOLD + "Now you are a " + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + "speedrunner");
 			}
@@ -95,6 +95,31 @@ public class UniversalCommands {
 					ac.targetPlayer.sendMessage(ChatColor.RED + "The player is already a speedrunner");
 				}
 			}
+		} else if(ac.type==CommandActionType.MAKE_NOROLE) { // LINE LINE LINE LINE
+			ManhuntCommandActions.doNoRole(ac.targetPlayer, ac.targetName);
+		}
+	}
+	
+	public static String getNotifToThatOne(AbstractCommand ac, String colorNameFrom) {
+		switch (ac.type) {
+		case HEAL: {
+			return ChatColor.GRAY + "You have been healed by " + colorNameFrom;
+		}
+		case GM: {
+			return ChatColor.GRAY + "Your gamemode has been set to " + getGamemodeName(ac.gm) + " by " + colorNameFrom;
+		}
+		case MAKE_HUNTER: {
+			return ChatColor.GRAY + "You have been added to hunters team by " + colorNameFrom;
+		}
+		case MAKE_SPEEDRUNNER: {
+			return ChatColor.GRAY + "You have been added to speedrunners team by " + colorNameFrom;
+		}
+		case MAKE_NOROLE: {
+			return ChatColor.GRAY + "You have been removed from your team by " + colorNameFrom;
+		}
+		
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + ac.type);
 		}
 	}
 	
@@ -119,8 +144,8 @@ public class UniversalCommands {
 				return;
 			}
 			doAction(ac);
-			notifpersonal = ChatColor.GRAY + "You have been healed";
-			notifOthers = colorNameFrom + ChatColor.RESET + "" + ChatColor.GRAY + " was healed";
+			notifpersonal = ChatColor.GRAY + "You have been healed"; // TODO
+			notifOthers = colorNameFrom + ChatColor.RESET + "" + ChatColor.GRAY + " was healed"; // TODO
 			if(ac.targetPlayer!=null) {
 				ac.targetPlayer.sendMessage(notifpersonal);
 			}
@@ -144,15 +169,15 @@ public class UniversalCommands {
 				}
 				
 				if(ac.targetName.equals(ac.senderName)) {
-					notifpersonal = ChatColor.GRAY + "You have been healed";
+					notifpersonal = ChatColor.GRAY + "You have been healed"; // TODO
 					if(ac.senderPlayer!=null) {
 						ac.senderPlayer.sendMessage(notifpersonal);
 					}
-					notifOthers = colorNameFrom + ChatColor.RESET + "" + ChatColor.GRAY + " was healed";
+					notifOthers = colorNameFrom + ChatColor.RESET + "" + ChatColor.GRAY + " was healed"; // TODO
 				}
 				else {
-					String notifToThatOne = ChatColor.GRAY + "You have been healed by " + colorNameFrom;
-					notifpersonal = ChatColor.GRAY + "You have healed " + colorNameTo;
+					String notifToThatOne = getNotifToThatOne(ac, colorNameFrom);
+					notifpersonal = ChatColor.GRAY + "You have healed " + colorNameTo; // TODO
 					if(ac.targetPlayer!=null) {
 						ac.targetPlayer.sendMessage(notifToThatOne);
 						if(ExtraCommands.logHealInfo) log("notifToThatOne: " + notifToThatOne);
@@ -160,7 +185,7 @@ public class UniversalCommands {
 					if(ac.senderPlayer!=null) {
 						ac.senderPlayer.sendMessage(notifpersonal);
 					}
-					notifOthers = coloredHealSentence(colorNameFrom, colorNameTo);
+					notifOthers = coloredHealSentence(colorNameFrom, colorNameTo, ac);
 				}
 				
 				if(ExtraCommands.logHealInfo) log("notifpersonal: " + notifpersonal);
@@ -207,42 +232,108 @@ public class UniversalCommands {
 		return s;
 	}
 	
-	public static String coloredHealSentence(String from, String to) {
+	public static String coloredHealSentence(String from, String to, AbstractCommand ac) {
 		String s = "";
 		
+		String color1 = "";
 		if(to.equals("[CONSOLE]")) {
-			s += ChatColor.GOLD + "" + ChatColor.BOLD;
+			color1 = ChatColor.GOLD + "" + ChatColor.BOLD;
 		}
 		else if(Hunters.contains(to)) {
-			s += ChatColor.RED + "" + ChatColor.BOLD;
+			color1 = ChatColor.RED + "" + ChatColor.BOLD;
 		}
 		else if(Speedrunners.contains(to)) {
-			s += ChatColor.GREEN + "" + ChatColor.BOLD;
+			color1 = ChatColor.GREEN + "" + ChatColor.BOLD;
 		}
 		else {
-			s += ChatColor.WHITE + "" + ChatColor.BOLD;
+			color1 = ChatColor.WHITE + "" + ChatColor.BOLD;
 		}
-		s += to;
 		
-		s += ChatColor.RESET + " was healed";
+		String part1 = color1 + to + ChatColor.RESET;
 		
-		if(!from.equals(to)) {
-			s += " by ";
+		String color2 = "";
+		if(to!=null && !from.equals(to)) {
 			if(from.equals("[CONSOLE]")) {
-				s += ChatColor.GOLD + "" + ChatColor.BOLD;
+				color2 = ChatColor.GOLD + "" + ChatColor.BOLD;
 			}
 			if(Hunters.contains(from)) {
-				s += ChatColor.RED + "" + ChatColor.BOLD;
+				color2 = ChatColor.RED + "" + ChatColor.BOLD;
 			}
 			else if(Speedrunners.contains(from)) {
-				s += ChatColor.GREEN + "" + ChatColor.BOLD;
+				color2 = ChatColor.GREEN + "" + ChatColor.BOLD;
 			}
 			else {
-				s += ChatColor.WHITE + "" + ChatColor.BOLD;
+				color2 = ChatColor.WHITE + "" + ChatColor.BOLD;
 			}
-			s += from;
 		}
+		
+		String part2 = color2 + from + ChatColor.RESET;
+		
+		switch (ac.type) {
+		case GM: {
+			if (ac.additionalType == AdditionalCommandActionType.SELF) {
+				s = part1 + " has set own gamemode to " + getGamemodeName(ac.gm) + " mode";
+			}
+			else {
+				s = part1 + "'s gamemode was set to " + getGamemodeName(ac.gm) + " by " + part2;
+			}
+			break;
+		}
+		case HEAL: {
+			if (ac.additionalType == AdditionalCommandActionType.SELF) {
+				s = part1 + " was healed";
+			}
+			else {
+				s = part1 + " was healed by " + part2;
+			}
+			break;
+		}
+		case MAKE_HUNTER: {
+			if (ac.additionalType == AdditionalCommandActionType.SELF) {
+				s = part1 + " joined the hunters team";
+			}
+			else {
+				s = part1 + " was added to the hunters team by " + part2;
+			}
+			break;
+		}
+		case MAKE_SPEEDRUNNER: {
+			if (ac.additionalType == AdditionalCommandActionType.SELF) {
+				s = part1 + " joined the speedrunners team";
+			}
+			else {
+				s = part1 + " was added to the speedrunners team by " + part2;
+			}
+			break;
+		}
+		case MAKE_NOROLE: {
+			if (ac.additionalType == AdditionalCommandActionType.SELF) {
+				s = part1 + " has left their team";
+			}
+			else {
+				s = part1 + " was removed from their team by " + part2;
+			}
+			break;
+		}
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + ac.type );
+		}
+		
+		s += ChatColor.RESET + " was healed";
+		s += " by ";
+		
 		return s;
+	}
+	
+	public static String getGamemodeName(GameMode gm) {
+		switch (gm) {
+		case SURVIVAL: return "Survival";
+		case CREATIVE: return "Creative";
+		case ADVENTURE: return "Adventure";
+		case SPECTATOR: return "Spectator";
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + gm);
+		}
 	}
 	
 	public static void sendOthersTheAlert(String pAlert, String pName, String notifOthers) {

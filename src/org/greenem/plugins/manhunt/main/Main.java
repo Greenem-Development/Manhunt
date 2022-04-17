@@ -58,7 +58,7 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@Override
 	public void onEnable() {
-		log(ChatColor.GREEN + "Your Manhunt plugin has been enabled!");
+		log(ChatColor.GREEN + "Advanced Manhunt plugin has been enabled!");
 		initAll();
 		ConfigOperations.updateAndLoadConfig();
 		finishInit();
@@ -67,7 +67,7 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@Override
 	public void onDisable() {
-		log("Your Manhunt plugin has been disabled");
+		log("Advanced Manhunt plugin has been disabled");
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
@@ -89,15 +89,15 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		if(cmd.getName().equalsIgnoreCase("mhhunter")){
 			if(!isSenderAPlayer(sender)) return true;
-			ManhuntCommands.hunterCommand(p);
+			ManhuntCommands.hunterCommand(sender, args);
 		}
 		else if(cmd.getName().equalsIgnoreCase("mhspeedrunner")){
 			if(!isSenderAPlayer(sender)) return true;
-			ManhuntCommands.speedrunnerCommand(p);
+			ManhuntCommands.speedrunnerCommand(sender, args);
 		}
 		else if(cmd.getName().equalsIgnoreCase("mhnorole")){
 			if(!isSenderAPlayer(sender)) return true;
-			ManhuntCommands.noRoleCommand(p);
+			ManhuntCommands.noRoleCommand(sender, args);
 		}
 		else if(cmd.getName().equalsIgnoreCase("mhstart")){
 			if(!isSenderAPlayer(sender)) return true;

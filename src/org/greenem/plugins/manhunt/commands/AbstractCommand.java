@@ -1,5 +1,8 @@
 package org.greenem.plugins.manhunt.commands;
 
+import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
+import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
@@ -21,11 +24,9 @@ public class AbstractCommand {
 	public Player targetPlayer;
 	
 	public void completeInitialisation() {
-		if(targetName==null) {
+		if(targetName!=null) {
 			targetPlayer = Bukkit.getPlayerExact(targetName);
-		}
-		if(senderPlayer==null) {
-			senderPlayer = Bukkit.getPlayerExact(senderName);
+			debug("first target name");
 		}
 		if(sender!=null) {
 			senderName = sender.getName();
@@ -35,10 +36,15 @@ public class AbstractCommand {
 				senderDecorName = senderName;
 				if(sender instanceof Player) {
 					senderPlayer = (Player) sender;
+					debug("sender instanceof Player");
 				}
 			}
 		}
-		if(targetName==null) {
+		if(senderPlayer==null) {
+			senderPlayer = Bukkit.getPlayerExact(senderName);
+			debug("get exact");
+		}
+		if(targetPlayer==null) {
 			targetPlayer = senderPlayer; 
 		}
 		if(targetPlayer!=null && targetName==null) {
