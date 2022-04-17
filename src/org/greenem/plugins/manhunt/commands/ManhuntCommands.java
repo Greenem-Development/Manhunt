@@ -24,9 +24,19 @@ import org.greenem.plugins.manhunt.worldManagement.WorldResetting;
 
 import net.md_5.bungee.api.chat.TextComponent;
 
-//@SuppressWarnings("unused")
 public class ManhuntCommands {
+	@SuppressWarnings("unused")
 	public static void hunterCommand(Player p) {
+		AbstractCommand ac = new AbstractCommand();
+		ac.sender = p;
+		ac.type = CommandActionType.MAKE_HUNTER;
+		ac.additionalType = AdditionalCommandActionType.SELF;
+		ac.completeInitialisation();
+		
+		UniversalCommands.universalCommand(ac);
+		
+		if(true) return;
+		
 		String pName = p.getName();
 		if(Speedrunners.contains(pName)) {
 //			p.sendMessage(ChatColor.RED + "You are a speedrunner. Use /norole first");

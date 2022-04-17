@@ -46,6 +46,7 @@ import org.greenem.plugins.manhunt.util.OsDependent;
 import org.greenem.plugins.manhunt.util.SimpleLogger;
 //import org.spigotmc.event.entity.EntityDismountEvent;
 import org.greenem.plugins.manhunt.completers.MhProblemsCompleter;
+import org.greenem.plugins.manhunt.completers.MhRoleCompleter;
 
 public class Main extends JavaPlugin implements Listener {
 	public Plugin plugin = this;
@@ -153,8 +154,9 @@ public class Main extends JavaPlugin implements Listener {
 	
 	private void RegisterAllCommands() { // can forget to change command name everywhere and get a bug
 		getCommand("mhproblems").setTabCompleter(new MhProblemsCompleter());
-		getCommand("mhhunter").setTabCompleter(new EmptyCompleterNoArgs());
-		getCommand("mhnorole").setTabCompleter(new EmptyCompleterNoArgs());
+		getCommand("mhhunter").setTabCompleter(new MhRoleCompleter());
+		getCommand("mhspeedrunner").setTabCompleter(new MhRoleCompleter());
+		getCommand("mhnorole").setTabCompleter(new MhRoleCompleter());
 		getCommand("gm").setTabCompleter(new MhGmCompleter());
 		getCommand("mhstart").setTabCompleter(new MhStartCompleter());
 		getCommand("mhreloadconfig").setTabCompleter(new EmptyCompleterNoArgs());

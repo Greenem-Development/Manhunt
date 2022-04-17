@@ -18,6 +18,10 @@ public class MhProblemsCompleter implements TabCompleter {
 				arguments.add("give_compass");
 				return arguments;
 			}
+			if(args.length==2) {
+				return null;
+			}
+			return arguments;
 		}
 		return null;
 	}

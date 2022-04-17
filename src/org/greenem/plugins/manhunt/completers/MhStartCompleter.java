@@ -18,6 +18,7 @@ public class MhStartCompleter implements TabCompleter {
 				arguments.add("10");
 				return arguments;
 			}
+			return arguments;
 		}
 		return null;
 	}

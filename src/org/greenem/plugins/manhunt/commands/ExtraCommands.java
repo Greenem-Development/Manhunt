@@ -7,10 +7,15 @@ import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.World.Environment;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.greenem.plugins.manhunt.compass.CompassUpdating;
 import org.greenem.plugins.manhunt.config.ConfigData;
+import org.greenem.plugins.manhunt.util.Stash;
 
 public class ExtraCommands {
 	public static boolean logHealInfo = false; // false
@@ -102,71 +107,6 @@ public class ExtraCommands {
 		}
 	}
 	
-	public static String coloredName(String name) {
-		String s = "";
-		
-		if(name.equals("[CONSOLE]")) {
-			s += ChatColor.GOLD + "" + ChatColor.BOLD + name;
-		}
-		else if(Hunters.contains(name)) {
-			s += ChatColor.RED + "" + ChatColor.BOLD + name;
-		}
-		else if(Speedrunners.contains(name)) {
-			s += ChatColor.GREEN + "" + ChatColor.BOLD + name;
-		}
-		else {
-			s += ChatColor.WHITE + "" + ChatColor.BOLD + name;
-		}
-		return s;
-	}
-	
-	public static String coloredHealSentence(String from, String to) {
-		String s = "";
-		
-		if(to.equals("[CONSOLE]")) {
-			s += ChatColor.GOLD + "" + ChatColor.BOLD;
-		}
-		else if(Hunters.contains(to)) {
-			s += ChatColor.RED + "" + ChatColor.BOLD;
-		}
-		else if(Speedrunners.contains(to)) {
-			s += ChatColor.GREEN + "" + ChatColor.BOLD;
-		}
-		else {
-			s += ChatColor.WHITE + "" + ChatColor.BOLD;
-		}
-		s += to;
-		
-		s += ChatColor.RESET + " was healed";
-		
-		if(!from.equals(to)) {
-			s += " by ";
-			if(from.equals("[CONSOLE]")) {
-				s += ChatColor.GOLD + "" + ChatColor.BOLD;
-			}
-			if(Hunters.contains(from)) {
-				s += ChatColor.RED + "" + ChatColor.BOLD;
-			}
-			else if(Speedrunners.contains(from)) {
-				s += ChatColor.GREEN + "" + ChatColor.BOLD;
-			}
-			else {
-				s += ChatColor.WHITE + "" + ChatColor.BOLD;
-			}
-			s += from;
-		}
-		return s;
-	}
-	
-	public static void sendOthersTheAlert(String pAlert, String pName, String notifOthers) {
-		if(!pAlert.equals(pName)) {
-			Player pAlertP = Bukkit.getPlayerExact(pAlert);
-			if(pAlertP!=null) {
-				pAlertP.sendMessage(notifOthers);
-			}
-		}
-	}
-	
 	public static boolean HealCommand(CommandSender sender, Player p, String pName, String[] args) {
 		boolean console = sender instanceof ConsoleCommandSender;
 		if(!ConfigData.allowHealCommandForOps) {
@@ -186,7 +126,7 @@ public class ExtraCommands {
 		}
 		String pFrom = pName;
 		String notifpersonal;
-		String colorNameFrom = coloredName(pFrom);
+		String colorNameFrom = UniversalCommands.coloredName(pFrom);
 		String notifOthers;
 		if(args.length == 0) {
 			if(sender instanceof ConsoleCommandSender) {
@@ -206,10 +146,10 @@ public class ExtraCommands {
 			if(Hunters.contains(pName) || Speedrunners.contains(pName)) {
 				if(logHealInfo) log("notifOthers: " + notifOthers);
 				for (String pAlert : Hunters) {
-					sendOthersTheAlert(pAlert, pName, notifOthers);
+					UniversalCommands.sendOthersTheAlert(pAlert, pName, notifOthers);
 				}
 				for (String pAlert : Speedrunners) {
-					sendOthersTheAlert(pAlert, pName, notifOthers);
+					UniversalCommands.sendOthersTheAlert(pAlert, pName, notifOthers);
 				}
 			}
 		}
@@ -217,7 +157,7 @@ public class ExtraCommands {
 			String pTo = args[0];
 			Player pToP = Bukkit.getPlayerExact(pTo);
 			if(pToP!=null || logHealInfo) {
-				String colorNameTo = coloredName(pTo);
+				String colorNameTo = UniversalCommands.coloredName(pTo);
 				boolean atLeastOneImportantPlayer = Hunters.contains(pFrom) || Speedrunners.contains(pFrom) || Hunters.contains(pTo) || Speedrunners.contains(pTo);
 				if(pToP!=null) {
 					pToP.setHealth(20);
@@ -241,7 +181,7 @@ public class ExtraCommands {
 					if(p!=null) {
 						p.sendMessage(notifpersonal);
 					}
-					notifOthers = coloredHealSentence(colorNameFrom, colorNameTo);
+					notifOthers = UniversalCommands.coloredHealSentence(colorNameFrom, colorNameTo);
 				}
 				
 				if(logHealInfo) log("notifpersonal: " + notifpersonal);
@@ -250,12 +190,12 @@ public class ExtraCommands {
 					if(logHealInfo) log("notifOthers: " + notifOthers);
 					for (String pAlert : Hunters) {
 						if (!pAlert.equals(pTo)) {
-							sendOthersTheAlert(pAlert, pName, notifOthers);
+							UniversalCommands.sendOthersTheAlert(pAlert, pName, notifOthers);
 						}
 					}
 					for (String pAlert : Speedrunners) {
 						if (!pAlert.equals(pTo)) {
-							sendOthersTheAlert(pAlert, pName, notifOthers);
+							UniversalCommands.sendOthersTheAlert(pAlert, pName, notifOthers);
 						}
 					}
 				}
