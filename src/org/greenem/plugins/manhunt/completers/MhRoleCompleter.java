@@ -20,15 +20,19 @@ public class MhRoleCompleter implements TabCompleter {
 				arguments.add("add-remaining");
 				arguments.add("remove-all");
 				return arguments;
-			} else if(cmd.getName().equalsIgnoreCase("mhnorole")) {
-				arguments.add("apply");
-				arguments.add("apply-to-remaining");
 			}
 			if(args.length==2) {
 				if(args[0].equals("add") || args[0].equals("remove")) {
 					return null;
 				}
 			}
+		}
+		else if(cmd.getName().equalsIgnoreCase("mhnorole")) {
+			if(args.length==1) {
+				arguments.add("apply");
+				arguments.add("apply-to-remaining");
+			}
+			if(args.length==2) return null;
 		}
 		return arguments;
 	}

@@ -3,6 +3,7 @@ package org.greenem.plugins.manhunt.commands;
 import static org.greenem.plugins.manhunt.data.References.Hunters;
 import static org.greenem.plugins.manhunt.data.References.Speedrunners;
 import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
+import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.units.qual.Acceleration;
 import org.greenem.plugins.manhunt.compass.CompassUpdating;
 import org.greenem.plugins.manhunt.util.Stash;
 
@@ -50,7 +52,7 @@ public class UniversalCommands {
 				Stash.AddItemStack(ac.targetPlayer, new ItemStack(Material.COMPASS), 8);
 				CompassUpdating.findTarget();
 				if(!ac.targetPlayer.equals(ac.senderPlayer)) {
-					ac.targetPlayer.sendMessage(ChatColor.GOLD + ac.senderPlayer.getName() + " has added you to the hunters list");
+//					ac.targetPlayer.sendMessage(ChatColor.GOLD + ac.senderPlayer.getName() + " has added you to the hunters list");
 				}
 				ac.targetPlayer.sendMessage(ChatColor.GOLD + "Now you are a " + ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "hunter");
 			}
@@ -84,7 +86,7 @@ public class UniversalCommands {
 				ac.targetPlayer.getInventory().remove(Material.COMPASS);
 				CompassUpdating.findTarget();
 				if(!ac.targetPlayer.equals(ac.senderPlayer)) {
-					ac.targetPlayer.sendMessage(ChatColor.GOLD + ac.senderPlayer.getName() + " has added you to the speedrunners list");
+//					ac.targetPlayer.sendMessage(ChatColor.GOLD + ac.senderPlayer.getName() + " has added you to the speedrunners list");
 				}
 				ac.targetPlayer.sendMessage(ChatColor.GOLD + "Now you are a " + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + "speedrunner");
 			}
@@ -100,22 +102,93 @@ public class UniversalCommands {
 		}
 	}
 	
+	public static boolean stringsNotSameAndNotNull(String s1, String s2) {
+		if(s1!=null && s2!=null && !s1.equals(s2)) return true;
+		else return false;
+	}
+	
 	public static String getNotifToThatOne(AbstractCommand ac, String colorNameFrom) {
+		if(!stringsNotSameAndNotNull(ac.senderName, ac.targetName)) return null;
 		switch (ac.type) {
 		case HEAL: {
-			return ChatColor.GRAY + "You have been healed by " + colorNameFrom;
+			if(colorNameFrom!=null) return ChatColor.GRAY + "You have been healed by " + colorNameFrom;
+			else return ChatColor.GRAY + "You have been healed";
 		}
 		case GM: {
-			return ChatColor.GRAY + "Your gamemode has been set to " + getGamemodeName(ac.gm) + " by " + colorNameFrom;
+			if(colorNameFrom!=null) return ChatColor.GRAY + "Your gamemode has been set to " + getGamemodeName(ac.gm) + " by " + colorNameFrom;
+			else return ChatColor.GRAY + "Your gamemode has been set to " + getGamemodeName(ac.gm);
 		}
 		case MAKE_HUNTER: {
-			return ChatColor.GRAY + "You have been added to hunters team by " + colorNameFrom;
+			if(colorNameFrom!=null) return ChatColor.GRAY + "You have been added to hunters team by " + colorNameFrom;
+			else return null;
 		}
 		case MAKE_SPEEDRUNNER: {
-			return ChatColor.GRAY + "You have been added to speedrunners team by " + colorNameFrom;
+			if(colorNameFrom!=null) return ChatColor.GRAY + "You have been added to speedrunners team by " + colorNameFrom;
+			else return null;
 		}
 		case MAKE_NOROLE: {
-			return ChatColor.GRAY + "You have been removed from your team by " + colorNameFrom;
+			if(colorNameFrom!=null) return ChatColor.GRAY + "You have been removed from your team by " + colorNameFrom;
+			else return null;
+		}
+		
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + ac.type);
+		}
+	}
+	
+	public static String getNotifToTheSender(AbstractCommand ac, String NameTo) {
+		switch (ac.type) {
+		case HEAL: {
+			if(NameTo!=null) return ChatColor.GRAY + "You have healed " + coloredName(NameTo);
+			else return null;
+		}
+		case GM: {
+			if(NameTo!=null) return ChatColor.GRAY + "You have set " + coloredName(NameTo) + ChatColor.GRAY + "'s gamemode to " + getGamemodeName(ac.gm);
+			else return null;
+		}
+		case MAKE_HUNTER: {
+			if(NameTo!=null) return ChatColor.GRAY + "You have added " + ChatColor.RED + ChatColor.BOLD + NameTo + ChatColor.GRAY + " to hunters team";
+			else return null;
+		}
+		case MAKE_SPEEDRUNNER: {
+			if(NameTo!=null) return ChatColor.GRAY + "You have added " + ChatColor.GREEN + ChatColor.BOLD + NameTo + ChatColor.GRAY + " to speedrunners team";
+			else return null;
+		}
+		case MAKE_NOROLE: {
+			if(NameTo!=null) return ChatColor.GRAY + "You have removed " + boldWhite() + NameTo + ChatColor.GRAY + " from their team";
+			else return null;
+		}
+		
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + ac.type);
+		}
+	}
+	
+	public static String boldWhite() {
+		return ChatColor.RESET + "" + ChatColor.WHITE + ChatColor.BOLD;
+	}
+	
+	public static String getNotifToTheOthers(AbstractCommand ac, String NameTo) {
+		switch (ac.type) {
+		case HEAL: {
+			if(!ac.senderName.equals(ac.targetName)) return coloredName(NameTo) + ChatColor.RESET + "" + ChatColor.WHITE + " was healed by " + ac.senderDecorName; //TODO colored console
+			else return coloredName(NameTo) + " was healed ";
+		}
+		case GM: {
+			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + ChatColor.RESET + "" + ChatColor.WHITE + " has set " + coloredName(NameTo) + ChatColor.RESET + "" + ChatColor.WHITE + "'s gamemode to " + ChatColor.GRAY + "" + ChatColor.BOLD + getGamemodeName(ac.gm);
+			else return coloredName(ac.senderDecorName) + ChatColor.RESET + "" + ChatColor.WHITE + " has set own gamemode to " + ChatColor.GRAY + ChatColor.BOLD + getGamemodeName(ac.gm);
+		}
+		case MAKE_HUNTER: {
+			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + ChatColor.RESET + "" + ChatColor.WHITE + " has added " + ChatColor.RED + "" + ChatColor.BOLD + NameTo + ChatColor.RESET + "" + ChatColor.WHITE + " to hunters team";
+			else return ChatColor.RED + "" + ChatColor.BOLD + ac.senderDecorName + ChatColor.RESET + "" + ChatColor.WHITE + " has joined the hunters team";
+		}
+		case MAKE_SPEEDRUNNER: {
+			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + ChatColor.RESET + "" + ChatColor.WHITE + " has added " + ChatColor.GREEN + "" + ChatColor.BOLD + NameTo + " to speedrunners team";
+			else return ChatColor.GREEN + "" + ChatColor.BOLD + ac.senderDecorName + ChatColor.RESET + "" + ChatColor.WHITE + " has joined the speedrunners team";
+		}
+		case MAKE_NOROLE: {
+			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + ChatColor.RESET + "" + ChatColor.WHITE + " has removed " + coloredName(NameTo) + " from their team";
+			else return coloredName(ac.senderDecorName) + ChatColor.RESET + "" + ChatColor.WHITE + " has heft their team";
 		}
 		
 		default:
@@ -124,6 +197,7 @@ public class UniversalCommands {
 	}
 	
 	public static void universalCommand(AbstractCommand ac) {
+		Runnable finalActions = null;
 		ac.targetPlayer = Bukkit.getPlayerExact(ac.targetName);
 		if(ac.targetPlayer==null) {
 			ac.targetPlayer = Bukkit.getPlayerExact(ac.sender.getName());
@@ -143,14 +217,21 @@ public class UniversalCommands {
 				ac.sender.sendMessage(ChatColor.RED + "You can't apply the result to yourself as the console!");
 				return;
 			}
-			doAction(ac);
-			notifpersonal = ChatColor.GRAY + "You have been healed"; // TODO
-			notifOthers = colorNameFrom + ChatColor.RESET + "" + ChatColor.GRAY + " was healed"; // TODO
+			finalActions = new Runnable() {
+				@Override
+				public void run() {
+					doAction(ac);
+				}
+			};
+			notifpersonal = getNotifToThatOne(ac, null);
+			notifOthers = getNotifToTheOthers(ac, ac.targetName);
+			debug(notifOthers);
 			if(ac.targetPlayer!=null) {
-				ac.targetPlayer.sendMessage(notifpersonal);
+				if(notifpersonal!=null) ac.targetPlayer.sendMessage(notifpersonal);
 			}
 			if(ExtraCommands.logHealInfo) log("notifpersonal: " + notifpersonal);
-			if(Hunters.contains(ac.targetName) || Speedrunners.contains(ac.targetName)) {
+			if(Hunters.contains(ac.targetName) || Speedrunners.contains(ac.targetName)
+					|| ac.type==CommandActionType.MAKE_HUNTER || ac.type==CommandActionType.MAKE_SPEEDRUNNER || ac.type==CommandActionType.MAKE_NOROLE) {
 				if(ExtraCommands.logHealInfo) log("notifOthers: " + notifOthers);
 				for (String pAlert : Hunters) {
 					sendOthersTheAlert(pAlert, ac.targetName, notifOthers);
@@ -163,27 +244,34 @@ public class UniversalCommands {
 		else if (ac.additionalType == AdditionalCommandActionType.OTHER_PLAYER) {
 			if(ac.targetPlayer!=null || ExtraCommands.logHealInfo) {
 				String colorNameTo = coloredName(ac.targetName);
-				boolean atLeastOneImportantPlayer = Hunters.contains(ac.senderName) || Speedrunners.contains(ac.senderName) || Hunters.contains(ac.targetName) || Speedrunners.contains(ac.targetName);
+				boolean atLeastOneImportantPlayer = Hunters.contains(ac.senderName) || Speedrunners.contains(ac.senderName) || Hunters.contains(ac.targetName) || Speedrunners.contains(ac.targetName)
+						|| ac.type==CommandActionType.MAKE_HUNTER || ac.type==CommandActionType.MAKE_SPEEDRUNNER || ac.type==CommandActionType.MAKE_NOROLE;
 				if(ac.targetPlayer!=null) {
-					doAction(ac);
+					finalActions = new Runnable() {
+						@Override
+						public void run() {
+							doAction(ac);
+						}
+					};
 				}
 				
 				if(ac.targetName.equals(ac.senderName)) {
-					notifpersonal = ChatColor.GRAY + "You have been healed"; // TODO
+					notifpersonal = getNotifToThatOne(ac, colorNameFrom);
 					if(ac.senderPlayer!=null) {
-						ac.senderPlayer.sendMessage(notifpersonal);
+						if(notifpersonal!=null) ac.senderPlayer.sendMessage(notifpersonal);
 					}
-					notifOthers = colorNameFrom + ChatColor.RESET + "" + ChatColor.GRAY + " was healed"; // TODO
+					notifOthers = getNotifToTheOthers(ac, ac.targetName); //getNotifToTheSender(ac, ac.targetName);
+					debug("OTTHERS; " + notifOthers);
 				}
 				else {
 					String notifToThatOne = getNotifToThatOne(ac, colorNameFrom);
-					notifpersonal = ChatColor.GRAY + "You have healed " + colorNameTo; // TODO
+					notifpersonal = getNotifToTheSender(ac, ac.targetName);
 					if(ac.targetPlayer!=null) {
-						ac.targetPlayer.sendMessage(notifToThatOne);
+						if(notifpersonal!=null) ac.targetPlayer.sendMessage(notifToThatOne);
 						if(ExtraCommands.logHealInfo) log("notifToThatOne: " + notifToThatOne);
 					}
 					if(ac.senderPlayer!=null) {
-						ac.senderPlayer.sendMessage(notifpersonal);
+						if(notifpersonal!=null) ac.senderPlayer.sendMessage(notifpersonal);
 					}
 					notifOthers = coloredHealSentence(colorNameFrom, colorNameTo, ac);
 				}
@@ -212,6 +300,7 @@ public class UniversalCommands {
 				}
 			}
 		}
+		if(finalActions!=null) finalActions.run();
 	}
 	
 	public static String coloredName(String name) {
