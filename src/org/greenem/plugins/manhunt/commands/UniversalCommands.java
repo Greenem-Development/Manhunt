@@ -108,27 +108,30 @@ public class UniversalCommands {
 	}
 	
 	public static String getNotifToThatOne(AbstractCommand ac, String colorNameFrom) {
-		if(!stringsNotSameAndNotNull(ac.senderName, ac.targetName)) return null;
 		switch (ac.type) {
 		case HEAL: {
+			if(!stringsNotSameAndNotNull(ac.senderName, ac.targetName)) return null;
 			if(colorNameFrom!=null) return ChatColor.GRAY + "You have been healed by " + colorNameFrom;
 			else return ChatColor.GRAY + "You have been healed";
 		}
 		case GM: {
+			if(!stringsNotSameAndNotNull(ac.senderName, ac.targetName)) return null;
 			if(colorNameFrom!=null) return ChatColor.GRAY + "Your gamemode has been set to " + getGamemodeName(ac.gm) + " by " + colorNameFrom;
 			else return ChatColor.GRAY + "Your gamemode has been set to " + getGamemodeName(ac.gm);
 		}
 		case MAKE_HUNTER: {
+			if(!stringsNotSameAndNotNull(ac.senderName, ac.targetName)) return null;
 			if(colorNameFrom!=null) return ChatColor.GRAY + "You have been added to hunters team by " + colorNameFrom;
 			else return null;
 		}
 		case MAKE_SPEEDRUNNER: {
+			if(!stringsNotSameAndNotNull(ac.senderName, ac.targetName)) return null;
 			if(colorNameFrom!=null) return ChatColor.GRAY + "You have been added to speedrunners team by " + colorNameFrom;
 			else return null;
 		}
 		case MAKE_NOROLE: {
-			if(colorNameFrom!=null) return ChatColor.GRAY + "You have been removed from your team by " + colorNameFrom;
-			else return null;
+			if(stringsNotSameAndNotNull(ac.senderName, ac.targetName)) return ChatColor.GRAY + "You have been removed from your team by " + colorNameFrom; // else
+			else return ChatColor.GRAY + "You have left your team";
 		}
 		
 		default:
@@ -155,8 +158,8 @@ public class UniversalCommands {
 			else return null;
 		}
 		case MAKE_NOROLE: {
-			if(NameTo!=null) return ChatColor.GRAY + "You have removed " + boldWhite() + NameTo + ChatColor.GRAY + " from their team";
-			else return null;
+			if(NameTo!=null) return ChatColor.GRAY + "You have removed " + white() + NameTo + ChatColor.GRAY + " from their team";
+			else return ChatColor.GRAY + "You have left your team";
 		}
 		
 		default:
@@ -164,31 +167,31 @@ public class UniversalCommands {
 		}
 	}
 	
-	public static String boldWhite() {
-		return ChatColor.RESET + "" + ChatColor.WHITE + ChatColor.BOLD;
+	public static String white() {
+		return ChatColor.RESET + "" + ChatColor.WHITE; // + ChatColor.BOLD
 	}
 	
 	public static String getNotifToTheOthers(AbstractCommand ac, String NameTo) {
 		switch (ac.type) {
 		case HEAL: {
-			if(!ac.senderName.equals(ac.targetName)) return coloredName(NameTo) + ChatColor.RESET + "" + ChatColor.WHITE + " was healed by " + ac.senderDecorName; //TODO colored console
-			else return coloredName(NameTo) + " was healed ";
+			if(!ac.senderName.equals(ac.targetName)) return coloredName(NameTo) + white() + " was healed by " + ac.senderDecorName; //TODO colored console
+			else return coloredName(NameTo) + white() + " was healed ";
 		}
 		case GM: {
-			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + ChatColor.RESET + "" + ChatColor.WHITE + " has set " + coloredName(NameTo) + ChatColor.RESET + "" + ChatColor.WHITE + "'s gamemode to " + ChatColor.GRAY + "" + ChatColor.BOLD + getGamemodeName(ac.gm);
-			else return coloredName(ac.senderDecorName) + ChatColor.RESET + "" + ChatColor.WHITE + " has set own gamemode to " + ChatColor.GRAY + ChatColor.BOLD + getGamemodeName(ac.gm);
+			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + white() + " has set " + coloredName(NameTo) + white() + "'s gamemode to " + ChatColor.GRAY + "" + ChatColor.BOLD + getGamemodeName(ac.gm);
+			else return coloredName(ac.senderDecorName) + white() + " has set own gamemode to " + ChatColor.GRAY + ChatColor.BOLD + getGamemodeName(ac.gm);
 		}
 		case MAKE_HUNTER: {
-			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + ChatColor.RESET + "" + ChatColor.WHITE + " has added " + ChatColor.RED + "" + ChatColor.BOLD + NameTo + ChatColor.RESET + "" + ChatColor.WHITE + " to hunters team";
-			else return ChatColor.RED + "" + ChatColor.BOLD + ac.senderDecorName + ChatColor.RESET + "" + ChatColor.WHITE + " has joined the hunters team";
+			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + white() + " has added " + ChatColor.RED + "" + ChatColor.BOLD + NameTo + white() + " to hunters team";
+			else return ChatColor.RED + "" + ChatColor.BOLD + ac.senderDecorName + white() + " has joined the hunters team";
 		}
 		case MAKE_SPEEDRUNNER: {
-			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + ChatColor.RESET + "" + ChatColor.WHITE + " has added " + ChatColor.GREEN + "" + ChatColor.BOLD + NameTo + " to speedrunners team";
-			else return ChatColor.GREEN + "" + ChatColor.BOLD + ac.senderDecorName + ChatColor.RESET + "" + ChatColor.WHITE + " has joined the speedrunners team";
+			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + white() + " has added " + ChatColor.GREEN + "" + ChatColor.BOLD + NameTo + " to speedrunners team";
+			else return ChatColor.GREEN + "" + ChatColor.BOLD + ac.senderDecorName + white() + " has joined the speedrunners team";
 		}
 		case MAKE_NOROLE: {
-			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + ChatColor.RESET + "" + ChatColor.WHITE + " has removed " + coloredName(NameTo) + " from their team";
-			else return coloredName(ac.senderDecorName) + ChatColor.RESET + "" + ChatColor.WHITE + " has heft their team";
+			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + white() + " has removed " + coloredName(NameTo) + " from their team";
+			else return coloredName(ac.senderDecorName) + white() + " has heft their team";
 		}
 		
 		default:
@@ -197,6 +200,10 @@ public class UniversalCommands {
 	}
 	
 	public static void universalCommand(AbstractCommand ac) {
+		if(!(ac.sender instanceof ConsoleCommandSender) && ac.type==CommandActionType.MAKE_NOROLE && ac.targetName!=null && !Speedrunners.contains(ac.targetName) && !Hunters.contains(ac.targetName)) {
+			ac.sender.sendMessage(ChatColor.RED + "You have no role already");
+			return;
+		}
 		Runnable finalActions = null;
 		ac.targetPlayer = Bukkit.getPlayerExact(ac.targetName);
 		if(ac.targetPlayer==null) {
@@ -223,16 +230,16 @@ public class UniversalCommands {
 					doAction(ac);
 				}
 			};
-			notifpersonal = getNotifToThatOne(ac, null);
+			notifpersonal = getNotifToThatOne(ac, ac.targetName); // TODO was null
 			notifOthers = getNotifToTheOthers(ac, ac.targetName);
 			debug(notifOthers);
 			if(ac.targetPlayer!=null) {
 				if(notifpersonal!=null) ac.targetPlayer.sendMessage(notifpersonal);
 			}
-			if(ExtraCommands.logHealInfo) log("notifpersonal: " + notifpersonal);
+			if(ExtraCommands.logHealInfo) debug("notifpersonal1: " + notifpersonal);
 			if(Hunters.contains(ac.targetName) || Speedrunners.contains(ac.targetName)
 					|| ac.type==CommandActionType.MAKE_HUNTER || ac.type==CommandActionType.MAKE_SPEEDRUNNER || ac.type==CommandActionType.MAKE_NOROLE) {
-				if(ExtraCommands.logHealInfo) log("notifOthers: " + notifOthers);
+				if(ExtraCommands.logHealInfo) debug("notifOthers: " + notifOthers);
 				for (String pAlert : Hunters) {
 					sendOthersTheAlert(pAlert, ac.targetName, notifOthers);
 				}
@@ -268,7 +275,7 @@ public class UniversalCommands {
 					notifpersonal = getNotifToTheSender(ac, ac.targetName);
 					if(ac.targetPlayer!=null) {
 						if(notifpersonal!=null) ac.targetPlayer.sendMessage(notifToThatOne);
-						if(ExtraCommands.logHealInfo) log("notifToThatOne: " + notifToThatOne);
+						if(ExtraCommands.logHealInfo) debug("notifToThatOne: " + notifToThatOne);
 					}
 					if(ac.senderPlayer!=null) {
 						if(notifpersonal!=null) ac.senderPlayer.sendMessage(notifpersonal);
@@ -276,10 +283,10 @@ public class UniversalCommands {
 					notifOthers = coloredHealSentence(colorNameFrom, colorNameTo, ac);
 				}
 				
-				if(ExtraCommands.logHealInfo) log("notifpersonal: " + notifpersonal);
+				if(ExtraCommands.logHealInfo) debug("notifpersonal2: " + notifpersonal);
 				
 				if(atLeastOneImportantPlayer) {
-					if(ExtraCommands.logHealInfo) log("notifOthers: " + notifOthers);
+					if(ExtraCommands.logHealInfo) debug("notifOthers: " + notifOthers);
 					for (String pAlert : Hunters) {
 						if (!pAlert.equals(ac.targetName)) {
 							sendOthersTheAlert(pAlert, ac.senderDecorName, notifOthers);
@@ -294,7 +301,7 @@ public class UniversalCommands {
 			}
 			else {
 				String problem = ChatColor.RED + "Such player isn't online";
-				if(ExtraCommands.logHealInfo) log("personal error to " + ac.senderDecorName + ": " + problem);
+				if(ExtraCommands.logHealInfo) debug("personal error to " + ac.senderDecorName + ": " + problem);
 				if(ac.senderPlayer!=null) {
 					ac.senderPlayer.sendMessage(problem);
 				}
@@ -331,7 +338,7 @@ public class UniversalCommands {
 		else if(Hunters.contains(to)) {
 			color1 = ChatColor.RED + "" + ChatColor.BOLD;
 		}
-		else if(Speedrunners.contains(to)) {
+		else if(Speedrunners.contains(to)) { // TODO You have removed GREEN3M2 from their team WHITE TEXT BUT NOT RED
 			color1 = ChatColor.GREEN + "" + ChatColor.BOLD;
 		}
 		else {
@@ -408,8 +415,8 @@ public class UniversalCommands {
 			throw new IllegalArgumentException("Unexpected value: " + ac.type );
 		}
 		
-		s += ChatColor.RESET + " was healed";
-		s += " by ";
+//		s += ChatColor.RESET + " was healed";
+//		s += " by ";
 		
 		return s;
 	}

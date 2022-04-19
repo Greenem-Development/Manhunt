@@ -19,7 +19,7 @@ import org.greenem.plugins.manhunt.config.ConfigData;
 import org.greenem.plugins.manhunt.util.Stash;
 
 public class ExtraCommands {
-	public static boolean logHealInfo = false; // false
+	public static boolean logHealInfo = true; // false
 	
 	public static void GmCommand(CommandSender sender, String[] args) { // maybe boolean? (false not tested)
 		if(!ConfigData.allowGmCommandForOps) {

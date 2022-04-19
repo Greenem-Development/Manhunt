@@ -2,6 +2,7 @@ package org.greenem.plugins.manhunt.util;
 
 import java.io.File;
 
+import org.greenem.plugins.manhunt.commands.ExtraCommands;
 import org.greenem.plugins.manhunt.data.References;
 
 public class DebugModeSwitch {
@@ -9,6 +10,7 @@ public class DebugModeSwitch {
 		File f = new File(References.pluginConfigDirectory, "enableDebug.dev");
 		if(!f.exists()) {
 			SimpleLogger.debugOutputEnabled = false;
+			ExtraCommands.logHealInfo = false;
 		}
 	}
 }
