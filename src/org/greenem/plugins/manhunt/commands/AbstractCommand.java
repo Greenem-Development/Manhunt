@@ -1,6 +1,10 @@
 package org.greenem.plugins.manhunt.commands;
 
 import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;
 
 import org.bukkit.Bukkit;
@@ -22,6 +26,11 @@ public class AbstractCommand {
 	public String senderDecorName;
 	public Player senderPlayer;
 	public Player targetPlayer;
+	
+	public List<String> targetsList = new ArrayList<>();
+	public String removeFrom = null;
+	
+	public boolean lessInfoLotsOfPlayers = false;
 	
 	public void completeInitialisation() {
 		if(targetName!=null) {

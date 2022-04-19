@@ -219,6 +219,7 @@ public class UniversalCommands {
 		String colorNameFrom = coloredName(ac.senderDecorName);
 		String notifpersonal;
 		String notifOthers;
+		debug(ac.additionalType);
 		if(ac.additionalType == AdditionalCommandActionType.SELF) {
 			if(ac.sender instanceof ConsoleCommandSender) {
 				ac.sender.sendMessage(ChatColor.RED + "You can't apply the result to yourself as the console!");
@@ -307,7 +308,51 @@ public class UniversalCommands {
 				}
 			}
 		}
+		else if (ac.additionalType == AdditionalCommandActionType.ALL_PLAYERS) {
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				if(ac.removeFrom!=null && ac.removeFrom.equals("s") && Speedrunners.contains(p.getName())) {
+					ac.targetsList.add(p.getName());
+				} else if(ac.removeFrom!=null && ac.removeFrom.equals("h") && Hunters.contains(p.getName())) {
+					ac.targetsList.add(p.getName());
+				} else if(ac.removeFrom!=null && ac.removeFrom.equals("") && (Hunters.contains(p.getName()) || Speedrunners.contains(p.getName()))) {
+					ac.targetsList.add(p.getName());
+				}
+			}
+			recurcy(ac);
+		}
+		else if (ac.additionalType == AdditionalCommandActionType.REMAINING_PLAYERS) {
+			if(ac.type==CommandActionType.MAKE_HUNTER) {
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					if(!Hunters.contains(p.getName())) ac.targetsList.add(p.getName());
+				}
+			}
+			else if(ac.type==CommandActionType.MAKE_SPEEDRUNNER) {
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					if(!Speedrunners.contains(p.getName())) ac.targetsList.add(p.getName());
+				}
+			}
+			else if(ac.type==CommandActionType.MAKE_NOROLE) {
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					if(Speedrunners.contains(p.getName()) || Hunters.contains(p.getName())) ac.targetsList.add(p.getName());
+				}
+			}
+			recurcy(ac);
+		}
 		if(finalActions!=null) finalActions.run();
+	}
+	
+	public static void recurcy(AbstractCommand ac) {
+		for (String s : ac.targetsList) {
+			AbstractCommand ac2 = new AbstractCommand();
+			ac2.type = ac.type;
+			ac2.sender = ac.sender;
+			if(s.equals(ac.senderName)) ac2.additionalType = AdditionalCommandActionType.SELF;
+			else ac2.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
+			ac2.targetName = s;
+			ac2.completeInitialisation();
+			debug(ac2.targetName);
+			UniversalCommands.universalCommand(ac2);
+		}
 	}
 	
 	public static String coloredName(String name) {

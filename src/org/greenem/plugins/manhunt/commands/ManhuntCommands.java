@@ -8,6 +8,8 @@ import static org.greenem.plugins.manhunt.data.References.PortalFrom;
 import static org.greenem.plugins.manhunt.data.References.PortalTo;
 import static org.greenem.plugins.manhunt.data.References.Speedrunners;
 import static org.greenem.plugins.manhunt.util.Stash.isSenderAPlayerOrConsole;
+import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
+import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -32,7 +34,19 @@ public class ManhuntCommands {
 		ac.type = CommandActionType.MAKE_HUNTER;
 		if(args.length==2) {
 			ac.targetName = args[1];
-			ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
+			if(args[0].equals("add")) ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
+			if(args[0].equals("remove")) {
+				ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
+				ac.type = CommandActionType.MAKE_NOROLE;
+			}
+		} else if(args.length==1) {
+			if(args[0].equals("add-remaining")) ac.additionalType = AdditionalCommandActionType.REMAINING_PLAYERS;
+			else if(args[0].equals("remove-all")) {
+				ac.additionalType = AdditionalCommandActionType.ALL_PLAYERS;
+				ac.removeFrom = "h";
+				ac.type = CommandActionType.MAKE_NOROLE;
+			}
+			else log(ChatColor.RED + "Unknown command structure, bug");
 		} else {
 			ac.additionalType = AdditionalCommandActionType.SELF;
 		}
@@ -73,7 +87,19 @@ public class ManhuntCommands {
 		ac.type = CommandActionType.MAKE_SPEEDRUNNER;
 		if(args.length==2) {
 			ac.targetName = args[1];
-			ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
+			if(args[0].equals("add")) ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
+			if(args[0].equals("remove")) {
+				ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
+				ac.type = CommandActionType.MAKE_NOROLE;
+			}
+		} else if(args.length==1) {
+			if(args[0].equals("add-remaining")) ac.additionalType = AdditionalCommandActionType.REMAINING_PLAYERS;
+			else if(args[0].equals("remove-all")) {
+				ac.additionalType = AdditionalCommandActionType.ALL_PLAYERS;
+				ac.removeFrom = "s";
+				ac.type = CommandActionType.MAKE_NOROLE;
+			}
+			else log(ChatColor.RED + "Unknown command structure, bug");
 		} else {
 			ac.additionalType = AdditionalCommandActionType.SELF;
 		}
@@ -111,7 +137,14 @@ public class ManhuntCommands {
 		ac.type = CommandActionType.MAKE_NOROLE;
 		if(args.length==2) {
 			ac.targetName = args[1];
-			ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
+			if(args[0].equals("add")) ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
+			if(args[0].equals("add-remaining")) ac.additionalType = AdditionalCommandActionType.REMAINING_PLAYERS;
+		} else if(args.length==1) {
+			if(args[0].equals("apply-to-remaining")) {
+				ac.additionalType = AdditionalCommandActionType.REMAINING_PLAYERS;
+				ac.removeFrom = "";
+			}
+			else log(ChatColor.RED + "Unknown command structure, bug");
 		} else {
 			ac.additionalType = AdditionalCommandActionType.SELF;
 		}
