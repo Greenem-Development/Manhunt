@@ -54,7 +54,7 @@ public class UniversalCommands {
 				if(!ac.targetPlayer.equals(ac.senderPlayer)) {
 //					ac.targetPlayer.sendMessage(ChatColor.GOLD + ac.senderPlayer.getName() + " has added you to the hunters list");
 				}
-				ac.targetPlayer.sendMessage(ChatColor.GOLD + "Now you are a " + ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "hunter");
+				ac.targetPlayer.sendMessage(ChatColor.WHITE + "Now you are a " + ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "hunter");
 			}
 			else {
 				if(ac.targetPlayer.equals(ac.senderPlayer)) {
@@ -88,7 +88,7 @@ public class UniversalCommands {
 				if(!ac.targetPlayer.equals(ac.senderPlayer)) {
 //					ac.targetPlayer.sendMessage(ChatColor.GOLD + ac.senderPlayer.getName() + " has added you to the speedrunners list");
 				}
-				ac.targetPlayer.sendMessage(ChatColor.GOLD + "Now you are a " + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + "speedrunner");
+				ac.targetPlayer.sendMessage(ChatColor.WHITE + "Now you are a " + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + "speedrunner");
 			}
 			else {
 				if(ac.targetPlayer.equals(ac.senderPlayer)) {

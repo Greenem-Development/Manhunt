@@ -73,7 +73,7 @@ public class ManhuntCommands {
 			p.getInventory().remove(Material.COMPASS);
 			Stash.AddItemStack(p, new ItemStack(Material.COMPASS), 8);
 			CompassUpdating.findTarget();
-			p.sendMessage(ChatColor.GOLD + "Now you are a " + ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "hunter");
+			p.sendMessage(ChatColor.WHITE + "Now you are a " + ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "hunter");
 		}
 		else {
 			p.sendMessage(ChatColor.RED + "You are already a hunter");
@@ -123,7 +123,7 @@ public class ManhuntCommands {
 		if(!Speedrunners.contains(pName)) {
 			Speedrunners.add(pName);
 			p.getInventory().remove(Material.COMPASS);
-			p.sendMessage(ChatColor.GOLD + "Now you are a " + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + "speedrunner");
+			p.sendMessage(ChatColor.WHITE + "Now you are a " + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + "speedrunner");
 		}
 		else {
 			p.sendMessage(ChatColor.RED + "You are already a speedrunner");

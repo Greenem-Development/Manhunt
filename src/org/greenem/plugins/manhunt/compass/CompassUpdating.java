@@ -255,6 +255,16 @@ public class CompassUpdating {
 		}
 	}
 	
+	public static boolean noSpInEnd(Player h) {
+		boolean result = true;
+		for (Player p : h.getWorld().getPlayers()) {
+			String pName = p.getName();
+			if(Speedrunners.contains(pName)) result = false;
+			break;
+		}
+		return result;
+	}
+	
 	public static double GetDistance (Player hunter, Player speedrunner, String playerUpdated, Location theLoc) {
 		String nameH = hunter.getName();
 		String nameS = speedrunner.getName();
@@ -272,7 +282,7 @@ public class CompassUpdating {
 			result = hLocation.distance(spLocation);
 		}
 		else {
-			if(getEnvironment(spLocation)==Environment.THE_END && getEnvironment(spLocation)==Environment.NORMAL) {
+			if(getEnvironment(spLocation)==Environment.THE_END && getEnvironment(hLocation)==Environment.NORMAL) {
 				result = 0;
 				result+=hLocation.distance(PortalEndFrom.get(nameS));
 			}
@@ -280,7 +290,11 @@ public class CompassUpdating {
 					getEnvironment(hLocation)==Environment.THE_END && PortalEndTo.containsKey(nameS) && getEnvironment(spLocation)!=Environment.THE_END) {
 				result = 0;
 				if(HuntersPortalEndTo.containsKey(nameH)) {
-					result+=hLocation.distance(HuntersPortalEndTo.get(nameH));
+					if(noSpInEnd(hunter)) {
+						result+=hLocation.distance(HuntersPortalEndTo.get(nameH));
+					} else {
+						result = 999999;
+					}
 				} else {
 					log("Error code: 0002");
 				}
@@ -313,7 +327,7 @@ public class CompassUpdating {
 						//Bukkit.broadcastMessage(ChatColor.RED + "Almost a error, speedrunner got into another dimension without plugin seeing this");
 					}
 					else {
-						Bukkit.broadcastMessage(ChatColor.RED + "ERROR! A hunter got into another dimension without plugin seeing this");
+						log(ChatColor.RED + "ERROR! A hunter got into another dimension without plugin seeing this (or some other weird thing happened)");
 					}
 				}
 			}
@@ -375,6 +389,7 @@ public class CompassUpdating {
 			}
 		}
 		if(result==null) debug("result is null!");
+		debug(h + " to " + s + ": " + shortLocation(result));
 		return result;
 	}
 	

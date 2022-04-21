@@ -23,7 +23,7 @@ public class PairStringDouble {
 		this.s = s;
 	}
 	
-	public void setDouble(double s) {
+	public void setDouble(double d) {
 		this.d = d;
 	}
 }
