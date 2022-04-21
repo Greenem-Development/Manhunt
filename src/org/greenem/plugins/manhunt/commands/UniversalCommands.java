@@ -263,6 +263,8 @@ public class UniversalCommands {
 					};
 				}
 				
+//				if(ac.targetPlayer)
+				
 				if(ac.targetName.equals(ac.senderName)) {
 					notifpersonal = getNotifToThatOne(ac, colorNameFrom);
 					if(ac.senderPlayer!=null) {
@@ -318,6 +320,10 @@ public class UniversalCommands {
 					ac.targetsList.add(p.getName());
 				}
 			}
+			if(ac.targetsList.size()==0) {
+				ac.sender.sendMessage(ChatColor.RED + "There are no targets to apply the action on");
+				return;
+			}
 			recurcy(ac);
 		}
 		else if (ac.additionalType == AdditionalCommandActionType.REMAINING_PLAYERS) {
@@ -335,6 +341,10 @@ public class UniversalCommands {
 				for (Player p : Bukkit.getOnlinePlayers()) {
 					if(Speedrunners.contains(p.getName()) || Hunters.contains(p.getName())) ac.targetsList.add(p.getName());
 				}
+			}
+			if(ac.targetsList.size()==0) {
+				ac.sender.sendMessage(ChatColor.RED + "There are no targets to apply the action on");
+				return;
 			}
 			recurcy(ac);
 		}
