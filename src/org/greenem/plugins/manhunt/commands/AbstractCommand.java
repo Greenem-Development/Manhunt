@@ -35,7 +35,7 @@ public class AbstractCommand {
 	public void completeInitialisation() {
 		if(targetName!=null) {
 			targetPlayer = Bukkit.getPlayerExact(targetName);
-			debug("first target name");
+//			debug("first target name");
 		}
 		if(sender!=null) {
 			senderName = sender.getName();
@@ -45,16 +45,18 @@ public class AbstractCommand {
 				senderDecorName = senderName;
 				if(sender instanceof Player) {
 					senderPlayer = (Player) sender;
-					debug("sender instanceof Player");
+//					debug("sender instanceof Player");
 				}
 			}
 		}
 		if(senderPlayer==null) {
 			senderPlayer = Bukkit.getPlayerExact(senderName);
-			debug("get exact");
+//			debug("get exact");
 		}
 		if(targetPlayer==null) {
-			targetPlayer = senderPlayer; 
+			if(additionalType!=AdditionalCommandActionType.OTHER_PLAYER) { // are both used right here (remaining and all)?
+				targetPlayer = senderPlayer; // uncomment if a bug, commented because of /mhhunter add sdf worked (kinda) 
+			}
 		}
 		if(targetPlayer!=null && targetName==null) {
 			targetName = targetPlayer.getName();

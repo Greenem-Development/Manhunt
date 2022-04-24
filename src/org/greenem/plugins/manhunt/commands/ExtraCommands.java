@@ -67,7 +67,7 @@ public class ExtraCommands {
 				}
 				
 				ac.completeInitialisation();
-				UniversalCommands.universalCommand(ac);
+				UniversalCommands.universalCommand(ac, null);
 			}
 			else if(args.length == 2){
 				int value = -1;
@@ -98,7 +98,7 @@ public class ExtraCommands {
 						return;
 					}
 					ac.completeInitialisation();
-					UniversalCommands.universalCommand(ac);
+					UniversalCommands.universalCommand(ac, null);
 				}
 				else {
 					value = -1;
@@ -144,7 +144,7 @@ public class ExtraCommands {
 		}
 		ac.completeInitialisation();
 		
-		UniversalCommands.universalCommand(ac);
+		UniversalCommands.universalCommand(ac, null);
 		
 		if(true) return false;
 		

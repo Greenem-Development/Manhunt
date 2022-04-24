@@ -3,6 +3,10 @@ package org.greenem.plugins.manhunt.commands;
 import static org.greenem.plugins.manhunt.data.References.Hunters;
 import static org.greenem.plugins.manhunt.data.References.Speedrunners;
 import static org.greenem.plugins.manhunt.util.SimpleLogger.log;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.greenem.plugins.manhunt.util.SimpleLogger.debug;
 
 import org.bukkit.Bukkit;
@@ -16,6 +20,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.checkerframework.checker.units.qual.Acceleration;
 import org.greenem.plugins.manhunt.compass.CompassUpdating;
+import org.greenem.plugins.manhunt.data.References;
+import org.greenem.plugins.manhunt.main.Main;
 import org.greenem.plugins.manhunt.util.Stash;
 
 public class UniversalCommands {
@@ -34,6 +40,9 @@ public class UniversalCommands {
 				return;
 			}
 			String pName = ac.targetPlayer.getName();
+			if(pName==null) {
+				pName = ac.targetName;
+			}
 			if(Speedrunners.contains(pName)) {
 				ManhuntCommandActions.doNoRole(ac.targetPlayer, pName);
 			}
@@ -54,7 +63,11 @@ public class UniversalCommands {
 				if(!ac.targetPlayer.equals(ac.senderPlayer)) {
 //					ac.targetPlayer.sendMessage(ChatColor.GOLD + ac.senderPlayer.getName() + " has added you to the hunters list");
 				}
-				ac.targetPlayer.sendMessage(ChatColor.WHITE + "Now you are a " + ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "hunter");
+				Bukkit.getScheduler().runTaskLater(Main.getInstance().plugin, new Runnable() {
+					public void run() {
+						ac.targetPlayer.sendMessage(ChatColor.WHITE + "Now you are a " + ChatColor.RESET + "" + ChatColor.RED + "" + ChatColor.BOLD + "hunter");
+					}
+				}, 2);
 			}
 			else {
 				if(ac.targetPlayer.equals(ac.senderPlayer)) {
@@ -69,6 +82,9 @@ public class UniversalCommands {
 				return;
 			}
 			String pName = ac.targetPlayer.getName();
+			if(pName==null) {
+				pName = ac.targetName;
+			}
 			if(Hunters.contains(pName)) {
 				ManhuntCommandActions.doNoRole(ac.targetPlayer, pName);
 			}
@@ -76,7 +92,7 @@ public class UniversalCommands {
 				if(ac.targetPlayer.equals(ac.senderPlayer)) {
 					ac.targetPlayer.sendMessage(ChatColor.RED + "You must be in the overworld to use this command. (There would be problems with missing portal location. Later this will be avaliable)");
 				} else {
-					ac.targetPlayer.sendMessage(ChatColor.RED + "You must be in the overworld to get the role. (" + ac.senderPlayer.getName() + " tried to change it for you)");
+					ac.targetPlayer.sendMessage(ChatColor.RED + "You must be in the overworld to get the role. (" + ac.sender.getName() + " tried to change it for you)");
 					ac.senderPlayer.sendMessage(msgFromNotNormalEnv);
 				}
 				return;
@@ -88,7 +104,11 @@ public class UniversalCommands {
 				if(!ac.targetPlayer.equals(ac.senderPlayer)) {
 //					ac.targetPlayer.sendMessage(ChatColor.GOLD + ac.senderPlayer.getName() + " has added you to the speedrunners list");
 				}
-				ac.targetPlayer.sendMessage(ChatColor.WHITE + "Now you are a " + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + "speedrunner");
+				Bukkit.getScheduler().runTaskLater(Main.getInstance().plugin, new Runnable() {
+					public void run() {
+						ac.targetPlayer.sendMessage(ChatColor.WHITE + "Now you are a " + ChatColor.RESET + "" + ChatColor.GREEN + "" + ChatColor.BOLD + "speedrunner");
+					}
+				}, 2);
 			}
 			else {
 				if(ac.targetPlayer.equals(ac.senderPlayer)) {
@@ -199,15 +219,28 @@ public class UniversalCommands {
 		}
 	}
 	
-	public static void universalCommand(AbstractCommand ac) {
+	public static void universalCommand(AbstractCommand ac, List<String> newMessageListeners) {
+		debug(ac.targetPlayer);
+		if(ac.targetPlayer==null) {
+			ac.sender.sendMessage(ChatColor.RED + "Can't find such player!");
+			return;
+		}
 		if(!(ac.sender instanceof ConsoleCommandSender) && ac.type==CommandActionType.MAKE_NOROLE && ac.targetName!=null && !Speedrunners.contains(ac.targetName) && !Hunters.contains(ac.targetName)) {
-			ac.sender.sendMessage(ChatColor.RED + "You have no role already");
+			if(ac.additionalType==null) {
+				debug(ChatColor.RED + "addition type is null, maybe command was not initialized correctly");
+			}
+			if(ac.additionalType==AdditionalCommandActionType.SELF || (ac.additionalType==AdditionalCommandActionType.OTHER_PLAYER && ac.senderName.equals(ac.targetName))) ac.sender.sendMessage(ChatColor.RED + "You have no role already");
+			else if(ac.additionalType==AdditionalCommandActionType.OTHER_PLAYER) ac.sender.sendMessage(ChatColor.RED + "The player doesn't have a role already");
+			else if(ac.additionalType==AdditionalCommandActionType.REMAINING_PLAYERS || ac.additionalType==AdditionalCommandActionType.ALL_PLAYERS) ac.sender.sendMessage(ChatColor.RED + "No one has a role already");
 			return;
 		}
 		Runnable finalActions = null;
-		ac.targetPlayer = Bukkit.getPlayerExact(ac.targetName);
+		ac.targetPlayer = Bukkit.getPlayerExact(ac.targetName); // dublicate?
 		if(ac.targetPlayer==null) {
-			ac.targetPlayer = Bukkit.getPlayerExact(ac.sender.getName());
+			debug("targetPlayer null " + ac.type + " " + ac.additionalType);
+			if(ac.additionalType!=AdditionalCommandActionType.OTHER_PLAYER) {
+				ac.targetPlayer = Bukkit.getPlayerExact(ac.sender.getName());
+			}
 		}
 //		if(!ConfigData.allowHealCommandForOps) { // later and not here
 //			if(sender!=null) {
@@ -268,7 +301,11 @@ public class UniversalCommands {
 				if(ac.targetName.equals(ac.senderName)) {
 					notifpersonal = getNotifToThatOne(ac, colorNameFrom);
 					if(ac.senderPlayer!=null) {
-						if(notifpersonal!=null) ac.senderPlayer.sendMessage(notifpersonal);
+						Bukkit.getScheduler().runTaskLater(Main.getInstance().plugin, new Runnable() {
+							public void run() {
+									if(notifpersonal!=null) ac.senderPlayer.sendMessage(notifpersonal);
+							}
+						}, 1);
 					}
 					notifOthers = getNotifToTheOthers(ac, ac.targetName); //getNotifToTheSender(ac, ac.targetName);
 					debug("OTTHERS; " + notifOthers);
@@ -277,7 +314,11 @@ public class UniversalCommands {
 					String notifToThatOne = getNotifToThatOne(ac, colorNameFrom);
 					notifpersonal = getNotifToTheSender(ac, ac.targetName);
 					if(ac.targetPlayer!=null) {
-						if(notifpersonal!=null) ac.targetPlayer.sendMessage(notifToThatOne);
+						Bukkit.getScheduler().runTaskLater(Main.getInstance().plugin, new Runnable() {
+							public void run() {
+								if(notifpersonal!=null) ac.targetPlayer.sendMessage(notifToThatOne);
+							}
+						}, 1);
 						if(ExtraCommands.logHealInfo) debug("notifToThatOne: " + notifToThatOne);
 					}
 					if(ac.senderPlayer!=null) {
@@ -290,16 +331,27 @@ public class UniversalCommands {
 				
 				if(atLeastOneImportantPlayer) {
 					if(ExtraCommands.logHealInfo) debug("notifOthers: " + notifOthers);
-					for (String pAlert : Hunters) {
-						if (!pAlert.equals(ac.targetName)) {
-							sendOthersTheAlert(pAlert, ac.senderDecorName, notifOthers);
-						}
+					List<String> applyTo = new ArrayList<>();
+					if(newMessageListeners!=null) {
+						applyTo.addAll(newMessageListeners);
 					}
-					for (String pAlert : Speedrunners) {
-						if (!pAlert.equals(ac.targetName)) {
-							sendOthersTheAlert(pAlert, ac.senderDecorName, notifOthers);
-						}
-					}
+							for (String pAlert : Hunters) {
+								if (!pAlert.equals(ac.targetName)) {
+									sendOthersTheAlert(pAlert, ac.senderDecorName, notifOthers);
+									applyTo.remove(pAlert);
+								}
+							}
+							for (String pAlert : Speedrunners) {
+								if (!pAlert.equals(ac.targetName)) {
+									sendOthersTheAlert(pAlert, ac.senderDecorName, notifOthers);
+									applyTo.remove(pAlert);
+								}
+							}
+							for (String pAlert : applyTo) {
+								if (!pAlert.equals(ac.targetName)) {
+									sendOthersTheAlert(pAlert, ac.senderDecorName, notifOthers);
+								}
+							}
 				}
 			}
 			else {
@@ -329,17 +381,17 @@ public class UniversalCommands {
 		else if (ac.additionalType == AdditionalCommandActionType.REMAINING_PLAYERS) {
 			if(ac.type==CommandActionType.MAKE_HUNTER) {
 				for (Player p : Bukkit.getOnlinePlayers()) {
-					if(!Hunters.contains(p.getName())) ac.targetsList.add(p.getName());
+					if(!Hunters.contains(p.getName()) && !Speedrunners.contains(p.getName())) ac.targetsList.add(p.getName());
 				}
 			}
 			else if(ac.type==CommandActionType.MAKE_SPEEDRUNNER) {
 				for (Player p : Bukkit.getOnlinePlayers()) {
-					if(!Speedrunners.contains(p.getName())) ac.targetsList.add(p.getName());
+					if(!Hunters.contains(p.getName()) && !Speedrunners.contains(p.getName())) ac.targetsList.add(p.getName());
 				}
 			}
 			else if(ac.type==CommandActionType.MAKE_NOROLE) {
 				for (Player p : Bukkit.getOnlinePlayers()) {
-					if(Speedrunners.contains(p.getName()) || Hunters.contains(p.getName())) ac.targetsList.add(p.getName());
+					if(Hunters.contains(p.getName()) || Speedrunners.contains(p.getName())) ac.targetsList.add(p.getName());
 				}
 			}
 			if(ac.targetsList.size()==0) {
@@ -361,7 +413,7 @@ public class UniversalCommands {
 			ac2.targetName = s;
 			ac2.completeInitialisation();
 			debug(ac2.targetName);
-			UniversalCommands.universalCommand(ac2);
+			UniversalCommands.universalCommand(ac2, ac.targetsList);
 		}
 	}
 	
@@ -407,10 +459,10 @@ public class UniversalCommands {
 			if(from.equals("[CONSOLE]")) {
 				color2 = ChatColor.GOLD + "" + ChatColor.BOLD;
 			}
-			if(Hunters.contains(from)) {
+			if(Hunters.contains(from) || (ac.removeFrom!=null && ac.removeFrom.equals("h"))) {
 				color2 = ChatColor.RED + "" + ChatColor.BOLD;
 			}
-			else if(Speedrunners.contains(from)) {
+			else if(Speedrunners.contains(from) || (ac.removeFrom!=null && ac.removeFrom.equals("s"))) {
 				color2 = ChatColor.GREEN + "" + ChatColor.BOLD;
 			}
 			else {

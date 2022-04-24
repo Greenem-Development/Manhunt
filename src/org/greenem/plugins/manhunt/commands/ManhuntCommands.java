@@ -27,6 +27,8 @@ import org.greenem.plugins.manhunt.worldManagement.WorldResetting;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class ManhuntCommands {
+	private static String messageNoPlayerSpecified = ChatColor.RED + "You should specify the player to apply the result to";
+	
 	@SuppressWarnings("unused")
 	public static void hunterCommand(CommandSender sender, String[] args) {
 		AbstractCommand ac = new AbstractCommand();
@@ -53,7 +55,7 @@ public class ManhuntCommands {
 		
 		ac.completeInitialisation();
 		
-		UniversalCommands.universalCommand(ac);
+		UniversalCommands.universalCommand(ac, null);
 		
 		if(true) return;
 		
@@ -105,7 +107,7 @@ public class ManhuntCommands {
 		}
 		ac.completeInitialisation();
 		
-		UniversalCommands.universalCommand(ac);
+		UniversalCommands.universalCommand(ac, null);
 		
 		if(true) return;
 		
@@ -137,12 +139,13 @@ public class ManhuntCommands {
 		ac.type = CommandActionType.MAKE_NOROLE;
 		if(args.length==2) {
 			ac.targetName = args[1];
-			if(args[0].equals("add")) ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
-			if(args[0].equals("add-remaining")) ac.additionalType = AdditionalCommandActionType.REMAINING_PLAYERS;
+			if(args[0].equals("apply")) ac.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
 		} else if(args.length==1) {
 			if(args[0].equals("apply-to-remaining")) {
 				ac.additionalType = AdditionalCommandActionType.REMAINING_PLAYERS;
 				ac.removeFrom = "";
+			} else if(args[0].equals("apply")) {
+				sender.sendMessage(messageNoPlayerSpecified);
 			}
 			else log(ChatColor.RED + "Unknown command structure, bug");
 		} else {
@@ -150,7 +153,7 @@ public class ManhuntCommands {
 		}
 		ac.completeInitialisation();
 		
-		UniversalCommands.universalCommand(ac);
+		UniversalCommands.universalCommand(ac, null);
 		
 		if(true) return;
 		

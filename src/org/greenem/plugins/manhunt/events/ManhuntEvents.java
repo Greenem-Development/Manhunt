@@ -16,6 +16,7 @@ import static org.greenem.plugins.manhunt.data.References.PortalTo;
 import static org.greenem.plugins.manhunt.data.References.Speedrunners;
 import static org.greenem.plugins.manhunt.compass.CompassUpdating.getEnvironment;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,7 +31,9 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
+import org.greenem.plugins.manhunt.commands.UniversalCommands;
 import org.greenem.plugins.manhunt.compass.CompassUpdating;
+import org.greenem.plugins.manhunt.main.Main;
 import org.greenem.plugins.manhunt.util.Stash;
 
 public class ManhuntEvents implements Listener {
@@ -50,6 +53,7 @@ public class ManhuntEvents implements Listener {
 		Location loc = e.getTo().clone();
 		p.setAllowFlight(true);
 		p.setFlying(true);
+		loc.setWorld(FrozenLocs.get(p).getWorld());
 		loc.setX(FrozenLocs.get(p).getX());
 		loc.setY(FrozenLocs.get(p).getY());
 		loc.setZ(FrozenLocs.get(p).getZ());
@@ -63,33 +67,47 @@ public class ManhuntEvents implements Listener {
 //		debug(e.getFrom());
 //		debug(e.getTo());
 //		debug(e.getPlayer().getLocation());
-		if(Speedrunners.contains(pName)) {
-			if(getEnvironment(e.getTo())==Environment.THE_END) {
-				PortalEndFrom.put(pName, e.getFrom());
-//				debug(PortalEndFrom);
-				PortalEndTo.put(pName, e.getTo());
-//				debug(PortalEndTo);
+		Bukkit.getScheduler().runTaskLater(Main.getInstance().plugin, new Runnable() {
+			@Override
+			public void run() {
+				if(Speedrunners.contains(pName)) {
+					if(getEnvironment(p.getLocation())==Environment.THE_END) {
+						PortalEndFrom.put(pName, e.getFrom());
+		//				debug(PortalEndFrom);
+						PortalEndTo.put(pName, p.getLocation());
+		//				debug(PortalEndTo);
+					}
+					else {
+						PortalFrom.put(pName, e.getFrom());
+						PortalTo.put(pName, p.getLocation());
+					}
+				}
+				if(Hunters.contains(pName)) {
+					if(getEnvironment(p.getLocation())==Environment.THE_END) {
+						HuntersPortalEndFrom.put(pName, e.getFrom());
+						HuntersPortalEndTo.put(pName, p.getLocation());
+					}
+					else {
+		//				HuntersPortalFrom.remove(pName);
+		//				HuntersPortalTo.remove(pName);
+						HuntersPortalFrom.put(pName, e.getFrom());
+						HuntersPortalTo.put(pName, p.getLocation());
+		//				debug(HuntersPortalTo.get(pName));
+					}
+				}
 			}
-			else {
-				PortalFrom.put(pName, e.getFrom());
-				PortalTo.put(pName, e.getTo());
+		}, 1);
+		checkNetherCompassInHand(p, p.getLocation(), p.getInventory().getHeldItemSlot(), false, p.getInventory().getItemInOffHand());
+		Bukkit.getScheduler().runTaskLater(Main.getInstance().plugin, new Runnable() {
+			@Override
+			public void run() {
+//				CompassUpdating.findTarget(p.getName(), e.getTo());
+				debug(CompassUpdating.shortLocation(p.getLocation()));
+				debug(CompassUpdating.shortLocation(e.getPlayer().getLocation()));
+				debug(CompassUpdating.shortLocation(e.getTo()));
+				CompassUpdating.findTarget(p.getName(), p.getLocation());
 			}
-		}
-		if(Hunters.contains(pName)) {
-			if(getEnvironment(e.getTo())==Environment.THE_END) {
-				HuntersPortalEndFrom.put(pName, e.getFrom());
-				HuntersPortalEndTo.put(pName, e.getTo());
-			}
-			else {
-//				HuntersPortalFrom.remove(pName);
-//				HuntersPortalTo.remove(pName);
-				HuntersPortalFrom.put(pName, e.getFrom());
-				HuntersPortalTo.put(pName, e.getTo());
-//				debug(HuntersPortalTo.get(pName));
-			}
-		}
-		checkNetherCompassInHand(p, e.getTo(), p.getInventory().getHeldItemSlot(), false, p.getInventory().getItemInOffHand());
-		CompassUpdating.findTarget(p.getName(), e.getTo());
+		}, 1);
 	}
 
 	@EventHandler
