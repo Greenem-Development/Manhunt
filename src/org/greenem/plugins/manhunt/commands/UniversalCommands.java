@@ -390,10 +390,10 @@ public class UniversalCommands {
 		if(to.equals("[CONSOLE]")) {
 			color1 = ChatColor.GOLD + "" + ChatColor.BOLD;
 		}
-		else if(Hunters.contains(to)) {
+		else if(Hunters.contains(to) || ac.type==CommandActionType.MAKE_HUNTER || (ac.removeFrom!=null && ac.removeFrom.equals("h"))) {
 			color1 = ChatColor.RED + "" + ChatColor.BOLD;
 		}
-		else if(Speedrunners.contains(to)) { // TODO You have removed GREEN3M2 from their team WHITE TEXT BUT NOT RED
+		else if(Speedrunners.contains(to) || ac.type==CommandActionType.MAKE_SPEEDRUNNER || (ac.removeFrom!=null && ac.removeFrom.equals("s"))) { // TODO You have removed GREEN3M2 from their team WHITE TEXT BUT NOT RED
 			color1 = ChatColor.GREEN + "" + ChatColor.BOLD;
 		}
 		else {
