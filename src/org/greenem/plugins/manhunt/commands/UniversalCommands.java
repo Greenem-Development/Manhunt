@@ -27,7 +27,7 @@ import org.greenem.plugins.manhunt.util.Stash;
 public class UniversalCommands {
 	public static void doAction(AbstractCommand ac) {
 		// Player from, Player to, CommandActionType action, GameMode gm
-		String msgFromNotNormalEnv = ChatColor.RED + "The player must be in the overworld for you to use this command. (There would be problems with missing portal location. Later this will be avaliable)";
+		String msgFromNotNormalEnv = ChatColor.RED + "The player must be in the overworld for you to use this command. (There would be problems with missing portal location. Later this will be avaliable) Requested to apply to " + ac.targetName;
 		if(ac.type==CommandActionType.GM) {
 			ac.targetPlayer.setGameMode(ac.gm);
 		} else if(ac.type==CommandActionType.HEAL) {
@@ -128,6 +128,10 @@ public class UniversalCommands {
 	}
 	
 	public static String getNotifToThatOne(AbstractCommand ac, String colorNameFrom) {
+		return getNotifToThatOne(ac, colorNameFrom, false);
+	}
+	
+	public static String getNotifToThatOne(AbstractCommand ac, String colorNameFrom, boolean wrongDimension) {
 		switch (ac.type) {
 		case HEAL: {
 			if(!stringsNotSameAndNotNull(ac.senderName, ac.targetName)) return null;
@@ -141,12 +145,24 @@ public class UniversalCommands {
 		}
 		case MAKE_HUNTER: {
 			if(!stringsNotSameAndNotNull(ac.senderName, ac.targetName)) return null;
-			if(colorNameFrom!=null) return ChatColor.GRAY + "You have been added to hunters team by " + colorNameFrom;
+			if(colorNameFrom!=null) {
+				String message = wrongEnvMessage(ac);
+				if(message==null) {
+					message = ChatColor.GRAY + "You have been added to hunters team by " + colorNameFrom;
+				}
+				return message;
+			}
 			else return null;
 		}
 		case MAKE_SPEEDRUNNER: {
 			if(!stringsNotSameAndNotNull(ac.senderName, ac.targetName)) return null;
-			if(colorNameFrom!=null) return ChatColor.GRAY + "You have been added to speedrunners team by " + colorNameFrom;
+			if(colorNameFrom!=null) {
+				String message = wrongEnvMessage(ac);
+				if(message==null) {
+					message = ChatColor.GRAY + "You have been added to speedrunners team by " + colorNameFrom;
+				}
+				return message;
+			}
 			else return null;
 		}
 		case MAKE_NOROLE: {
@@ -157,6 +173,17 @@ public class UniversalCommands {
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + ac.type);
 		}
+	}
+	
+	public static String wrongEnvMessage(AbstractCommand ac) {
+		if(!ac.targetPlayer.getWorld().getEnvironment().equals(Environment.NORMAL)) {
+			if(ac.targetPlayer.equals(ac.senderPlayer)) {
+				return ChatColor.RED + "You must be in the overworld to use this command. (There would be problems with missing portal location. Later this will be avaliable)";
+			} else {
+				return ChatColor.RED + "You must be in the overworld to get the role. (" + ac.senderPlayer.getName() + " tried to change it for you)";
+			}
+		}
+		else return null;
 	}
 	
 	public static String getNotifToTheSender(AbstractCommand ac, String NameTo) {
@@ -178,7 +205,12 @@ public class UniversalCommands {
 			else return null;
 		}
 		case MAKE_NOROLE: {
-			if(NameTo!=null) return ChatColor.GRAY + "You have removed " + white() + NameTo + ChatColor.GRAY + " from their team";
+			String c = whiteBald();
+			if(ac.removeFrom!=null && ac.removeFrom.equals("h")) c = red();
+			if(ac.removeFrom!=null && ac.removeFrom.equals("s")) c = green();
+			if(NameTo!=null) {
+				return ChatColor.GRAY + "You have removed " + c + NameTo + ChatColor.GRAY + " from their team";
+			}
 			else return ChatColor.GRAY + "You have left your team";
 		}
 		
@@ -187,8 +219,20 @@ public class UniversalCommands {
 		}
 	}
 	
+	public static String whiteBald() {
+		return ChatColor.RESET + "" + ChatColor.WHITE + ChatColor.BOLD;
+	}
+	
 	public static String white() {
-		return ChatColor.RESET + "" + ChatColor.WHITE; // + ChatColor.BOLD
+		return ChatColor.RESET + "" + ChatColor.WHITE;
+	}
+	
+	public static String red() {
+		return ChatColor.RESET + "" + ChatColor.RED + ChatColor.BOLD;
+	}
+	
+	public static String green() {
+		return ChatColor.RESET + "" + ChatColor.GREEN + ChatColor.BOLD;
 	}
 	
 	public static String getNotifToTheOthers(AbstractCommand ac, String NameTo) {
@@ -211,7 +255,7 @@ public class UniversalCommands {
 		}
 		case MAKE_NOROLE: {
 			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + white() + " has removed " + coloredName(NameTo) + " from their team";
-			else return coloredName(ac.senderDecorName) + white() + " has heft their team";
+			else return coloredName(ac.senderDecorName) + white() + " has left their team";
 		}
 		
 		default:
@@ -253,6 +297,7 @@ public class UniversalCommands {
 		String notifpersonal;
 		String notifOthers;
 		debug(ac.additionalType);
+		debug(ac.removeFrom);
 		if(ac.additionalType == AdditionalCommandActionType.SELF) {
 			if(ac.sender instanceof ConsoleCommandSender) {
 				ac.sender.sendMessage(ChatColor.RED + "You can't apply the result to yourself as the console!");
@@ -303,7 +348,7 @@ public class UniversalCommands {
 					if(ac.senderPlayer!=null) {
 						Bukkit.getScheduler().runTaskLater(Main.getInstance().plugin, new Runnable() {
 							public void run() {
-									if(notifpersonal!=null) ac.senderPlayer.sendMessage(notifpersonal);
+									if(notifpersonal!=null && ac.senderPlayer!=null && ac.senderPlayer.getWorld().getEnvironment()!=Environment.THE_END) ac.senderPlayer.sendMessage(notifpersonal);
 							}
 						}, 1);
 					}
@@ -316,13 +361,27 @@ public class UniversalCommands {
 					if(ac.targetPlayer!=null) {
 						Bukkit.getScheduler().runTaskLater(Main.getInstance().plugin, new Runnable() {
 							public void run() {
-								if(notifpersonal!=null) ac.targetPlayer.sendMessage(notifToThatOne);
+								if(notifpersonal!=null && ac.targetPlayer!=null) {
+									if (ac.targetPlayer.getWorld().getEnvironment()==Environment.NORMAL) { 
+										ac.targetPlayer.sendMessage(notifToThatOne);
+									} else {
+										ac.targetPlayer.sendMessage(notifToThatOne); // TODO WTF
+									}
+								}
 							}
 						}, 1);
 						if(ExtraCommands.logHealInfo) debug("notifToThatOne: " + notifToThatOne);
 					}
 					if(ac.senderPlayer!=null) {
-						if(notifpersonal!=null) ac.senderPlayer.sendMessage(notifpersonal);
+						if(notifpersonal!=null) {
+							if(ac.targetPlayer!=null) {
+								if(ac.targetPlayer.getWorld().getEnvironment()==Environment.NORMAL) { 
+									ac.senderPlayer.sendMessage(notifpersonal);
+								} else {
+									
+								}
+							}
+						}
 					}
 					notifOthers = coloredHealSentence(colorNameFrom, colorNameTo, ac);
 				}
@@ -411,6 +470,8 @@ public class UniversalCommands {
 			if(s.equals(ac.senderName)) ac2.additionalType = AdditionalCommandActionType.SELF;
 			else ac2.additionalType = AdditionalCommandActionType.OTHER_PLAYER;
 			ac2.targetName = s;
+			if(ac2.targetName!=null && Hunters.contains(ac2.targetName)) ac2.removeFrom = "h";
+			if(ac2.targetName!=null && Speedrunners.contains(ac2.targetName)) ac2.removeFrom = "s";
 			ac2.completeInitialisation();
 			debug(ac2.targetName);
 			UniversalCommands.universalCommand(ac2, ac.targetsList);
