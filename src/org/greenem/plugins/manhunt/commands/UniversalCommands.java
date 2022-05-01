@@ -193,7 +193,7 @@ public class UniversalCommands {
 			else return null;
 		}
 		case GM: {
-			if(NameTo!=null) return ChatColor.GRAY + "You have set " + coloredName(NameTo) + ChatColor.GRAY + "'s gamemode to " + getGamemodeName(ac.gm);
+			if(NameTo!=null) return ChatColor.GRAY + "You have set " + coloredName(NameTo) + "'s" + ChatColor.GRAY + " gamemode to " + getGamemodeName(ac.gm);
 			else return null;
 		}
 		case MAKE_HUNTER: {
@@ -242,7 +242,7 @@ public class UniversalCommands {
 			else return coloredName(NameTo) + white() + " was healed ";
 		}
 		case GM: {
-			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + white() + " has set " + coloredName(NameTo) + white() + "'s gamemode to " + ChatColor.GRAY + "" + ChatColor.BOLD + getGamemodeName(ac.gm);
+			if(!ac.senderName.equals(ac.targetName)) return coloredName(ac.senderDecorName) + white() + " has set " + coloredName(NameTo) + "'s" + white() + " gamemode to " + ChatColor.GRAY + "" + ChatColor.BOLD + getGamemodeName(ac.gm);
 			else return coloredName(ac.senderDecorName) + white() + " has set own gamemode to " + ChatColor.GRAY + ChatColor.BOLD + getGamemodeName(ac.gm);
 		}
 		case MAKE_HUNTER: {
@@ -264,8 +264,8 @@ public class UniversalCommands {
 	}
 	
 	public static void universalCommand(AbstractCommand ac, List<String> newMessageListeners) {
-		debug(ac.targetPlayer);
-		if(ac.targetPlayer==null) {
+		debug(ac.targetPlayer + " " + ac.type + " " + ac.additionalType);
+		if(ac.targetPlayer==null && !(ac.sender instanceof ConsoleCommandSender && (ac.additionalType==AdditionalCommandActionType.REMAINING_PLAYERS || ac.additionalType==AdditionalCommandActionType.ALL_PLAYERS))) {
 			ac.sender.sendMessage(ChatColor.RED + "Can't find such player!");
 			return;
 		}
@@ -279,7 +279,7 @@ public class UniversalCommands {
 			return;
 		}
 		Runnable finalActions = null;
-		ac.targetPlayer = Bukkit.getPlayerExact(ac.targetName); // dublicate?
+		if(ac.targetName!=null) ac.targetPlayer = Bukkit.getPlayerExact(ac.targetName); // dublicate?
 		if(ac.targetPlayer==null) {
 			debug("targetPlayer null " + ac.type + " " + ac.additionalType);
 			if(ac.additionalType!=AdditionalCommandActionType.OTHER_PLAYER) {
@@ -513,7 +513,7 @@ public class UniversalCommands {
 			color1 = ChatColor.WHITE + "" + ChatColor.BOLD;
 		}
 		
-		String part1 = color1 + to + ChatColor.RESET;
+		String part1 = color1 + to;
 		
 		String color2 = "";
 		if(to!=null && !from.equals(to)) {
@@ -536,46 +536,46 @@ public class UniversalCommands {
 		switch (ac.type) {
 		case GM: {
 			if (ac.additionalType == AdditionalCommandActionType.SELF) {
-				s = part1 + " has set own gamemode to " + getGamemodeName(ac.gm) + " mode";
+				s = part1 + ChatColor.RESET + " has set own gamemode to " + getGamemodeName(ac.gm) + " mode";
 			}
 			else {
-				s = part1 + "'s gamemode was set to " + getGamemodeName(ac.gm) + " by " + part2;
+				s = part1 + "'s" + ChatColor.RESET + " gamemode was set to " + getGamemodeName(ac.gm) + " by " + part2;
 			}
 			break;
 		}
 		case HEAL: {
 			if (ac.additionalType == AdditionalCommandActionType.SELF) {
-				s = part1 + " was healed";
+				s = part1 + ChatColor.RESET + " was healed";
 			}
 			else {
-				s = part1 + " was healed by " + part2;
+				s = part1 + ChatColor.RESET + " was healed by " + part2;
 			}
 			break;
 		}
 		case MAKE_HUNTER: {
 			if (ac.additionalType == AdditionalCommandActionType.SELF) {
-				s = part1 + " joined the hunters team";
+				s = part1 + ChatColor.RESET + " joined the hunters team";
 			}
 			else {
-				s = part1 + " was added to the hunters team by " + part2;
+				s = part1 + ChatColor.RESET + " was added to the hunters team by " + part2;
 			}
 			break;
 		}
 		case MAKE_SPEEDRUNNER: {
 			if (ac.additionalType == AdditionalCommandActionType.SELF) {
-				s = part1 + " joined the speedrunners team";
+				s = part1 + ChatColor.RESET + " joined the speedrunners team";
 			}
 			else {
-				s = part1 + " was added to the speedrunners team by " + part2;
+				s = part1 + ChatColor.RESET + " was added to the speedrunners team by " + part2;
 			}
 			break;
 		}
 		case MAKE_NOROLE: {
 			if (ac.additionalType == AdditionalCommandActionType.SELF) {
-				s = part1 + " has left their team";
+				s = part1 + ChatColor.RESET + " has left their team";
 			}
 			else {
-				s = part1 + " was removed from their team by " + part2;
+				s = part1 + ChatColor.RESET + " was removed from their team by " + part2;
 			}
 			break;
 		}

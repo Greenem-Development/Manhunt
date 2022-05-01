@@ -36,7 +36,7 @@ public class Stash {
 	
 	public static boolean isSenderAPlayer(CommandSender sender) {
 		if(sender instanceof ConsoleCommandSender) {
-			sender.sendMessage(ChatColor.RED + "You can't do it through console!");
+			sender.sendMessage(ChatColor.RED + "You can't do it via console!");
 			return false;
 		}
 		if(!(sender instanceof Player)) {

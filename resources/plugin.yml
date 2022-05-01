@@ -1,6 +1,6 @@
 name: AdvancedManhunt
 main: org.greenem.plugins.manhunt.main.Main
-version: 1.5.0
+version: 1.6.0
 api-version: 1.18
 commands:
    mhhunter:
