@@ -269,11 +269,11 @@ public class UniversalCommands {
 			ac.sender.sendMessage(ChatColor.RED + "Can't find such player!");
 			return;
 		}
-		if(!(ac.sender instanceof ConsoleCommandSender) && ac.type==CommandActionType.MAKE_NOROLE && ac.targetName!=null && !Speedrunners.contains(ac.targetName) && !Hunters.contains(ac.targetName)) {
+		if(ac.type==CommandActionType.MAKE_NOROLE && ac.targetName!=null && !Speedrunners.contains(ac.targetName) && !Hunters.contains(ac.targetName)) {
 			if(ac.additionalType==null) {
 				debug(ChatColor.RED + "addition type is null, maybe command was not initialized correctly");
 			}
-			if(ac.additionalType==AdditionalCommandActionType.SELF || (ac.additionalType==AdditionalCommandActionType.OTHER_PLAYER && ac.senderName.equals(ac.targetName))) ac.sender.sendMessage(ChatColor.RED + "You have no role already");
+			if(!(ac.sender instanceof ConsoleCommandSender) && (ac.additionalType==AdditionalCommandActionType.SELF || (ac.additionalType==AdditionalCommandActionType.OTHER_PLAYER && ac.senderName.equals(ac.targetName)))) ac.sender.sendMessage(ChatColor.RED + "You have no role already");
 			else if(ac.additionalType==AdditionalCommandActionType.OTHER_PLAYER) ac.sender.sendMessage(ChatColor.RED + "The player doesn't have a role already");
 			else if(ac.additionalType==AdditionalCommandActionType.REMAINING_PLAYERS || ac.additionalType==AdditionalCommandActionType.ALL_PLAYERS) ac.sender.sendMessage(ChatColor.RED + "No one has a role already");
 			return;
@@ -315,10 +315,10 @@ public class UniversalCommands {
 			if(ac.targetPlayer!=null) {
 				if(notifpersonal!=null) ac.targetPlayer.sendMessage(notifpersonal);
 			}
-			if(ExtraCommands.logHealInfo) debug("notifpersonal1: " + notifpersonal);
+			if(ExtraCommands.logCommandInfo) debug("notifpersonal1: " + notifpersonal);
 			if(Hunters.contains(ac.targetName) || Speedrunners.contains(ac.targetName)
 					|| ac.type==CommandActionType.MAKE_HUNTER || ac.type==CommandActionType.MAKE_SPEEDRUNNER || ac.type==CommandActionType.MAKE_NOROLE) {
-				if(ExtraCommands.logHealInfo) debug("notifOthers: " + notifOthers);
+				if(ExtraCommands.logCommandInfo) debug("notifOthers: " + notifOthers);
 				for (String pAlert : Hunters) {
 					sendOthersTheAlert(pAlert, ac.targetName, notifOthers);
 				}
@@ -328,7 +328,11 @@ public class UniversalCommands {
 			}
 		}
 		else if (ac.additionalType == AdditionalCommandActionType.OTHER_PLAYER) {
-			if(ac.targetPlayer!=null || ExtraCommands.logHealInfo) {
+			if(ac.targetPlayer!=null || ExtraCommands.logCommandInfo) {
+//				if(ac.type==CommandActionType.MAKE_NOROLE && !Hunters.contains(ac.targetName) && !Speedrunners.contains(ac.targetName)) {
+//					ac.sender.sendMessage(ChatColor.RED + );
+//					return;
+//				}
 				String colorNameTo = coloredName(ac.targetName);
 				boolean atLeastOneImportantPlayer = Hunters.contains(ac.senderName) || Speedrunners.contains(ac.senderName) || Hunters.contains(ac.targetName) || Speedrunners.contains(ac.targetName)
 						|| ac.type==CommandActionType.MAKE_HUNTER || ac.type==CommandActionType.MAKE_SPEEDRUNNER || ac.type==CommandActionType.MAKE_NOROLE;
@@ -370,13 +374,13 @@ public class UniversalCommands {
 								}
 							}
 						}, 1);
-						if(ExtraCommands.logHealInfo) debug("notifToThatOne: " + notifToThatOne);
+						if(ExtraCommands.logCommandInfo) debug("notifToThatOne: " + notifToThatOne);
 					}
-					if(ac.senderPlayer!=null) {
+					if(ac.sender!=null) {
 						if(notifpersonal!=null) {
 							if(ac.targetPlayer!=null) {
 								if(ac.targetPlayer.getWorld().getEnvironment()==Environment.NORMAL) { 
-									ac.senderPlayer.sendMessage(notifpersonal);
+									ac.sender.sendMessage(notifpersonal);
 								} else {
 									
 								}
@@ -386,10 +390,10 @@ public class UniversalCommands {
 					notifOthers = coloredHealSentence(colorNameFrom, colorNameTo, ac);
 				}
 				
-				if(ExtraCommands.logHealInfo) debug("notifpersonal2: " + notifpersonal);
+				if(ExtraCommands.logCommandInfo) debug("notifpersonal2: " + notifpersonal);
 				
 				if(atLeastOneImportantPlayer) {
-					if(ExtraCommands.logHealInfo) debug("notifOthers: " + notifOthers);
+					if(ExtraCommands.logCommandInfo) debug("notifOthers: " + notifOthers);
 					List<String> applyTo = new ArrayList<>();
 					if(newMessageListeners!=null) {
 						applyTo.addAll(newMessageListeners);
@@ -415,7 +419,7 @@ public class UniversalCommands {
 			}
 			else {
 				String problem = ChatColor.RED + "Such player isn't online";
-				if(ExtraCommands.logHealInfo) debug("personal error to " + ac.senderDecorName + ": " + problem);
+				if(ExtraCommands.logCommandInfo) debug("personal error to " + ac.senderDecorName + ": " + problem);
 				if(ac.senderPlayer!=null) {
 					ac.senderPlayer.sendMessage(problem);
 				}

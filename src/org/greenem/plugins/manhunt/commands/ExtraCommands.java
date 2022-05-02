@@ -19,7 +19,7 @@ import org.greenem.plugins.manhunt.config.ConfigData;
 import org.greenem.plugins.manhunt.util.Stash;
 
 public class ExtraCommands {
-	public static boolean logHealInfo = true; // false
+	public static boolean logCommandInfo = true; // false
 	
 	public static void GmCommand(CommandSender sender, String[] args) { // maybe boolean? (false not tested)
 		if(!ConfigData.allowGmCommandForOps) {
@@ -146,110 +146,112 @@ public class ExtraCommands {
 		
 		UniversalCommands.universalCommand(ac, null);
 		
-		if(true) return false;
-		
-		boolean console = sender instanceof ConsoleCommandSender;
-		
-		if(console) {
-			pName = "[CONSOLE]";
-		}
-		else if(pName==null) {
-			pName = p.getName();
-		}
-		if(p==null) {
-			p = Bukkit.getPlayerExact(pName);
-		}
-		String pFrom = pName;
-		String notifpersonal;
-		String colorNameFrom = UniversalCommands.coloredName(pFrom);
-		String notifOthers;
-		if(args.length == 0) {
-			if(sender instanceof ConsoleCommandSender) {
-				sender.sendMessage(ChatColor.RED + "You can't heal yourself as the console!");
-				return false;
-			}
-			if(p!=null) {
-				p.setHealth(20);
-				p.setFoodLevel(20);
-			}
-			notifpersonal = ChatColor.GRAY + "You have been healed";
-			notifOthers = colorNameFrom + ChatColor.RESET + "" + ChatColor.GRAY + " was healed";
-			if(p!=null) {
-				p.sendMessage(notifpersonal);
-			}
-			if(logHealInfo) log("notifpersonal: " + notifpersonal);
-			if(Hunters.contains(pName) || Speedrunners.contains(pName)) {
-				if(logHealInfo) log("notifOthers: " + notifOthers);
-				for (String pAlert : Hunters) {
-					UniversalCommands.sendOthersTheAlert(pAlert, pName, notifOthers);
-				}
-				for (String pAlert : Speedrunners) {
-					UniversalCommands.sendOthersTheAlert(pAlert, pName, notifOthers);
-				}
-			}
-		}
-		else if(args.length==1) {
-			String pTo = args[0];
-			Player pToP = Bukkit.getPlayerExact(pTo);
-			if(pToP!=null || logHealInfo) {
-				String colorNameTo = UniversalCommands.coloredName(pTo);
-				boolean atLeastOneImportantPlayer = Hunters.contains(pFrom) || Speedrunners.contains(pFrom) || Hunters.contains(pTo) || Speedrunners.contains(pTo);
-				if(pToP!=null) {
-					pToP.setHealth(20);
-					pToP.setFoodLevel(20);
-				}
-				
-				if(pTo.equals(pFrom)) {
-					notifpersonal = ChatColor.GRAY + "You have been healed";
-					if(p!=null) {
-						p.sendMessage(notifpersonal);
-					}
-					notifOthers = colorNameFrom + ChatColor.RESET + "" + ChatColor.GRAY + " was healed";
-				}
-				else {
-					String notifToThatOne = ChatColor.GRAY + "You have been healed by " + colorNameFrom;
-					notifpersonal = ChatColor.GRAY + "You have healed " + colorNameTo;
-					if(pToP!=null) {
-						pToP.sendMessage(notifToThatOne);
-						if(logHealInfo) log("notifToThatOne: " + notifToThatOne);
-					}
-					if(p!=null) {
-						p.sendMessage(notifpersonal);
-					}
-					notifOthers = UniversalCommands.coloredHealSentence(colorNameFrom, colorNameTo, null);
-				}
-				
-				if(logHealInfo) log("notifpersonal: " + notifpersonal);
-				
-				if(atLeastOneImportantPlayer) {
-					if(logHealInfo) log("notifOthers: " + notifOthers);
-					for (String pAlert : Hunters) {
-						if (!pAlert.equals(pTo)) {
-							UniversalCommands.sendOthersTheAlert(pAlert, pName, notifOthers);
-						}
-					}
-					for (String pAlert : Speedrunners) {
-						if (!pAlert.equals(pTo)) {
-							UniversalCommands.sendOthersTheAlert(pAlert, pName, notifOthers);
-						}
-					}
-				}
-			}
-			else {
-				String problem = ChatColor.RED + "Such player isn't online";
-				if(logHealInfo) log("personal error to " + pName + ": " + problem);
-				if(p!=null) {
-					p.sendMessage(problem);
-				}
-			}
-		}
-		else {
-			String problem = ChatColor.RED + "Please, type the command in such order: /heal <player>";
-			log("personal error to " + pName + ": " + problem);
-			if(p!=null) {
-				p.sendMessage(problem);
-			}
-		}
 		return true;
+		
+//		if(true) return false;
+//		
+//		boolean console = sender instanceof ConsoleCommandSender;
+//		
+//		if(console) {
+//			pName = "[CONSOLE]";
+//		}
+//		else if(pName==null) {
+//			pName = p.getName();
+//		}
+//		if(p==null) {
+//			p = Bukkit.getPlayerExact(pName);
+//		}
+//		String pFrom = pName;
+//		String notifpersonal;
+//		String colorNameFrom = UniversalCommands.coloredName(pFrom);
+//		String notifOthers;
+//		if(args.length == 0) {
+//			if(sender instanceof ConsoleCommandSender) {
+//				sender.sendMessage(ChatColor.RED + "You can't heal yourself as the console!");
+//				return false;
+//			}
+//			if(p!=null) {
+//				p.setHealth(20);
+//				p.setFoodLevel(20);
+//			}
+//			notifpersonal = ChatColor.GRAY + "You have been healed";
+//			notifOthers = colorNameFrom + ChatColor.RESET + "" + ChatColor.GRAY + " was healed";
+//			if(p!=null) {
+//				p.sendMessage(notifpersonal);
+//			}
+//			if(logHealInfo) log("notifpersonal: " + notifpersonal);
+//			if(Hunters.contains(pName) || Speedrunners.contains(pName)) {
+//				if(logHealInfo) log("notifOthers: " + notifOthers);
+//				for (String pAlert : Hunters) {
+//					UniversalCommands.sendOthersTheAlert(pAlert, pName, notifOthers);
+//				}
+//				for (String pAlert : Speedrunners) {
+//					UniversalCommands.sendOthersTheAlert(pAlert, pName, notifOthers);
+//				}
+//			}
+//		}
+//		else if(args.length==1) {
+//			String pTo = args[0];
+//			Player pToP = Bukkit.getPlayerExact(pTo);
+//			if(pToP!=null || logHealInfo) {
+//				String colorNameTo = UniversalCommands.coloredName(pTo);
+//				boolean atLeastOneImportantPlayer = Hunters.contains(pFrom) || Speedrunners.contains(pFrom) || Hunters.contains(pTo) || Speedrunners.contains(pTo);
+//				if(pToP!=null) {
+//					pToP.setHealth(20);
+//					pToP.setFoodLevel(20);
+//				}
+//				
+//				if(pTo.equals(pFrom)) {
+//					notifpersonal = ChatColor.GRAY + "You have been healed";
+//					if(p!=null) {
+//						p.sendMessage(notifpersonal);
+//					}
+//					notifOthers = colorNameFrom + ChatColor.RESET + "" + ChatColor.GRAY + " was healed";
+//				}
+//				else {
+//					String notifToThatOne = ChatColor.GRAY + "You have been healed by " + colorNameFrom;
+//					notifpersonal = ChatColor.GRAY + "You have healed " + colorNameTo;
+//					if(pToP!=null) {
+//						pToP.sendMessage(notifToThatOne);
+//						if(logHealInfo) log("notifToThatOne: " + notifToThatOne);
+//					}
+//					if(p!=null) {
+//						p.sendMessage(notifpersonal);
+//					}
+//					notifOthers = UniversalCommands.coloredHealSentence(colorNameFrom, colorNameTo, null);
+//				}
+//				
+//				if(logHealInfo) log("notifpersonal: " + notifpersonal);
+//				
+//				if(atLeastOneImportantPlayer) {
+//					if(logHealInfo) log("notifOthers: " + notifOthers);
+//					for (String pAlert : Hunters) {
+//						if (!pAlert.equals(pTo)) {
+//							UniversalCommands.sendOthersTheAlert(pAlert, pName, notifOthers);
+//						}
+//					}
+//					for (String pAlert : Speedrunners) {
+//						if (!pAlert.equals(pTo)) {
+//							UniversalCommands.sendOthersTheAlert(pAlert, pName, notifOthers);
+//						}
+//					}
+//				}
+//			}
+//			else {
+//				String problem = ChatColor.RED + "Such player isn't online";
+//				if(logHealInfo) log("personal error to " + pName + ": " + problem);
+//				if(p!=null) {
+//					p.sendMessage(problem);
+//				}
+//			}
+//		}
+//		else {
+//			String problem = ChatColor.RED + "Please, type the command in such order: /heal <player>";
+//			log("personal error to " + pName + ": " + problem);
+//			if(p!=null) {
+//				p.sendMessage(problem);
+//			}
+//		}
+//		return true;
 	}
 }

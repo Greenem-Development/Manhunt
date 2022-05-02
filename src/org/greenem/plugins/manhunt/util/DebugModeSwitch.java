@@ -10,7 +10,7 @@ public class DebugModeSwitch {
 		File f = new File(References.pluginConfigDirectory, "enableDebug.dev");
 		if(!f.exists()) {
 			SimpleLogger.debugOutputEnabled = false;
-			ExtraCommands.logHealInfo = false;
+			ExtraCommands.logCommandInfo = false;
 		}
 	}
 }
