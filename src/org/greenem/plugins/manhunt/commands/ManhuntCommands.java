@@ -289,7 +289,7 @@ public class ManhuntCommands {
 	}
 	
 	public static void authors(CommandSender sender) {
-		String discordLinkText = "(no link yet)";
+		String discordLinkText = "https://discord.gg/GGRJAcN8nU";
 		String curseforgeLinkText = "https://www.curseforge.com/minecraft/bukkit-plugins/advanced-manhunt";
 		String line = "-------------------------------------------------------------------------------";
 		String endLine = "\n" + ChatColor.RED + line;

@@ -8,7 +8,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class NonBukkit {
 	public static void authors(CommandSender sender) {
-        String discordLinkText = "(no link yet)";
+        String discordLinkText = "https://discord.gg/GGRJAcN8nU";
         String curseforgeLinkText = "https://www.curseforge.com/minecraft/bukkit-plugins/advanced-manhunt";
         String line = "-------------------------------------------------------------------------------";
         String endLine = "\n" + ChatColor.RED + line;
@@ -38,7 +38,7 @@ public class NonBukkit {
         TextComponent discordLink = null;
         if(simpleText==null) {
             discordLink = new TextComponent(discordPartText);
-//          discordLink.setClickEvent(new ClickEvent( ClickEvent.Action.OPEN_URL, discordLinkText));
+          discordLink.setClickEvent(new ClickEvent( ClickEvent.Action.OPEN_URL, discordLinkText));
           }
 
           String part2 = ChatColor.GRAY + "\n" + "Download links: " + ChatColor.RESET + "\n";
